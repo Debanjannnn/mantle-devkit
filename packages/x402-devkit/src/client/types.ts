@@ -11,6 +11,8 @@ export interface PaymentRequest {
   network: string
   chainId?: number
   recipient: string
+  description?: string // Optional: Description of what's being paid for
+  endpoint?: string // Optional: API endpoint being paid for
 }
 
 /** Payment response after successful payment */

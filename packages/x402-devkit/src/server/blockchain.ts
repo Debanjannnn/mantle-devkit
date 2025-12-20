@@ -44,12 +44,21 @@ interface RawTransactionReceipt {
   status: string
   from: string
   to: string | null
-  value?: string
   logs: Array<{
     address: string
     topics: string[]
     data: string
   }>
+}
+
+/** Raw transaction from RPC */
+interface RawTransaction {
+  hash: string
+  from: string
+  to: string | null
+  value: string
+  input: string
+  blockNumber: string | null
 }
 
 /** Parsed transaction receipt */
@@ -104,17 +113,31 @@ async function callRPC<T>(url: string, method: string, params: unknown[]): Promi
 }
 
 /**
- * Get and parse transaction receipt
+ * Get transaction by hash
+ */
+async function getTransaction(
+  rpcUrl: string,
+  txHash: string
+): Promise<RawTransaction | null> {
+  return await callRPC<RawTransaction | null>(
+    rpcUrl,
+    'eth_getTransactionByHash',
+    [txHash]
+  )
+}
+
+/**
+ * Get and parse transaction receipt with transaction value
  */
 async function getTransactionReceipt(
   rpcUrl: string,
   txHash: string
 ): Promise<TransactionReceipt | null> {
-  const receipt = await callRPC<RawTransactionReceipt | null>(
-    rpcUrl,
-    'eth_getTransactionReceipt',
-    [txHash]
-  )
+  // Get both receipt and transaction (for value)
+  const [receipt, tx] = await Promise.all([
+    callRPC<RawTransactionReceipt | null>(rpcUrl, 'eth_getTransactionReceipt', [txHash]),
+    callRPC<RawTransaction | null>(rpcUrl, 'eth_getTransactionByHash', [txHash]),
+  ])
 
   if (!receipt) {
     return null
@@ -125,8 +148,8 @@ async function getTransactionReceipt(
     blockNumber: parseInt(receipt.blockNumber, 16),
     status: receipt.status === '0x1' ? 'success' : 'failed',
     from: receipt.from,
-    to: receipt.to,
-    value: receipt.value || '0x0',
+    to: tx?.to || receipt.to,
+    value: tx?.value || '0x0',
     logs: receipt.logs || [],
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "x402-mantle-sdk",
-  "version": "0.1.0",
-  "description": "Complete SDK for x402 paid APIs on Mantle Network - server middleware and client payments",
+  "version": "0.2.5",
+  "description": "Complete SDK for monetizing APIs with HTTP 402 payments on Mantle Network. Protect API routes, handle payments automatically, and track revenue.",
   "type": "module",
   "exports": {
     "./server": {
@@ -50,16 +50,28 @@
   },
   "keywords": [
     "x402",
+    "http-402",
     "mantle",
+    "mantle-network",
     "payment",
+    "payments",
     "api",
     "monetization",
+    "monetize",
     "hono",
+    "express",
     "middleware",
     "web3",
     "blockchain",
-    "http-402",
-    "wallet"
+    "wallet",
+    "ethereum",
+    "layer2",
+    "l2",
+    "micropayments",
+    "api-monetization",
+    "paid-api",
+    "payment-gateway",
+    "blockchain-payments"
   ],
   "author": "x402-devkit",
   "license": "MIT",
@@ -75,11 +87,15 @@
     "access": "public"
   },
   "peerDependencies": {
+    "express": "^4.0.0 || ^5.0.0",
     "hono": "^4.0.0",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
+    "express": {
+      "optional": true
+    },
     "hono": {
       "optional": true
     },
@@ -91,9 +107,11 @@
     }
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "express": "^4.21.0",
     "hono": "^4.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

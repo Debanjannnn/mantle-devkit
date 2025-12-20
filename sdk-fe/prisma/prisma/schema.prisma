@@ -17,16 +17,80 @@ datasource db {
 model Project {
   id        String   @id @default(cuid())
   appId     String   @unique // Hashed project ID
-  name      String   // Project name
-  payTo     String   // Payout wallet address
-  createdBy String   // Wallet address of the user who created the project
+  name      String // Project name
+  payTo     String // Payout wallet address
+  createdBy String // Wallet address of the user who created the project
   network   String   @default("mantle")
   status    String   @default("ACTIVE")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Relations
+  payments  Payment[]
+  endpoints Endpoint[]
+
   @@index([appId])
   @@index([payTo])
   @@index([createdBy])
   @@map("projects")
+}
+
+model Endpoint {
+  id        String   @id @default(cuid())
+  projectId String   // Reference to Project
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Endpoint details
+  endpoint  String   // API endpoint path (e.g., "/api/premium-data")
+  method    String?  // HTTP method (e.g., "GET", "POST", null for any)
+  price     String   // Payment price (e.g., "0.001")
+  token     String   // Token symbol (e.g., "MNT", "USDC")
+  network   String   // Network (e.g., "mantle", "mantle-sepolia")
+
+  // Status
+  status    String   @default("ACTIVE") // ACTIVE, INACTIVE, DELETED
+  lastSeen  DateTime @default(now()) // Last time this endpoint was accessed
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, endpoint, method])
+  @@index([projectId])
+  @@index([endpoint])
+  @@index([status])
+  @@index([lastSeen])
+  @@map("endpoints")
+}
+
+model Payment {
+  id        String  @id @default(cuid())
+  projectId String // Reference to Project
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Payment details
+  transactionHash String @unique
+  amount          String // Amount paid (e.g., "0.001")
+  token           String // Token symbol (e.g., "MNT", "USDC")
+  network         String // Network (e.g., "mantle", "mantle-sepolia")
+
+  // Endpoint tracking
+  endpoint String? // API endpoint that was paid for (e.g., "/api/premium-data")
+  method   String? // HTTP method (e.g., "GET", "POST")
+
+  // Payment metadata
+  fromAddress String? // Payer wallet address
+  toAddress   String // Recipient wallet address (project payTo)
+  blockNumber Int? // Block number of transaction
+
+  // Status
+  status String @default("SUCCESS") // SUCCESS, FAILED, PENDING
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([transactionHash])
+  @@index([endpoint])
+  @@index([createdAt])
+  @@map("payments")
 }

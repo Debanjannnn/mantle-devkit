@@ -12,12 +12,15 @@
  */
 
 import { processPaymentMiddleware, type X402Options } from './middleware'
-import { initializePlatform } from './platform'
+import { initializePlatform, getProjectConfig } from './platform'
 
 /** Hono context interface (generic to avoid requiring hono at build time) */
 interface HonoContext {
   req: {
     header(): Record<string, string>
+    url?: string
+    path?: string
+    method?: string
   }
   json(data: unknown, status?: number, headers?: Record<string, string>): Response
 }
@@ -59,7 +62,36 @@ export function x402(options: X402Options) {
     try {
       await ensureInitialized()
 
-      const result = await processPaymentMiddleware(options, c.req.header())
+      // Extract endpoint path from request (for automatic registration)
+      const requestPath = c.req.path || (c.req.url ? new URL(c.req.url).pathname : undefined)
+      const requestMethod = c.req.method
+
+      // Auto-register endpoint on first use (fire and forget)
+      if (requestPath && options.enableAnalytics !== false) {
+        import('./endpoint-registry').then(({ registerEndpoint }) => {
+          const config = getProjectConfig()
+          const network = options.network || (options.testnet ? 'mantle-sepolia' : config.network)
+          
+          registerEndpoint({
+            endpoint: requestPath,
+            method: requestMethod || options.method,
+            price: options.price,
+            token: options.token,
+            network,
+          }).catch(() => {
+            // Silently fail - registration shouldn't break payment flow
+          })
+        }).catch(() => {
+          // Silently fail if module can't be loaded
+        })
+      }
+
+      const result = await processPaymentMiddleware(
+        options,
+        c.req.header(),
+        requestPath,
+        requestMethod
+      )
 
       if (!result.allowed) {
         if (result.paymentRequired) {

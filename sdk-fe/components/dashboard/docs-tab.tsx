@@ -16,15 +16,35 @@ const DOCS = [
   {
     id: 1,
     title: "Getting Started",
-    shortContent: "Learn how to set up x402 DevKit and create your first paid API endpoint.",
-    fullContent: `# Getting Started with x402 DevKit
+    shortContent: "Learn how to set up x402 and create your first paid API endpoint.",
+    fullContent: `# Getting Started with x402
 
-x402 DevKit is the complete toolkit for building paid APIs on Mantle Network. Get started in minutes with just three lines of code.
+x402 is the complete toolkit for building paid APIs on Mantle Network. Get started in minutes with just three lines of code.
 
-## Installation
+## Quick Start Options
+
+### Option 1: Use the CLI (Recommended)
+
+The fastest way to get started is using the \`create-x402-app\` CLI tool:
 
 \`\`\`bash
-npm install @x402-devkit/server @x402-devkit/client
+npx create-x402-app my-api
+cd my-api
+npm run dev
+\`\`\`
+
+This creates a fully configured Next.js project with:
+- Example API routes (free and paid)
+- Wallet connection UI
+- Payment modal integration
+- TypeScript configuration
+
+### Option 2: Manual Installation
+
+If you prefer to set up manually:
+
+\`\`\`bash
+npm install x402-mantle-sdk
 \`\`\`
 
 ## Quick Start
@@ -32,62 +52,143 @@ npm install @x402-devkit/server @x402-devkit/client
 ### Server Setup
 
 \`\`\`typescript
-import { x402 } from '@x402-devkit/server'
+import { x402 } from 'x402-mantle-sdk/server'
 
 app.use('/api/premium', x402({
   price: '0.001',
   token: 'MNT',
-  network: 'mantle'
+  testnet: true  // Use mantle-sepolia for testing
 }))
 \`\`\`
 
 ### Client Integration
 
 \`\`\`typescript
-import { x402Fetch } from '@x402-devkit/client'
+import { x402Fetch } from 'x402-mantle-sdk/client'
 
 const response = await x402Fetch('https://api.example.com/api/premium')
 \`\`\`
 
-That's it! Your API now accepts payments.`,
+That's it! Your API now accepts payments.
+
+## Packages
+
+x402 consists of two main packages:
+
+1. **\`x402-mantle-sdk\`** (v0.2.5+) - The core SDK for server and client
+   - Install: \`npm install x402-mantle-sdk\`
+   - Exports: \`/server\`, \`/client\`, \`/client/react\`
+   - [View on npm](https://www.npmjs.com/package/x402-mantle-sdk)
+
+2. **\`create-x402-app\`** (v0.1.4+) - CLI tool for scaffolding projects
+   - Use: \`npx create-x402-app my-app\`
+   - Creates ready-to-use starter templates
+   - [View on npm](https://www.npmjs.com/package/create-x402-app)`,
   },
   {
     id: 2,
     title: "API Reference",
-    shortContent: "Complete reference for all x402 DevKit server and client methods.",
+    shortContent: "Complete reference for all x402 server and client methods.",
     fullContent: `# API Reference
+
+## Installation
+
+\`\`\`bash
+npm install x402-mantle-sdk@latest
+\`\`\`
+
+**Current version:** v0.2.5+
+
+**Package:** [x402-mantle-sdk on npm](https://www.npmjs.com/package/x402-mantle-sdk)
 
 ## Server SDK
 
-### x402(options)
+Import from \`x402-mantle-sdk/server\`:
 
-Main middleware function to protect your API routes.
+### x402(options) - Hono Middleware
+
+Main middleware function for Hono framework.
 
 \`\`\`typescript
-x402({
-  price: string,        // Price in tokens (e.g., "0.001")
-  token: string,        // Token symbol (e.g., "MNT", "USDC")
-  network: string,      // Network name (e.g., "mantle")
-  recipient?: string,   // Optional: custom recipient address
-  testnet?: boolean     // Optional: use testnet
-})
+import { x402 } from 'x402-mantle-sdk/server'
+
+app.use('/api/premium', x402({
+  price: '0.001',        // Price in tokens
+  token: 'MNT',         // Token symbol (MNT, USDC, USDT, mETH, WMNT)
+  testnet: true,        // Use mantle-sepolia (false for mainnet)
+  network: 'mantle-sepolia'  // Or 'mantle' for mainnet
+}))
+\`\`\`
+
+### x402Express(options) - Express Middleware
+
+Express.js middleware adapter.
+
+\`\`\`typescript
+import { x402Express } from 'x402-mantle-sdk/server'
+
+app.use('/api/premium', x402Express({
+  price: '0.001',
+  token: 'MNT',
+  testnet: true
+}))
+\`\`\`
+
+### processPaymentMiddleware(options, headers) - Framework Agnostic
+
+Use with any framework (Next.js, etc.).
+
+\`\`\`typescript
+import { processPaymentMiddleware } from 'x402-mantle-sdk/server'
+
+const result = await processPaymentMiddleware(
+  { price: '0.001', token: 'MNT', testnet: true },
+  request.headers
+)
 \`\`\`
 
 ## Client SDK
+
+Import from \`x402-mantle-sdk/client\`:
 
 ### x402Fetch(url, options?)
 
 Fetch wrapper that handles payments automatically.
 
 \`\`\`typescript
-x402Fetch(url: string, options?: RequestInit): Promise<Response>
+import { x402Fetch } from 'x402-mantle-sdk/client'
+
+const response = await x402Fetch('https://api.example.com/api/premium')
+const data = await response.json()
 \`\`\`
+
+### X402Client
+
+Configurable client instance.
+
+\`\`\`typescript
+import { X402Client } from 'x402-mantle-sdk/client'
+
+const client = new X402Client({
+  autoRetry: true,
+  testnet: true
+})
+
+await client.initialize()
+const response = await client.fetch('/api/premium')
+\`\`\`
+
+## React Components
+
+Import from \`x402-mantle-sdk/client/react\`:
 
 ### PaymentModal Component
 
 React component for payment UI.
 
 \`\`\`tsx
+import { PaymentModal } from 'x402-mantle-sdk/client/react'
+
 <PaymentModal
   request={paymentRequest}
   isOpen={boolean}
@@ -98,6 +199,100 @@ React component for payment UI.
   },
   {
     id: 3,
+    title: "CLI Tool: create-x402-app",
+    shortContent: "Scaffold a new x402 project with one command using the CLI tool.",
+    fullContent: `# create-x402-app CLI Tool
+
+The fastest way to get started with x402 is using the \`create-x402-app\` CLI tool. It creates a fully configured project with examples and best practices.
+
+## Quick Start
+
+\`\`\`bash
+npx create-x402-app my-api
+cd my-api
+npm run dev
+\`\`\`
+
+## Usage
+
+### Interactive Mode
+
+\`\`\`bash
+npx create-x402-app
+\`\`\`
+
+This will prompt you for:
+- Project name
+- Project type (Fullstack or Backend only)
+- Framework (Hono or Express)
+- Package manager (npm, yarn, pnpm, bun)
+- Whether to install dependencies
+
+### With Arguments
+
+\`\`\`bash
+# Create project with specific name
+npx create-x402-app my-api
+
+# Specify project type and framework
+npx create-x402-app my-api --fullstack --express
+npx create-x402-app my-api --backend --hono
+
+# Use specific package manager
+npx create-x402-app my-api --bun
+npx create-x402-app my-api --pnpm
+npx create-x402-app my-api --yarn
+
+# Skip dependency installation
+npx create-x402-app my-api --skip-install
+\`\`\`
+
+## Available Templates
+
+The CLI provides 4 templates:
+
+1. **backend-hono** - Standalone Hono API server
+2. **backend-express** - Standalone Express API server
+3. **fullstack-hono** - Next.js app with Hono API routes
+4. **fullstack-express** - Next.js app with Express-style API routes
+
+## What's Included
+
+Each template includes:
+- **x402-mantle-sdk** pre-installed
+- **TypeScript** configuration
+- **Example API routes** (free and paid endpoints)
+- **Wallet connection** UI
+- **Payment modal** integration
+- **Tailwind CSS** for styling
+
+## After Creating
+
+1. **Get your App ID**
+   - Visit the [x402 Dashboard](https://mantle-x402.vercel.app)
+   - Connect your wallet
+   - Create a project
+   - Copy your App ID
+
+2. **Configure environment**
+   \`\`\`bash
+   cp .env.example .env
+   # Edit .env with your App ID
+   \`\`\`
+
+3. **Start development**
+   \`\`\`bash
+   npm run dev
+   \`\`\`
+
+## Learn More
+
+- [x402 Documentation](https://mantle-x402.vercel.app/dashboard?tab=docs)
+- [x402-mantle-sdk on npm](https://www.npmjs.com/package/x402-mantle-sdk)
+- [create-x402-app on npm](https://www.npmjs.com/package/create-x402-app)`,
+  },
+  {
+    id: 4,
     title: "Payment Integration",
     shortContent: "Guide to integrating x402 payments into your existing API infrastructure.",
     fullContent: `# Payment Integration Guide
@@ -107,7 +302,7 @@ React component for payment UI.
 ### 1. Install Dependencies
 
 \`\`\`bash
-npm install @x402-devkit/server
+npm install x402-mantle-sdk
 \`\`\`
 
 ### 2. Protect Your Endpoint
@@ -115,7 +310,7 @@ npm install @x402-devkit/server
 Wrap your existing API route with x402 middleware:
 
 \`\`\`typescript
-import { x402 } from '@x402-devkit/server'
+import { x402 } from 'x402-mantle-sdk/server'
 
 // Before
 app.get('/api/data', (req, res) => {
@@ -126,7 +321,7 @@ app.get('/api/data', (req, res) => {
 app.use('/api/data', x402({
   price: '0.001',
   token: 'MNT',
-  network: 'mantle'
+  testnet: true
 }))
 app.get('/api/data', (req, res) => {
   res.json({ data: 'premium content' })
@@ -142,14 +337,14 @@ Replace your fetch calls with x402Fetch:
 const response = await fetch('/api/data')
 
 // After
-import { x402Fetch } from '@x402-devkit/client'
+import { x402Fetch } from 'x402-mantle-sdk/client'
 const response = await x402Fetch('/api/data')
 \`\`\`
 
 The payment flow is handled automatically!`,
   },
   {
-    id: 4,
+    id: 5,
     title: "Wallet Configuration",
     shortContent: "Configure payout wallets and manage payment settings.",
     fullContent: `# Wallet Configuration
@@ -162,18 +357,28 @@ The payment flow is handled automatically!`,
 2. Click "Create New Project"
 3. Enter your project name
 4. Set your payout wallet address
-5. Copy your Project ID
+5. Copy your App ID
 
-### Using Your Project ID
+### Using Your App ID
+
+Set the \`X402_APP_ID\` environment variable:
+
+\`\`\`bash
+# .env
+X402_APP_ID=your-app-id-here
+X402_PLATFORM_URL=https://mantle-x402.vercel.app
+\`\`\`
+
+The SDK will automatically use this App ID:
 
 \`\`\`typescript
-import { x402 } from '@x402-devkit/server'
+import { x402 } from 'x402-mantle-sdk/server'
 
+// App ID is read from process.env.X402_APP_ID
 app.use('/api/premium', x402({
-  projectId: 'your-project-id',
   price: '0.001',
   token: 'MNT',
-  network: 'mantle'
+  testnet: true
 }))
 \`\`\`
 
@@ -189,7 +394,7 @@ You can update your payout wallet from the dashboard at any time. All future pay
 - Monitor your dashboard regularly`,
   },
   {
-    id: 5,
+    id: 6,
     title: "Network Setup",
     shortContent: "Connect to Mantle network and configure your environment.",
     fullContent: `# Network Setup
@@ -222,7 +427,7 @@ NEXT_PUBLIC_PRIVY_APP_ID=your_privy_app_id
 Use the testnet for development. Switch to mainnet only when ready for production.`,
   },
   {
-    id: 6,
+    id: 7,
     title: "Error Handling",
     shortContent: "Best practices for handling payment errors and edge cases.",
     fullContent: `# Error Handling
@@ -234,6 +439,8 @@ Use the testnet for development. Switch to mainnet only when ready for productio
 The client hasn't paid for the request yet.
 
 \`\`\`typescript
+import { x402Fetch } from 'x402-mantle-sdk/client'
+
 try {
   const response = await x402Fetch('/api/premium')
   const data = await response.json()
@@ -259,6 +466,8 @@ User doesn't have enough tokens.
 Handle network connection issues:
 
 \`\`\`typescript
+import { x402Fetch } from 'x402-mantle-sdk/client'
+
 try {
   const response = await x402Fetch('/api/premium')
 } catch (error) {
@@ -276,27 +485,35 @@ try {
 - Log errors for debugging`,
   },
   {
-    id: 7,
+    id: 8,
     title: "Testing",
     shortContent: "Test your paid APIs locally before deploying to production.",
     fullContent: `# Testing Your Paid APIs
 
 ## Local Development
 
-### Using the Sandbox
+### Using Mantle Sepolia Testnet
 
-x402 DevKit includes a local sandbox for testing without real payments:
+For local development, use the Mantle Sepolia testnet:
 
 \`\`\`typescript
-import { x402 } from '@x402-devkit/server'
+import { x402 } from 'x402-mantle-sdk/server'
 
 app.use('/api/premium', x402({
   price: '0.001',
   token: 'MNT',
-  network: 'mantle',
-  sandbox: true  // Enable sandbox mode
+  testnet: true  // Use Mantle Sepolia testnet
 }))
 \`\`\`
+
+### Get Test Tokens
+
+1. Add Mantle Sepolia to MetaMask:
+   - Chain ID: 5003
+   - RPC: https://rpc.sepolia.mantle.xyz
+   - Explorer: https://explorer.sepolia.mantle.xyz
+
+2. Get test MNT from the [Mantle Faucet](https://faucet.sepolia.mantle.xyz/)
 
 ### Test Scenarios
 
@@ -305,23 +522,17 @@ app.use('/api/premium', x402({
 3. **Network Errors**: Simulate network issues
 4. **Multiple Requests**: Test rate limiting
 
-### Mock Payments
-
-\`\`\`typescript
-// In sandbox mode, payments are simulated
-// No real tokens are transferred
-\`\`\`
-
 ## Production Testing
 
 Before going live:
-- Test with small amounts
+- Test with small amounts on testnet first
 - Verify payout wallet receives funds
 - Check dashboard shows correct data
-- Test error scenarios`,
+- Test error scenarios
+- Switch to mainnet when ready`,
   },
   {
-    id: 8,
+    id: 9,
     title: "Deployment",
     shortContent: "Deploy your x402-enabled APIs to production environments.",
     fullContent: `# Deployment Guide
@@ -340,8 +551,8 @@ Before going live:
 
 \`\`\`bash
 # Set environment variables in Vercel dashboard
-DATABASE_URL=your_production_db_url
-NEXT_PUBLIC_PRIVY_APP_ID=your_privy_app_id
+X402_APP_ID=your_app_id_here
+X402_PLATFORM_URL=https://mantle-x402.vercel.app
 \`\`\`
 
 ### Docker Deployment
@@ -364,7 +575,7 @@ CMD ["npm", "start"]
 4. Set up alerts for errors`,
   },
   {
-    id: 9,
+    id: 10,
     title: "Monitoring",
     shortContent: "Monitor payments, revenue, and API usage through the dashboard.",
     fullContent: `# Monitoring & Analytics
@@ -409,7 +620,7 @@ Track these important metrics:
 - Review logs weekly`,
   },
   {
-    id: 10,
+    id: 11,
     title: "Security",
     shortContent: "Security best practices for handling payments and API keys.",
     fullContent: `# Security Best Practices

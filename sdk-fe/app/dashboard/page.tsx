@@ -9,7 +9,8 @@ import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { OverviewTab } from "@/components/dashboard/overview-tab"
 import { DocsTab } from "@/components/dashboard/docs-tab"
 import { AdminTab } from "@/components/dashboard/admin-tab"
-import { AnalyticsTab, EndpointsTab, LogsTab, SettingsTab } from "@/components/dashboard/placeholder-tabs"
+import { AnalyticsTab, LogsTab, SettingsTab } from "@/components/dashboard/placeholder-tabs"
+import { EndpointsTab } from "@/components/dashboard/endpoints-tab"
 import { CreateProjectDialog } from "@/components/dashboard/create-project-dialog"
 
 function DashboardContent() {

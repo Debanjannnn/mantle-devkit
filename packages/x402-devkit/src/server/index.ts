@@ -29,6 +29,9 @@
 // Main middleware export
 export { x402 } from './hono'
 
+// Express middleware
+export { x402Express, resetExpressMiddleware } from './express'
+
 // Platform configuration
 export {
   initializePlatform,
@@ -85,3 +88,15 @@ export {
   type CustomNetworkConfig,
   type CustomTokenConfig,
 } from './constants'
+
+// Analytics and payment tracking
+export {
+  logPayment,
+  type PaymentEvent,
+} from './analytics'
+
+// Endpoint registration
+export {
+  registerEndpoint,
+  type EndpointRegistration,
+} from './endpoint-registry'

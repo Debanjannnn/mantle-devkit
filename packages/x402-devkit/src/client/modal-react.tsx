@@ -12,7 +12,14 @@ interface PaymentModalProps {
   onComplete: (payment: PaymentResponse) => void
   onCancel: () => void
   isOpen: boolean
+  /** Custom logo URL or base64 data URI */
+  logo?: string
+  /** Logo alt text */
+  logoAlt?: string
 }
+
+/** Default X402 logo as SVG data URI - styled to match the x402 brand */
+const DEFAULT_LOGO = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%231a1a2e'/%3E%3Cstop offset='100%25' style='stop-color:%230f0f1a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='24' fill='url(%23bg)'/%3E%3Crect x='4' y='4' width='112' height='112' rx='20' fill='none' stroke='%23ffffff15' stroke-width='1'/%3E%3Ctext x='60' y='72' text-anchor='middle' font-family='-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif' font-size='32' font-weight='600' fill='%23ffffff'%3Ex402%3C/text%3E%3C/svg%3E`
 
 type Step = 'connect' | 'confirm' | 'processing'
 
@@ -42,7 +49,7 @@ function formatAddress(address: string | null | undefined): string {
  * />
  * ```
  */
-export function PaymentModal({ request, onComplete, onCancel, isOpen }: PaymentModalProps) {
+export function PaymentModal({ request, onComplete, onCancel, isOpen, logo, logoAlt = 'x402' }: PaymentModalProps) {
   const [walletAddress, setWalletAddress] = useState<string | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -231,22 +238,16 @@ export function PaymentModal({ request, onComplete, onCancel, isOpen }: PaymentM
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div
+            <img
+              src={logo || DEFAULT_LOGO}
+              alt={logoAlt}
               style={{
                 width: '2rem',
                 height: '2rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
                 borderRadius: '0.5rem',
-                background: 'rgba(255, 255, 255, 0.1)',
-                fontFamily: 'monospace',
-                fontSize: '0.75rem',
-                fontWeight: 'bold',
+                objectFit: 'contain',
               }}
-            >
-              x402
-            </div>
+            />
             <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 300 }}>Payment Required</h2>
           </div>
           <button

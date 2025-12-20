@@ -29,6 +29,12 @@ export interface X402Options {
   customNetwork?: CustomNetworkConfig
   /** Custom token configurations for this network */
   customTokens?: CustomTokenConfig
+  /** API endpoint path for tracking (e.g., "/api/premium-data") */
+  endpoint?: string
+  /** HTTP method for tracking (e.g., "GET", "POST") */
+  method?: string
+  /** Enable analytics tracking (default: true) */
+  enableAnalytics?: boolean
 }
 
 /** HTTP 402 Payment Required response */
@@ -115,7 +121,9 @@ function createPaymentRequiredResponse(
  */
 export async function processPaymentMiddleware(
   options: X402Options,
-  headers: Headers | Record<string, string | string[] | undefined>
+  headers: Headers | Record<string, string | string[] | undefined>,
+  requestPath?: string,
+  requestMethod?: string
 ): Promise<MiddlewareResult> {
   try {
     // Register custom network if provided
@@ -166,6 +174,30 @@ export async function processPaymentMiddleware(
           message: verification.error || 'Payment verification failed',
         },
       }
+    }
+
+    // Log payment event for analytics (fire and forget)
+    if (verification.transactionHash && options.enableAnalytics !== false) {
+      // Dynamically import to avoid circular dependency
+      import('./analytics').then(({ logPayment }) => {
+        logPayment(
+          {
+            transactionHash: verification.transactionHash!,
+            amount: verification.amount || options.price,
+            token: verification.token || options.token,
+            network,
+            toAddress: config.payTo,
+            blockNumber: undefined, // Could be extracted from verification if available
+            status: 'SUCCESS',
+          },
+          options.endpoint || requestPath, // Use provided endpoint or extracted path
+          options.method || requestMethod // Use provided method or extracted method
+        ).catch(() => {
+          // Silently fail - analytics shouldn't break payment flow
+        })
+      }).catch(() => {
+        // Silently fail if analytics module can't be loaded
+      })
     }
 
     return { allowed: true }

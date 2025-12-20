@@ -6,12 +6,7 @@
  */
 
 import type { PaymentRequest, PaymentResponse, WalletProvider, TransactionRequest } from './types'
-import {
-  getTokenConfig,
-  TREASURY_ADDRESS,
-  PLATFORM_FEE_BPS,
-  BPS_DENOMINATOR,
-} from './constants'
+import { getTokenConfig } from './constants'
 
 /** ERC20 transfer function signature */
 const ERC20_TRANSFER_SIG = '0xa9059cbb'
@@ -27,14 +22,6 @@ function amountToWei(amount: string, decimals: number = 18): bigint {
   return BigInt(whole) * 10n ** BigInt(decimals) + BigInt(fraction)
 }
 
-/**
- * Calculate fee split
- */
-function calculateSplit(amount: bigint): { merchantAmount: bigint; feeAmount: bigint } {
-  const feeAmount = (amount * PLATFORM_FEE_BPS) / BPS_DENOMINATOR
-  const merchantAmount = amount - feeAmount
-  return { merchantAmount, feeAmount }
-}
 
 /**
  * Encode ERC20 transfer call data
@@ -76,8 +63,6 @@ export async function processPayment(
     throw new Error('Invalid payment amount: amount must be greater than 0')
   }
 
-  const { merchantAmount, feeAmount } = calculateSplit(totalAmount)
-
   let txHash: string
 
   if (tokenConfig) {
@@ -92,30 +77,15 @@ export async function processPayment(
 
     txHash = await wallet.sendTransaction(tx)
   } else {
-    // Native MNT transfer - split between merchant and treasury
-
-    // 1. Send to merchant (99.5%)
-    const merchantValue = merchantAmount.toString(16)
-    const merchantTx: TransactionRequest = {
+    // Native MNT transfer - send full amount to merchant
+    // (Treasury fee collection is handled separately by the platform)
+    const totalValue = totalAmount.toString(16)
+    const tx: TransactionRequest = {
       to: request.recipient,
-      value: `0x${merchantValue}`,
+      value: `0x${totalValue}`,
     }
-    
-    txHash = await wallet.sendTransaction(merchantTx)
 
-    // 2. Send fee to Treasury (0.5%)
-    if (feeAmount > 0n) {
-      const feeValue = feeAmount.toString(16)
-      const feeTx: TransactionRequest = {
-        to: TREASURY_ADDRESS,
-        value: `0x${feeValue}`,
-      }
-      // Note: We send the fee transaction but don't wait for it
-      // The main transaction hash is what we return
-      wallet.sendTransaction(feeTx).catch((err) => {
-        console.warn('Fee transaction failed (non-critical):', err)
-      })
-    }
+    txHash = await wallet.sendTransaction(tx)
   }
 
   return {

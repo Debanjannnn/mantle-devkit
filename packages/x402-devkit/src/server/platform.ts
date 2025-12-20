@@ -44,7 +44,7 @@ function getPlatformBaseUrl(): string {
  */
 async function validateProject(appId: string): Promise<ProjectConfig> {
   const baseUrl = getPlatformBaseUrl()
-  const url = `${baseUrl}/v1/validate?appId=${encodeURIComponent(appId)}`
+  const url = `${baseUrl}/api/v1/validate?appId=${encodeURIComponent(appId)}`
 
   const response = await fetch(url, {
     method: 'GET',
