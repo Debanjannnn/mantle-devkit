@@ -5,9 +5,10 @@
   "packageManager": "bun@1.3.3",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "cd prisma && bun install && bun run prisma:generate && cd .. && next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "postinstall": "cd prisma && bun install && bun run prisma:generate || true"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -73,6 +74,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "postcss": "^8.5",
+    "prisma": "^7.2.0",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",
     "typescript": "^5"
