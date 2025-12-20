@@ -266,8 +266,7 @@ export default function Home() {
 
   return (
     <main className="relative h-screen w-full overflow-hidden">
-      <GrainOverlay />bun add -d prisma @types/pg
-      bun add @prisma/client @prisma/adapter-pg pg
+      <GrainOverlay />
       <ScrollProgress containerRef={scrollContainerRef} />
 
       <nav

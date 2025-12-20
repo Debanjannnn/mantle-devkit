@@ -1,6 +1,6 @@
 // @ts-ignore - Prisma client is generated
 import { PrismaClient } from '../prisma/generated/prisma/client'
-import { Pool } from '@/node_modules/@types/pg'
+import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 const globalForPrisma = globalThis as unknown as {

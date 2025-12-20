@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -18,6 +19,7 @@ model Project {
   appId     String   @unique // Hashed project ID
   name      String   // Project name
   payTo     String   // Payout wallet address
+  createdBy String   // Wallet address of the user who created the project
   network   String   @default("mantle")
   status    String   @default("ACTIVE")
   createdAt DateTime @default(now())
@@ -25,5 +27,6 @@ model Project {
 
   @@index([appId])
   @@index([payTo])
+  @@index([createdBy])
   @@map("projects")
 }

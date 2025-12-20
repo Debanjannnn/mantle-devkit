@@ -8,6 +8,7 @@ export interface Project {
   appId: string
   name: string
   payTo: string
+  createdBy: string // Wallet address of the user who created the project
   network: string
   status: string
   createdAt: string
@@ -18,6 +19,7 @@ export interface Project {
 export interface CreateProjectData {
   name: string
   payTo: string
+  createdBy: string // Wallet address of the user creating the project
   network?: string
 }
 
@@ -29,14 +31,37 @@ export interface UpdateProjectData {
 }
 
 /**
- * Get all projects
+ * Get all projects, optionally filtered by wallet address
  */
-export async function getProjects(): Promise<Project[]> {
-  const response = await fetch('/api/projects')
-  if (!response.ok) {
-    throw new Error('Failed to fetch projects')
+export async function getProjects(walletAddress?: string): Promise<Project[]> {
+  // Normalize wallet address to lowercase and trim
+  const normalizedWallet = walletAddress ? walletAddress.toLowerCase().trim() : undefined
+  const url = normalizedWallet 
+    ? `/api/projects?walletAddress=${encodeURIComponent(normalizedWallet)}`
+    : '/api/projects'
+  
+  console.log('[Client] Fetching projects from:', url)
+  console.log('[Client] Wallet address:', walletAddress, '-> Normalized:', normalizedWallet)
+  
+  try {
+    const response = await fetch(url)
+    console.log('[Client] Response status:', response.status)
+    
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('[Client] Failed to fetch projects:', response.status, errorText)
+      throw new Error(`Failed to fetch projects: ${response.status}`)
+    }
+    
+    const projects = await response.json()
+    console.log('[Client] Received projects:', projects)
+    console.log('[Client] Number of projects:', projects.length)
+    
+    return projects
+  } catch (error) {
+    console.error('[Client] Error in getProjects:', error)
+    throw error
   }
-  return response.json()
 }
 
 /**
@@ -65,6 +90,7 @@ export async function createProject(data: CreateProjectData): Promise<Project & 
     body: JSON.stringify({
       name: data.name,
       payTo: data.payTo,
+      createdBy: data.createdBy,
       network: data.network || 'mantle',
     }),
   })
