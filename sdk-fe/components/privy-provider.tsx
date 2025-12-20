@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, ReactNode } from "react"
 import { PrivyProvider } from "@privy-io/react-auth"
 import { MantleTestnet, MantleMainnet } from "@/lib/chains"
 
@@ -8,7 +8,7 @@ import { MantleTestnet, MantleMainnet } from "@/lib/chains"
 const LOGIN_METHODS = ["wallet", "email", "sms"] as const
 const SUPPORTED_CHAINS = [MantleTestnet, MantleMainnet]
 
-export function PrivyProviderWrapper({ children }: { children: React.ReactNode }) {
+export function PrivyProviderWrapper({ children }: { children: ReactNode }) {
   const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID
 
   // Memoize config to ensure stable references

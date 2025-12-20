@@ -1,441 +1,458 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowRight, CheckCircle, Clock, XCircle, ExternalLink, TrendingUp, TrendingDown, Users, Zap, DollarSign, Activity, Code, Copy, Check, Play } from "lucide-react"
-
-// Mock analytics data
-const DAILY_REVENUE = [
-  { day: "Mon", amount: 0.042 },
-  { day: "Tue", amount: 0.068 },
-  { day: "Wed", amount: 0.055 },
-  { day: "Thu", amount: 0.089 },
-  { day: "Fri", amount: 0.102 },
-  { day: "Sat", amount: 0.078 },
-  { day: "Sun", amount: 0.024 },
-]
-
-const TOP_ENDPOINTS = [
-  { endpoint: "/api/premium/data", calls: 1247, revenue: "0.125 MNT", percentage: 42 },
-  { endpoint: "/api/premium/analytics", calls: 892, revenue: "0.089 MNT", percentage: 30 },
-  { endpoint: "/api/premium/export", calls: 534, revenue: "0.053 MNT", percentage: 18 },
-  { endpoint: "/api/premium/upload", calls: 298, revenue: "0.030 MNT", percentage: 10 },
-]
-
-const RECENT_ACTIVITY = [
-  { type: "payment", message: "Payment received from 0x742d...3a9F", time: "2 min ago", amount: "+0.001 MNT" },
-  { type: "user", message: "New user connected: 0x1234...5678", time: "5 min ago", amount: null },
-  { type: "payment", message: "Payment received from 0xaBcD...eF12", time: "8 min ago", amount: "+0.002 MNT" },
-  { type: "milestone", message: "Milestone reached: 100 total payments", time: "1 hour ago", amount: null },
-  { type: "payment", message: "Payment received from 0x9876...5432", time: "2 hours ago", amount: "+0.005 MNT" },
-]
+import { Copy, Check, Play, LogOut, Wallet, Network, Sidebar, Eye, EyeOff, GitBranch, ArrowRight, Zap } from "lucide-react"
+import { BlurFade } from "@/components/ui/blur-fade"
+import { MagicCard } from "@/components/ui/magic-card"
+import { PaymentModal, PaymentRequest } from "@/components/payment-modal"
+import { usePrivy } from "@privy-io/react-auth"
+import { useDashboard } from "@/contexts/dashboard-context"
 
 export function AnalyticsTab() {
-  const maxRevenue = Math.max(...DAILY_REVENUE.map(d => d.amount))
-
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
-        <h2 className="font-sans text-2xl font-light text-foreground">Analytics</h2>
-        <p className="font-mono text-sm text-foreground/60">Monitor your API performance and revenue</p>
+        <h2 className="mb-2 font-sans text-2xl font-light text-foreground">Analytics</h2>
+        <p className="font-mono text-sm text-foreground/60">Coming soon</p>
       </div>
-
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="font-mono text-xs text-foreground/60">Total Revenue</p>
-            <DollarSign className="h-4 w-4 text-foreground/40" />
-          </div>
-          <p className="font-sans text-2xl font-light text-foreground">0.458 MNT</p>
-          <div className="flex items-center gap-1 mt-1">
-            <TrendingUp className="h-3 w-3 text-green-500" />
-            <span className="font-mono text-xs text-green-500">+12.5%</span>
-            <span className="font-mono text-xs text-foreground/40">vs last week</span>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="font-mono text-xs text-foreground/60">API Calls</p>
-            <Zap className="h-4 w-4 text-foreground/40" />
-          </div>
-          <p className="font-sans text-2xl font-light text-foreground">2,971</p>
-          <div className="flex items-center gap-1 mt-1">
-            <TrendingUp className="h-3 w-3 text-green-500" />
-            <span className="font-mono text-xs text-green-500">+8.2%</span>
-            <span className="font-mono text-xs text-foreground/40">vs last week</span>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="font-mono text-xs text-foreground/60">Unique Users</p>
-            <Users className="h-4 w-4 text-foreground/40" />
-          </div>
-          <p className="font-sans text-2xl font-light text-foreground">142</p>
-          <div className="flex items-center gap-1 mt-1">
-            <TrendingUp className="h-3 w-3 text-green-500" />
-            <span className="font-mono text-xs text-green-500">+24.3%</span>
-            <span className="font-mono text-xs text-foreground/40">vs last week</span>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="font-mono text-xs text-foreground/60">Avg. Response</p>
-            <Activity className="h-4 w-4 text-foreground/40" />
-          </div>
-          <p className="font-sans text-2xl font-light text-foreground">124ms</p>
-          <div className="flex items-center gap-1 mt-1">
-            <TrendingDown className="h-3 w-3 text-green-500" />
-            <span className="font-mono text-xs text-green-500">-15ms</span>
-            <span className="font-mono text-xs text-foreground/40">vs last week</span>
-          </div>
-        </div>
+      <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-8 backdrop-blur-sm">
+        <p className="text-center font-mono text-sm text-foreground/50">
+          Analytics dashboard will be available soon
+        </p>
       </div>
-
-      {/* Charts Row */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Revenue Chart */}
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-          <h3 className="font-sans text-sm font-medium text-foreground mb-4">Daily Revenue (MNT)</h3>
-          <div className="flex items-end justify-between gap-2 h-40">
-            {DAILY_REVENUE.map((day) => (
-              <div key={day.day} className="flex-1 flex flex-col items-center gap-2">
-                <div className="w-full flex flex-col justify-end h-32">
-                  <div
-                    className="w-full bg-foreground/20 rounded-t-sm hover:bg-foreground/30 transition-colors"
-                    style={{ height: `${(day.amount / maxRevenue) * 100}%` }}
-                    title={`${day.amount} MNT`}
-                  />
-                </div>
-                <span className="font-mono text-xs text-foreground/50">{day.day}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Top Endpoints */}
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-          <h3 className="font-sans text-sm font-medium text-foreground mb-4">Top Endpoints</h3>
-          <div className="space-y-3">
-            {TOP_ENDPOINTS.map((endpoint) => (
-              <div key={endpoint.endpoint}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-mono text-xs text-foreground/80 truncate">{endpoint.endpoint}</span>
-                  <span className="font-mono text-xs text-foreground/60">{endpoint.revenue}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-2 bg-foreground/10 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-foreground/30 rounded-full"
-                      style={{ width: `${endpoint.percentage}%` }}
-                    />
-                  </div>
-                  <span className="font-mono text-xs text-foreground/40 w-8">{endpoint.percentage}%</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="rounded-lg border border-foreground/10 bg-foreground/5 overflow-hidden">
-        <div className="border-b border-foreground/10 bg-foreground/5 px-4 py-3">
-          <h3 className="font-sans text-sm font-medium text-foreground">Recent Activity</h3>
-        </div>
-        <div className="divide-y divide-foreground/10">
-          {RECENT_ACTIVITY.map((activity, idx) => (
-            <div key={idx} className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-3">
-                <div className={`rounded-full p-1.5 ${
-                  activity.type === "payment" ? "bg-green-500/10" :
-                  activity.type === "user" ? "bg-blue-500/10" : "bg-yellow-500/10"
-                }`}>
-                  {activity.type === "payment" ? (
-                    <DollarSign className="h-3.5 w-3.5 text-green-500" />
-                  ) : activity.type === "user" ? (
-                    <Users className="h-3.5 w-3.5 text-blue-500" />
-                  ) : (
-                    <Zap className="h-3.5 w-3.5 text-yellow-500" />
-                  )}
-                </div>
-                <div>
-                  <p className="font-mono text-sm text-foreground">{activity.message}</p>
-                  <p className="font-mono text-xs text-foreground/50">{activity.time}</p>
-                </div>
-              </div>
-              {activity.amount && (
-                <span className="font-mono text-sm text-green-500">{activity.amount}</span>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Mock notice */}
-      <p className="text-center font-mono text-xs text-foreground/40">
-        Showing mock data • Real analytics will appear when transactions occur
-      </p>
     </div>
   )
-}
-
-// Mock payment flow data
-const MOCK_PAYMENTS = [
-  {
-    id: "pay_1a2b3c4d",
-    from: "0x742d...3a9F",
-    to: "0xDacC...08E1",
-    amount: "0.001",
-    token: "MNT",
-    status: "completed",
-    endpoint: "/api/premium/data",
-    timestamp: "2 min ago",
-    txHash: "0x8f3d...2e1a",
-  },
-  {
-    id: "pay_2b3c4d5e",
-    from: "0x1234...5678",
-    to: "0xDacC...08E1",
-    amount: "0.005",
-    token: "MNT",
-    status: "completed",
-    endpoint: "/api/premium/analytics",
-    timestamp: "5 min ago",
-    txHash: "0x7c2e...9f3b",
-  },
-  {
-    id: "pay_3c4d5e6f",
-    from: "0xaBcD...eF12",
-    to: "0xDacC...08E1",
-    amount: "0.002",
-    token: "MNT",
-    status: "pending",
-    endpoint: "/api/premium/export",
-    timestamp: "8 min ago",
-    txHash: "0x4a1b...8c2d",
-  },
-  {
-    id: "pay_4d5e6f7g",
-    from: "0x9876...5432",
-    to: "0xDacC...08E1",
-    amount: "0.001",
-    token: "MNT",
-    status: "completed",
-    endpoint: "/api/premium/data",
-    timestamp: "12 min ago",
-    txHash: "0x2f3e...7d4c",
-  },
-  {
-    id: "pay_5e6f7g8h",
-    from: "0xFeDc...bA98",
-    to: "0xDacC...08E1",
-    amount: "0.003",
-    token: "MNT",
-    status: "failed",
-    endpoint: "/api/premium/upload",
-    timestamp: "15 min ago",
-    txHash: "0x1e2f...6b5a",
-  },
-]
-
-const STATUS_CONFIG = {
-  completed: {
-    icon: CheckCircle,
-    color: "text-green-500",
-    bg: "bg-green-500/10",
-    label: "Completed",
-  },
-  pending: {
-    icon: Clock,
-    color: "text-yellow-500",
-    bg: "bg-yellow-500/10",
-    label: "Pending",
-  },
-  failed: {
-    icon: XCircle,
-    color: "text-red-500",
-    bg: "bg-red-500/10",
-    label: "Failed",
-  },
 }
 
 export function EndpointsTab() {
+  const [copiedEndpoint, setCopiedEndpoint] = useState<string | null>(null)
+
+  // Define nodes with positions for n8n-style workflow layout
+  // Optimized for 14-inch Mac screens (compact layout)
+  const nodes = [
+    // Entry points (left side)
+    {
+      id: "entry-get",
+      method: "GET",
+      path: "/api/projects",
+      description: "List Projects",
+      color: "blue",
+      x: 40,
+      y: 120,
+      connections: [{ targetId: "hub", label: "GET" }],
+      isEntry: true,
+    },
+    {
+      id: "entry-post",
+      method: "POST",
+      path: "/api/projects",
+      description: "Create Project",
+      color: "green",
+      x: 40,
+      y: 240,
+      connections: [{ targetId: "hub", label: "POST" }],
+      isEntry: true,
+    },
+    // Central Hub
+    {
+      id: "hub",
+      method: "HUB",
+      path: "Projects API",
+      description: "Route by method",
+      color: "blue",
+      x: 320,
+      y: 180,
+      connections: [
+        { targetId: "get-project", label: "GET" },
+        { targetId: "update-project", label: "PATCH" },
+        { targetId: "update-payout", label: "PATCH" },
+        { targetId: "delete-project", label: "DELETE" },
+        { targetId: "validate", label: "VALIDATE" },
+      ],
+      isHub: true,
+    },
+    // Operations (right side)
+    {
+      id: "get-project",
+      method: "GET",
+      path: "/api/projects/[appId]",
+      description: "Get Project",
+      color: "blue",
+      x: 600,
+      y: 60,
+      connections: [],
+    },
+    {
+      id: "update-project",
+      method: "PATCH",
+      path: "/api/projects/[appId]",
+      description: "Update Project",
+      color: "yellow",
+      x: 600,
+      y: 140,
+      connections: [],
+    },
+    {
+      id: "update-payout",
+      method: "PATCH",
+      path: "/api/projects/[appId]/payTo",
+      description: "Update Payout",
+      color: "yellow",
+      x: 600,
+      y: 220,
+      connections: [],
+    },
+    {
+      id: "delete-project",
+      method: "DELETE",
+      path: "/api/projects/[appId]",
+      description: "Delete Project",
+      color: "red",
+      x: 600,
+      y: 300,
+      connections: [],
+    },
+    {
+      id: "validate",
+      method: "GET",
+      path: "/api/v1/validate",
+      description: "Validate (SDK)",
+      color: "blue",
+      x: 600,
+      y: 380,
+      connections: [],
+    },
+  ]
+
+  const getMethodColor = (color: string, isHub?: boolean) => {
+    if (isHub) return "bg-purple-500/25 text-purple-300 border-purple-500/40 shadow-purple-500/20"
+    const colors = {
+      blue: "bg-blue-500/25 text-blue-300 border-blue-500/40 shadow-blue-500/20",
+      green: "bg-green-500/25 text-green-300 border-green-500/40 shadow-green-500/20",
+      yellow: "bg-yellow-500/25 text-yellow-300 border-yellow-500/40 shadow-yellow-500/20",
+      red: "bg-red-500/25 text-red-300 border-red-500/40 shadow-red-500/20",
+    }
+    return colors[color as keyof typeof colors] || colors.blue
+  }
+
+  const getMethodBgColor = (color: string, isHub?: boolean) => {
+    if (isHub) return "bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent"
+    const colors = {
+      blue: "bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent",
+      green: "bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent",
+      yellow: "bg-gradient-to-br from-yellow-500/10 via-yellow-500/5 to-transparent",
+      red: "bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent",
+    }
+    return colors[color as keyof typeof colors] || colors.blue
+  }
+
+  const getMethodIcon = (method: string) => {
+    switch (method) {
+      case "GET":
+        return <ArrowRight className="h-3 w-3" />
+      case "POST":
+        return <Zap className="h-3 w-3" />
+      case "PATCH":
+        return <GitBranch className="h-3 w-3" />
+      case "DELETE":
+        return <Zap className="h-3 w-3" />
+      case "HUB":
+        return <GitBranch className="h-4 w-4" />
+      default:
+        return null
+    }
+  }
+
+  const handleCopyEndpoint = (endpoint: string) => {
+    const fullUrl = `${window.location.origin}${endpoint}`
+    navigator.clipboard.writeText(fullUrl)
+    setCopiedEndpoint(endpoint)
+    setTimeout(() => setCopiedEndpoint(null), 2000)
+  }
+
+  // Calculate smooth curved connection lines with labels
+  const getConnectionPath = (from: typeof nodes[0], to: typeof nodes[0]) => {
+    const nodeWidth = 200
+    const nodeHeight = 100
+    const fromX = from.x + nodeWidth // Right edge of node
+    const fromY = from.y + nodeHeight / 2 // Center Y of node
+    const toX = to.x // Left edge of node
+    const toY = to.y + nodeHeight / 2 // Center Y of node
+
+    // Calculate control points for smooth curves
+    const dx = toX - fromX
+    const controlPoint1X = fromX + dx * 0.5
+    const controlPoint1Y = fromY
+    const controlPoint2X = fromX + dx * 0.5
+    const controlPoint2Y = toY
+
+    // Create smooth bezier curve
+    return {
+      path: `M ${fromX} ${fromY} C ${controlPoint1X} ${controlPoint1Y}, ${controlPoint2X} ${controlPoint2Y}, ${toX} ${toY}`,
+      midX: (fromX + toX) / 2,
+      midY: (fromY + toY) / 2,
+    }
+  }
+
+  // Get connection color based on method
+  const getConnectionColor = (fromColor: string) => {
+    const colors = {
+      blue: "rgba(96, 165, 250, 0.5)",
+      green: "rgba(74, 222, 128, 0.5)",
+      yellow: "rgba(250, 204, 21, 0.5)",
+      red: "rgba(248, 113, 113, 0.5)",
+    }
+    return colors[fromColor as keyof typeof colors] || colors.blue
+  }
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-sans text-2xl font-light text-foreground">Payment Flows</h2>
-          <p className="font-mono text-sm text-foreground/60">Track all payment transactions for your endpoints</p>
+    <>
+      <BlurFade delay={0} direction="up">
+        <div className="mb-4 md:mb-6">
+          <h2 className="mb-2 font-sans text-3xl md:text-4xl font-light tracking-tight text-foreground">
+            API Endpoints
+          </h2>
+          <p className="font-mono text-xs md:text-sm text-foreground/60">Visual workflow of API endpoints</p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1.5 rounded-full bg-green-500/10 px-3 py-1 font-mono text-xs text-green-500">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-            Live
-          </span>
-        </div>
-      </div>
+      </BlurFade>
 
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-          <p className="font-mono text-xs text-foreground/60">Total Payments</p>
-          <p className="font-sans text-2xl font-light text-foreground">127</p>
-        </div>
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-          <p className="font-mono text-xs text-foreground/60">Total Volume</p>
-          <p className="font-sans text-2xl font-light text-foreground">0.458 MNT</p>
-        </div>
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-          <p className="font-mono text-xs text-foreground/60">Success Rate</p>
-          <p className="font-sans text-2xl font-light text-foreground">98.4%</p>
-        </div>
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-          <p className="font-mono text-xs text-foreground/60">Active Endpoints</p>
-          <p className="font-sans text-2xl font-light text-foreground">4</p>
-        </div>
-      </div>
+      {/* Workflow Canvas */}
+      <div className="relative overflow-auto rounded-2xl border border-foreground/10 bg-gradient-to-br from-foreground/5 via-foreground/3 to-foreground/5 backdrop-blur-sm shadow-2xl">
+        {/* Grid Background (n8n style) */}
+        <div
+          className="absolute inset-0 opacity-15"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: "32px 32px",
+          }}
+        />
+        {/* Subtle radial gradient overlay */}
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            background: "radial-gradient(circle at 30% 50%, rgba(168, 85, 247, 0.1), transparent 70%)",
+          }}
+        />
 
-      {/* Payment Flows Table */}
-      <div className="rounded-lg border border-foreground/10 bg-foreground/5 overflow-hidden">
-        <div className="border-b border-foreground/10 bg-foreground/5 px-4 py-3">
-          <h3 className="font-sans text-sm font-medium text-foreground">Recent Payment Flows</h3>
-        </div>
-        <div className="divide-y divide-foreground/10">
-          {MOCK_PAYMENTS.map((payment) => {
-            const statusConfig = STATUS_CONFIG[payment.status as keyof typeof STATUS_CONFIG]
-            const StatusIcon = statusConfig.icon
-            return (
-              <div key={payment.id} className="flex items-center gap-4 px-4 py-3 hover:bg-foreground/5 transition-colors">
-                {/* Status */}
-                <div className={`rounded-full p-1.5 ${statusConfig.bg}`}>
-                  <StatusIcon className={`h-4 w-4 ${statusConfig.color}`} />
-                </div>
+        {/* SVG for connections - rendered behind nodes */}
+        <svg
+          className="absolute inset-0 pointer-events-none z-0"
+          style={{ width: "100%", height: "100%" }}
+        >
+          <defs>
+            {/* Gradient for connection lines */}
+            <linearGradient id="connectionGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="rgba(255,255,255,0.3)" />
+              <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+            </linearGradient>
+            {/* Arrow marker */}
+            <marker
+              id="arrowhead"
+              markerWidth="14"
+              markerHeight="14"
+              refX="11"
+              refY="4"
+              orient="auto"
+              markerUnits="strokeWidth"
+            >
+              <polygon
+                points="0 0, 14 4, 0 8"
+                fill="rgba(255,255,255,0.6)"
+                stroke="rgba(255,255,255,0.3)"
+                strokeWidth="0.5"
+                filter="url(#glow)"
+              />
+            </marker>
+            {/* Glow filter for connections */}
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          {nodes.map((node) =>
+            node.connections.map((connection) => {
+              const targetNode = nodes.find((n) => n.id === connection.targetId)
+              if (!targetNode) return null
+              const pathData = getConnectionPath(node, targetNode)
+              return (
+                <g key={`${node.id}-${connection.targetId}`}>
+                  {/* Connection line with glow */}
+                  <path
+                    d={pathData.path}
+                    stroke={getConnectionColor(node.color)}
+                    strokeWidth="3"
+                    fill="none"
+                    markerEnd="url(#arrowhead)"
+                    className="transition-all duration-300"
+                    style={{
+                      filter: "drop-shadow(0 0 4px rgba(255,255,255,0.4))",
+                    }}
+                  />
+                  {/* Connection Label with background */}
+                  {connection.label && (
+                    <g>
+                      <rect
+                        x={pathData.midX - 20}
+                        y={pathData.midY - 18}
+                        width="40"
+                        height="16"
+                        rx="4"
+                        fill="rgba(0,0,0,0.4)"
+                        className="backdrop-blur-sm"
+                      />
+                      <text
+                        x={pathData.midX}
+                        y={pathData.midY - 6}
+                        textAnchor="middle"
+                        className="pointer-events-none select-none"
+                        style={{
+                          fontSize: "10px",
+                          fill: "rgba(255,255,255,0.9)",
+                          fontWeight: "700",
+                          fontFamily: "monospace",
+                          letterSpacing: "0.5px",
+                        }}
+                      >
+                        {connection.label}
+                      </text>
+                    </g>
+                  )}
+                </g>
+              )
+            })
+          )}
+        </svg>
 
-                {/* Flow */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-mono text-sm text-foreground">{payment.from}</span>
-                    <ArrowRight className="h-3 w-3 text-foreground/40" />
-                    <span className="font-mono text-sm text-foreground">{payment.to}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-foreground/50">{payment.endpoint}</span>
-                    <span className="text-foreground/30">•</span>
-                    <span className="font-mono text-xs text-foreground/50">{payment.timestamp}</span>
-                  </div>
-                </div>
-
-                {/* Amount */}
-                <div className="text-right">
-                  <p className="font-mono text-sm font-medium text-foreground">
-                    {payment.amount} {payment.token}
-                  </p>
-                  <p className={`font-mono text-xs ${statusConfig.color}`}>{statusConfig.label}</p>
-                </div>
-
-                {/* Link */}
-                <button
-                  className="rounded-lg p-2 text-foreground/40 hover:bg-foreground/10 hover:text-foreground transition-colors"
-                  title="View on Explorer"
+        {/* Nodes */}
+        <div className="relative min-h-[650px] p-16" style={{ minWidth: "1100px" }}>
+          {nodes.map((node, index) => (
+            <BlurFade key={node.id} delay={index * 0.08} direction="up">
+              <div
+                className="absolute z-10 transition-all duration-300 hover:scale-105 hover:z-20"
+                style={{
+                  left: `${node.x}px`,
+                  top: `${node.y}px`,
+                  width: "240px",
+                }}
+              >
+                <MagicCard
+                  gradientSize={280}
+                  gradientFrom="oklch(0.35 0.15 240)"
+                  gradientTo="oklch(0.3 0.13 240)"
+                  gradientColor="oklch(0.35 0.15 240)"
+                  gradientOpacity={0.2}
+                  className="rounded-2xl"
                 >
-                  <ExternalLink className="h-4 w-4" />
-                </button>
+                  <div
+                    className={`group relative overflow-hidden rounded-xl border-2 p-4 backdrop-blur-xl transition-all duration-300 hover:border-foreground/50 hover:shadow-xl ${
+                      node.isHub
+                        ? "border-purple-500/40 bg-gradient-to-br from-purple-500/15 via-purple-500/8 to-transparent shadow-purple-500/20"
+                        : getMethodBgColor(node.color, node.isHub) + " border-foreground/25"
+                    }`}
+                  >
+                    {/* Decorative corner accent */}
+                    <div
+                      className={`absolute top-0 right-0 h-12 w-12 opacity-10 ${
+                        node.isHub
+                          ? "bg-purple-500"
+                          : node.color === "blue"
+                            ? "bg-blue-500"
+                            : node.color === "green"
+                              ? "bg-green-500"
+                              : node.color === "yellow"
+                                ? "bg-yellow-500"
+                                : "bg-red-500"
+                      }`}
+                      style={{
+                        clipPath: "polygon(100% 0, 100% 100%, 0 0)",
+                      }}
+                    />
+
+                    {/* Method Badge */}
+                    <div className="mb-3 flex items-center gap-2">
+                      <span
+                        className={`flex items-center gap-1.5 rounded-lg border-2 px-2.5 py-1 font-mono text-xs font-bold shadow-lg backdrop-blur-sm ${
+                          node.isHub
+                            ? "bg-purple-500/25 text-purple-200 border-purple-500/40 shadow-purple-500/30"
+                            : getMethodColor(node.color, node.isHub)
+                        }`}
+                      >
+                        {getMethodIcon(node.method)}
+                        {node.method}
+                      </span>
+                    </div>
+
+                    {/* Endpoint Path */}
+                    <code className="mb-3 block break-all font-mono text-xs font-semibold text-foreground leading-tight">
+                      {node.path}
+                    </code>
+
+                    {/* Description */}
+                    <p className="mb-3 font-sans text-xs leading-relaxed text-foreground/70">
+                      {node.description}
+                    </p>
+
+                    {/* Connection indicator */}
+                    {node.connections.length > 0 && (
+                      <div className="mt-3 flex items-center gap-2 border-t border-foreground/15 pt-3">
+                        <div className="flex gap-1">
+                          {[...Array(Math.min(node.connections.length, 3))].map((_, i) => (
+                            <div
+                              key={i}
+                              className="h-1.5 w-1.5 animate-pulse rounded-full bg-foreground/60 shadow-sm"
+                              style={{
+                                animationDelay: `${i * 0.3}s`,
+                                animationDuration: "2s",
+                              }}
+                            />
+                          ))}
+                          {node.connections.length > 3 && (
+                            <span className="ml-1 font-mono text-xs text-foreground/40">
+                              +{node.connections.length - 3}
+                            </span>
+                          )}
+                        </div>
+                        <span className="font-mono text-xs font-medium text-foreground/60">
+                          {node.connections.length} output{node.connections.length > 1 ? "s" : ""}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </MagicCard>
               </div>
-            )
-          })}
+            </BlurFade>
+          ))}
         </div>
       </div>
-
-      {/* Mock notice */}
-      <p className="text-center font-mono text-xs text-foreground/40">
-        Showing mock data • Real payment flows will appear when transactions occur
-      </p>
-    </div>
+    </>
   )
 }
 
-// Mock PaymentModal component for demonstration
-// In production, this would be imported from @x402-devkit/client/react
-function PaymentModalDemo({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  if (!isOpen) return null
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className="w-full max-w-md rounded-lg border border-foreground/20 bg-foreground/5 p-6 shadow-lg backdrop-blur-xl">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground/15">
-              <span className="font-mono text-sm font-bold text-foreground">x402</span>
-            </div>
-            <h2 className="font-sans text-xl font-light text-foreground">Payment Required</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-foreground/60 transition-colors hover:text-foreground"
-          >
-            ×
-          </button>
-        </div>
-        <div className="mb-4 space-y-3 rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-          <div className="flex justify-between">
-            <span className="font-mono text-xs text-foreground/60">Amount</span>
-            <span className="font-sans text-base font-medium text-foreground">0.001 MNT</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-mono text-xs text-foreground/60">Network</span>
-            <span className="font-mono text-sm text-foreground">Mantle Sepolia</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-mono text-xs text-foreground/60">Recipient</span>
-            <span className="font-mono text-sm text-foreground">0x742d...3a9F</span>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 rounded-lg border border-foreground/20 bg-foreground/5 px-4 py-2 font-sans text-sm text-foreground/80 transition-colors hover:bg-foreground/10"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onClose}
-            className="flex-1 rounded-lg border border-foreground/20 bg-foreground/15 px-4 py-2 font-sans text-sm text-foreground transition-colors hover:bg-foreground/20"
-          >
-            Pay 0.001 MNT
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const COMPONENT_EXAMPLES = [
+const COMPONENTS = [
   {
+    id: 1,
     name: "PaymentModal",
     description: "React component for handling x402 payments with wallet integration",
     import: "import { PaymentModal } from '@x402-devkit/client/react'",
-    code: `import { useState } from 'react'
-import { PaymentModal } from '@x402-devkit/client/react'
+    code: `import { PaymentModal } from '@x402-devkit/client/react'
 
-function App() {
-  const [isOpen, setIsOpen] = useState(false)
+function MyComponent() {
   const [paymentRequest, setPaymentRequest] = useState(null)
+  const [isOpen, setIsOpen] = useState(false)
 
   const handlePayment = async () => {
     // Trigger payment request (e.g., from API 402 response)
     setPaymentRequest({
-      amount: '0.001',
-      token: 'MNT',
-      network: 'mantle',
-      recipient: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb'
+      amount: "0.001",
+      token: "MNT",
+      network: "mantle",
+      recipient: "0xB27705342ACE73736AE490540Ea031cc06C3eF49"
     })
     setIsOpen(true)
   }
@@ -464,146 +481,365 @@ function App() {
   },
 ]
 
-export function LogsTab() {
-  const [selectedComponent, setSelectedComponent] = useState(0)
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
-  const [showModal, setShowModal] = useState(false)
+function CodeBlock({ code, onCopy }: { code: string; onCopy: () => void }) {
+  const [copied, setCopied] = useState(false)
 
-  const handleCopy = (text: string, index: number) => {
-    navigator.clipboard.writeText(text)
-    setCopiedIndex(index)
-    setTimeout(() => setCopiedIndex(null), 2000)
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+    onCopy()
   }
 
-  const component = COMPONENT_EXAMPLES[selectedComponent]
+  return (
+    <div className="my-4 flex rounded-lg border border-foreground/10 bg-foreground/10 overflow-hidden">
+      <pre className="flex-1 overflow-x-auto p-4">
+        <code className="font-mono text-xs text-foreground/90">{code}</code>
+      </pre>
+      <button
+        onClick={handleCopy}
+        className="flex items-center justify-center px-3 text-foreground/50 transition-colors hover:text-foreground"
+        title={copied ? "Copied!" : "Copy code"}
+      >
+        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+      </button>
+    </div>
+  )
+}
+
+export function LogsTab() {
+  const [showModal, setShowModal] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  // Show the first component (PaymentModal) directly
+  const component = COMPONENTS[0]
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="mb-2 font-sans text-2xl font-light text-foreground">React Components</h2>
-        <p className="font-mono text-sm text-foreground/60">
-          Browse and test React components from x402 DevKit
-        </p>
-      </div>
-
-      {/* Component Selector */}
-      <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4">
-        <div className="flex flex-wrap gap-2">
-          {COMPONENT_EXAMPLES.map((comp, idx) => (
-            <button
-              key={idx}
-              onClick={() => setSelectedComponent(idx)}
-              className={`rounded-lg border px-4 py-2 font-sans text-sm transition-colors ${
-                selectedComponent === idx
-                  ? "border-foreground/40 bg-foreground/10 text-foreground"
-                  : "border-foreground/20 bg-background text-foreground/70 hover:bg-foreground/5 hover:text-foreground"
-              }`}
-            >
-              {comp.name}
-            </button>
-          ))}
+    <>
+      <BlurFade delay={0} direction="up">
+        <div className="mb-6">
+          <h2 className="mb-2 font-sans text-4xl font-light tracking-tight text-foreground md:text-5xl">
+            {component.name}
+          </h2>
+          <p className="font-mono text-sm text-foreground/60">Integration examples and previews</p>
         </div>
-      </div>
+      </BlurFade>
 
-      {/* Component Details */}
-      <div className="space-y-6">
-        {/* Component Info */}
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h3 className="mb-1 font-sans text-xl font-light text-foreground">{component.name}</h3>
-              <p className="font-mono text-sm text-foreground/60">{component.description}</p>
-            </div>
-            <button
-              onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 rounded-lg border border-foreground/20 bg-foreground/10 px-4 py-2 font-sans text-sm text-foreground transition-colors hover:bg-foreground/15"
-            >
-              <Play className="h-4 w-4" />
-              Preview
-            </button>
-          </div>
-
-          {/* Import Statement */}
-          <div className="mb-6">
-            <div className="mb-2 flex items-center justify-between">
-              <p className="font-mono text-xs text-foreground/60">Import</p>
+      <BlurFade delay={0.1} direction="up">
+        <MagicCard
+          gradientSize={300}
+          gradientFrom="oklch(0.35 0.15 240)"
+          gradientTo="oklch(0.3 0.13 240)"
+          gradientColor="oklch(0.35 0.15 240)"
+          gradientOpacity={0.15}
+          className="rounded-2xl"
+        >
+          <div className="rounded-2xl border border-foreground/20 bg-foreground/5 p-8 backdrop-blur-xl">
+            {/* Header with Preview Button */}
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <p className="font-sans text-base text-foreground flex-1">{component.description}</p>
               <button
-                onClick={() => handleCopy(component.import, -1)}
-                className="text-foreground/60 transition-colors hover:text-foreground"
-                title="Copy import"
+                onClick={() => setShowModal(true)}
+                className="flex items-center gap-2 rounded-lg border border-foreground/20 bg-foreground/15 px-4 py-2 font-sans text-sm text-foreground transition-colors hover:bg-foreground/20 flex-shrink-0"
               >
-                {copiedIndex === -1 ? (
-                  <Check className="h-4 w-4" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
+                <Play className="h-4 w-4" />
+                Preview Component
               </button>
             </div>
-            <div className="rounded-lg border border-foreground/10 bg-background p-3">
-              <code className="font-mono text-sm text-foreground/90">{component.import}</code>
-            </div>
-          </div>
-
-          {/* Code Example */}
-          <div>
-            <div className="mb-2 flex items-center justify-between">
-              <p className="font-mono text-xs text-foreground/60">Example Usage</p>
-              <button
-                onClick={() => handleCopy(component.code, 0)}
-                className="text-foreground/60 transition-colors hover:text-foreground"
-                title="Copy code"
-              >
-                {copiedIndex === 0 ? (
-                  <Check className="h-4 w-4" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-            <div className="rounded-lg border border-foreground/10 bg-background p-4">
-              <pre className="overflow-x-auto">
-                <code className="font-mono text-sm text-foreground/90">{component.code}</code>
-              </pre>
-            </div>
-          </div>
-        </div>
-
-        {/* Props Documentation */}
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-6">
-          <h3 className="mb-4 font-sans text-lg font-light text-foreground">Props</h3>
-          <div className="space-y-4">
-            {component.props.map((prop, idx) => (
-              <div key={idx} className="border-b border-foreground/10 pb-4 last:border-0">
-                <div className="mb-2 flex items-center gap-2">
-                  <code className="font-mono text-sm font-medium text-foreground">{prop.name}</code>
-                  <span className="font-mono text-xs text-foreground/40">({prop.type})</span>
-                  {prop.required && (
-                    <span className="rounded bg-red-500/20 px-1.5 py-0.5 font-mono text-xs text-red-500">
-                      required
-                    </span>
-                  )}
-                </div>
-                <p className="font-mono text-sm text-foreground/70">{prop.description}</p>
+            
+            <div className="mb-6">
+              <div className="mb-4">
+                <p className="font-mono text-xs text-foreground/60 mb-2">Import</p>
+                <CodeBlock code={component.import} onCopy={() => setCopied(true)} />
               </div>
-            ))}
+              <div className="mb-4">
+                <p className="font-mono text-xs text-foreground/60 mb-2">Usage Example</p>
+                <CodeBlock code={component.code} onCopy={() => setCopied(true)} />
+              </div>
+              <div className="mb-4">
+                <p className="font-mono text-xs text-foreground/60 mb-2">Props</p>
+                <div className="space-y-2">
+                  {component.props.map((prop, idx) => (
+                    <div key={idx} className="rounded-lg border border-foreground/10 bg-foreground/5 p-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <code className="font-mono text-xs text-foreground">{prop.name}</code>
+                        <span className="font-mono text-xs text-foreground/50">({prop.type})</span>
+                        {prop.required && (
+                          <span className="font-mono text-xs text-red-500/80">required</span>
+                        )}
+                      </div>
+                      <p className="font-mono text-xs text-foreground/60">{prop.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </MagicCard>
+      </BlurFade>
 
-      {/* Modal Preview */}
-      <PaymentModalDemo isOpen={showModal} onClose={() => setShowModal(false)} />
-    </div>
+      <PaymentModal
+        isOpen={showModal}
+        simulation={true}
+        request={{
+          amount: "0.001",
+          token: "MNT",
+          network: "mantle",
+          recipient: "0xB27705342ACE73736AE490540Ea031cc06C3eF49",
+          description: "Preview payment modal (Simulation)",
+          endpoint: "/api/premium-data",
+        }}
+        onComplete={(payment) => {
+          console.log("Simulated payment completed:", payment.transactionHash)
+          // Auto-close after showing success for a moment
+          setTimeout(() => {
+            setShowModal(false)
+          }, 3000)
+        }}
+        onCancel={() => setShowModal(false)}
+      />
+    </>
   )
 }
 
 export function SettingsTab() {
+  const { user, logout } = usePrivy()
+  const { sidebarOpen, setSidebarOpen } = useDashboard()
+  const [copied, setCopied] = useState(false)
+  const [defaultNetwork, setDefaultNetwork] = useState<"mantle-sepolia" | "mantle">("mantle-sepolia")
+  const [autoCollapseSidebar, setAutoCollapseSidebar] = useState(false)
+  const [defaultTab, setDefaultTab] = useState<"overview" | "docs" | "components">("overview")
+  const [showProjectIds, setShowProjectIds] = useState(true)
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const formatAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      <h2 className="mb-2 font-sans text-2xl font-light text-foreground">Settings</h2>
-      <p className="font-mono text-sm text-foreground/60">Coming soon...</p>
-    </div>
+    <>
+      <BlurFade delay={0} direction="up">
+        <div className="mb-6">
+          <h2 className="mb-2 font-sans text-4xl font-light tracking-tight text-foreground md:text-5xl">
+            Settings
+          </h2>
+          <p className="font-mono text-sm text-foreground/60">Manage your account and preferences</p>
+        </div>
+      </BlurFade>
+
+      <div className="space-y-6">
+        {/* Account Settings */}
+        <BlurFade delay={0.1} direction="up">
+          <MagicCard
+            gradientSize={200}
+            gradientFrom="oklch(0.35 0.15 240)"
+            gradientTo="oklch(0.3 0.13 240)"
+            gradientColor="oklch(0.35 0.15 240)"
+            gradientOpacity={0.1}
+            className="rounded-xl"
+          >
+            <div className="rounded-xl border border-foreground/10 bg-foreground/5 p-6 backdrop-blur-sm">
+              <div className="mb-4 flex items-center gap-3">
+                <Wallet className="h-5 w-5 text-foreground/60" />
+                <h3 className="font-sans text-xl font-light text-foreground">Account</h3>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <p className="mb-2 font-mono text-xs text-foreground/60">Connected Wallet</p>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 font-mono text-sm text-foreground">
+                      {user?.wallet?.address ? formatAddress(user.wallet.address) : "Not connected"}
+                    </code>
+                    {user?.wallet?.address && (
+                      <button
+                        onClick={() => handleCopy(user?.wallet?.address || "")}
+                        className="text-foreground/60 transition-colors hover:text-foreground flex-shrink-0"
+                        title="Copy address"
+                      >
+                        {copied ? (
+                          <Check className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
+                {user?.wallet?.address && (
+                  <div>
+                    <p className="mb-2 font-mono text-xs text-foreground/60">Full Address</p>
+                    <code className="block break-all font-mono text-xs text-foreground/80">
+                      {user.wallet.address}
+                    </code>
+                  </div>
+                )}
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-2 rounded-lg border border-foreground/20 bg-foreground/10 px-4 py-2 font-sans text-sm text-foreground transition-colors hover:bg-foreground/15"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Disconnect Wallet
+                </button>
+              </div>
+            </div>
+          </MagicCard>
+        </BlurFade>
+
+        {/* Network Settings */}
+        <BlurFade delay={0.2} direction="up">
+          <MagicCard
+            gradientSize={200}
+            gradientFrom="oklch(0.35 0.15 240)"
+            gradientTo="oklch(0.3 0.13 240)"
+            gradientColor="oklch(0.35 0.15 240)"
+            gradientOpacity={0.1}
+            className="rounded-xl"
+          >
+            <div className="rounded-xl border border-foreground/10 bg-foreground/5 p-6 backdrop-blur-sm">
+              <div className="mb-4 flex items-center gap-3">
+                <Network className="h-5 w-5 text-foreground/60" />
+                <h3 className="font-sans text-xl font-light text-foreground">Network</h3>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <p className="mb-2 font-mono text-xs text-foreground/60">Default Network</p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setDefaultNetwork("mantle-sepolia")}
+                      className={`flex-1 rounded-lg border px-4 py-2 font-sans text-sm transition-colors ${
+                        defaultNetwork === "mantle-sepolia"
+                          ? "border-foreground/30 bg-foreground/15 text-foreground"
+                          : "border-foreground/10 bg-foreground/5 text-foreground/70 hover:bg-foreground/10"
+                      }`}
+                    >
+                      Mantle Sepolia
+                    </button>
+                    <button
+                      onClick={() => setDefaultNetwork("mantle")}
+                      className={`flex-1 rounded-lg border px-4 py-2 font-sans text-sm transition-colors ${
+                        defaultNetwork === "mantle"
+                          ? "border-foreground/30 bg-foreground/15 text-foreground"
+                          : "border-foreground/10 bg-foreground/5 text-foreground/70 hover:bg-foreground/10"
+                      }`}
+                    >
+                      Mantle Mainnet
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </MagicCard>
+        </BlurFade>
+
+        {/* UI Preferences */}
+        <BlurFade delay={0.3} direction="up">
+          <MagicCard
+            gradientSize={200}
+            gradientFrom="oklch(0.35 0.15 240)"
+            gradientTo="oklch(0.3 0.13 240)"
+            gradientColor="oklch(0.35 0.15 240)"
+            gradientOpacity={0.1}
+            className="rounded-xl"
+          >
+            <div className="rounded-xl border border-foreground/10 bg-foreground/5 p-6 backdrop-blur-sm">
+              <div className="mb-4 flex items-center gap-3">
+                <Sidebar className="h-5 w-5 text-foreground/60" />
+                <h3 className="font-sans text-xl font-light text-foreground">UI Preferences</h3>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-sans text-sm text-foreground">Sidebar</p>
+                    <p className="font-mono text-xs text-foreground/60">Toggle sidebar visibility</p>
+                  </div>
+                  <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className={`rounded-lg border px-4 py-2 font-sans text-sm transition-colors ${
+                      sidebarOpen
+                        ? "border-foreground/30 bg-foreground/15 text-foreground"
+                        : "border-foreground/10 bg-foreground/5 text-foreground/70"
+                    }`}
+                  >
+                    {sidebarOpen ? "Open" : "Closed"}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-sans text-sm text-foreground">Auto-collapse Sidebar</p>
+                    <p className="font-mono text-xs text-foreground/60">Automatically collapse on small screens</p>
+                  </div>
+                  <button
+                    onClick={() => setAutoCollapseSidebar(!autoCollapseSidebar)}
+                    className={`rounded-lg border px-4 py-2 font-sans text-sm transition-colors ${
+                      autoCollapseSidebar
+                        ? "border-foreground/30 bg-foreground/15 text-foreground"
+                        : "border-foreground/10 bg-foreground/5 text-foreground/70"
+                    }`}
+                  >
+                    {autoCollapseSidebar ? "On" : "Off"}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-sans text-sm text-foreground">Show Project IDs</p>
+                    <p className="font-mono text-xs text-foreground/60">Display project IDs by default</p>
+                  </div>
+                  <button
+                    onClick={() => setShowProjectIds(!showProjectIds)}
+                    className="flex items-center gap-2 text-foreground/60 transition-colors hover:text-foreground"
+                  >
+                    {showProjectIds ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                  </button>
+                </div>
+                <div>
+                  <p className="mb-2 font-sans text-sm text-foreground">Default Dashboard Tab</p>
+                  <div className="flex gap-2">
+                    {(["overview", "docs", "components"] as const).map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => setDefaultTab(tab)}
+                        className={`flex-1 rounded-lg border px-4 py-2 font-sans text-sm capitalize transition-colors ${
+                          defaultTab === tab
+                            ? "border-foreground/30 bg-foreground/15 text-foreground"
+                            : "border-foreground/10 bg-foreground/5 text-foreground/70 hover:bg-foreground/10"
+                        }`}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </MagicCard>
+        </BlurFade>
+
+        {/* About */}
+        <BlurFade delay={0.4} direction="up">
+          <MagicCard
+            gradientSize={200}
+            gradientFrom="oklch(0.35 0.15 240)"
+            gradientTo="oklch(0.3 0.13 240)"
+            gradientColor="oklch(0.35 0.15 240)"
+            gradientOpacity={0.1}
+            className="rounded-xl"
+          >
+            <div className="rounded-xl border border-foreground/10 bg-foreground/5 p-6 backdrop-blur-sm">
+              <h3 className="mb-4 font-sans text-xl font-light text-foreground">About</h3>
+              <div className="space-y-2 font-mono text-xs text-foreground/60">
+                <p>x402 DevKit SDK Dashboard</p>
+                <p>Version 1.0.0</p>
+                <p className="pt-2 text-foreground/50">Built for Mantle Network</p>
+              </div>
+            </div>
+          </MagicCard>
+        </BlurFade>
+      </div>
+    </>
   )
 }
-
-

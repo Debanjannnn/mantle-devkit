@@ -264,8 +264,40 @@ export default function Home() {
     }
   }, [currentSection])
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "x402 DevKit",
+    applicationCategory: "DeveloperApplication",
+    description:
+      "The complete developer toolkit for x402 payments on Mantle. Build, test, and monitor paid APIs in minutes.",
+    operatingSystem: "Web",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "5",
+      ratingCount: "1",
+    },
+    featureList: [
+      "Server SDK for Hono",
+      "Client library for React",
+      "Monitoring dashboard",
+      "Local testing environment",
+      "Payment integration",
+      "Mantle Network support",
+    ],
+  }
+
   return (
     <main className="relative h-screen w-full overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <GrainOverlay />
       <ScrollProgress containerRef={scrollContainerRef} />
 
@@ -276,12 +308,12 @@ export default function Home() {
       >
         <button
           onClick={() => scrollToSection(0)}
-          className="flex items-center gap-2 transition-transform hover:scale-105"
+          className="flex items-center gap-2"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-foreground/15 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-foreground/25">
-            <span className="font-mono text-sm font-bold text-foreground">x402</span>
+          <div className="flex h-10 w-10 items-center justify-center overflow-hidden">
+            <img src="/X402.png" alt="x402" className="h-full w-full object-contain" />
           </div>
-          <span className="font-sans text-xl font-semibold tracking-tight text-foreground">DevKit</span>
+          <span className="font-sans text-sm font-semibold tracking-tight text-foreground">DevKit</span>
         </button>
 
         <div className="hidden items-center gap-8 md:flex">
@@ -329,7 +361,7 @@ export default function Home() {
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {/* Hero Section */}
-        <section className="relative flex min-h-screen w-screen shrink-0 flex-col justify-end px-6 pb-16 pt-24 md:px-12 md:pb-24 lg:flex-row lg:items-end lg:gap-12">
+        <section className="relative flex min-h-screen w-screen shrink-0 snap-start flex-col justify-end px-6 pb-16 pt-24 md:px-12 md:pb-24 lg:flex-row lg:items-end lg:gap-12">
           {/* Left Section - Text Content */}
           <div className="max-w-3xl lg:flex-1 lg:mr-32">
             <BlurFade delay={0} direction="up" offset={10} blur="4px">

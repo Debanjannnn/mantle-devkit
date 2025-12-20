@@ -2,35 +2,23 @@
 
 import { useState } from "react"
 import { Banknote, Check, RefreshCw, Edit2, Save, X } from "lucide-react"
+import { useDashboard } from "@/contexts/dashboard-context"
 
 const TREASURY_ADDRESS = "0xB27705342ACE73736AE490540Ea031cc06C3eF49"
-const MANTLE_SEPOLIA_RPC = "https://rpc.sepolia.mantle.xyz"
 
-interface AdminTabProps {
-  pendingFees: string
-  totalCollected: string
-  isCollecting: boolean
-  collectError: string
-  collectSuccess: boolean
-  onCollectFees: () => void
-  onRefresh: () => void
-  adminAddress: string
-  onUpdateAdmin: (address: string) => Promise<void>
-  validateWalletAddress: (address: string) => boolean
-}
-
-export function AdminTab({
+export function AdminTab() {
+  const {
   pendingFees,
   totalCollected,
   isCollecting,
   collectError,
   collectSuccess,
-  onCollectFees,
-  onRefresh,
+    handleCollectFees,
+    loadTreasuryData,
   adminAddress,
-  onUpdateAdmin,
+    handleUpdateAdmin,
   validateWalletAddress,
-}: AdminTabProps) {
+  } = useDashboard()
   const [isEditingAdmin, setIsEditingAdmin] = useState(false)
   const [editedAdminAddress, setEditedAdminAddress] = useState(adminAddress)
   const [adminError, setAdminError] = useState("")
@@ -66,7 +54,7 @@ export function AdminTab({
       <div className="mb-6 flex items-center justify-between">
         <h2 className="font-sans text-2xl font-light text-foreground">Admin Panel</h2>
         <button
-          onClick={onRefresh}
+          onClick={loadTreasuryData}
           className="flex items-center gap-2 rounded-lg border border-foreground/20 bg-foreground/10 px-4 py-2 font-sans text-sm text-foreground transition-colors hover:bg-foreground/15"
         >
           <RefreshCw className="h-4 w-4" />
@@ -96,7 +84,7 @@ export function AdminTab({
         </p>
         <div className="flex items-center gap-4">
           <button
-            onClick={onCollectFees}
+            onClick={handleCollectFees}
             disabled={isCollecting || pendingFees === "0" || pendingFees === "0.000000"}
             className="flex items-center gap-2 rounded-lg border border-foreground/20 bg-foreground/15 px-6 py-3 font-sans text-sm text-foreground transition-colors hover:bg-foreground/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >

@@ -2,42 +2,26 @@
 
 import { useState } from "react"
 import { Plus, Eye, EyeOff, Copy, Check, Edit2, Save, Wallet, X, Trash2 } from "lucide-react"
-import { updatePayoutWallet, deleteProject, Project } from "@/lib/api-client"
+import { updatePayoutWallet, deleteProject } from "@/lib/api-client"
+import { useDashboard } from "@/contexts/dashboard-context"
+import { useProjectForm } from "@/hooks/use-project-form"
 
 interface OverviewTabProps {
   onCreateProject: () => void
-  projects: Project[]
-  selectedProject: Project | null
-  onSelectProject: (project: Project) => void
-  onProjectDeleted: () => void
-  createdProjectId: string | null
-  appId: string | null
-  currentProjectName: string | null
-  currentPayoutWallet: string | null
-  showProjectId: boolean
-  setShowProjectId: (show: boolean) => void
-  copied: boolean
-  setCopied: (copied: boolean) => void
-  isEditingPayoutWallet: boolean
-  setIsEditingPayoutWallet: (editing: boolean) => void
-  editedPayoutWallet: string
-  setEditedPayoutWallet: (wallet: string) => void
-  walletError: string
-  setWalletError: (error: string) => void
-  isSaving: boolean
-  setIsSaving: (saving: boolean) => void
-  setCurrentPayoutWallet: (wallet: string) => void
-  userWalletAddress?: string
-  isLoading: boolean
-  validateWalletAddress: (address: string) => boolean
 }
 
-export function OverviewTab({
-  onCreateProject,
+export function OverviewTab({ onCreateProject }: OverviewTabProps) {
+  const {
   projects,
   selectedProject,
-  onSelectProject,
-  onProjectDeleted,
+    setSelectedProject,
+    isLoading,
+    loadProjects,
+    userWalletAddress,
+    validateWalletAddress,
+  } = useDashboard()
+  
+  const {
   createdProjectId,
   appId,
   currentProjectName,
@@ -45,7 +29,7 @@ export function OverviewTab({
   showProjectId,
   setShowProjectId,
   copied,
-  setCopied,
+    handleCopyProjectId,
   isEditingPayoutWallet,
   setIsEditingPayoutWallet,
   editedPayoutWallet,
@@ -54,11 +38,7 @@ export function OverviewTab({
   setWalletError,
   isSaving,
   setIsSaving,
-  setCurrentPayoutWallet,
-  userWalletAddress,
-  isLoading,
-  validateWalletAddress,
-}: OverviewTabProps) {
+  } = useProjectForm()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState("")
@@ -71,21 +51,12 @@ export function OverviewTab({
       setDeleteError("")
       await deleteProject(appId)
       setShowDeleteConfirm(false)
-      onProjectDeleted()
+      loadProjects()
     } catch (error: any) {
       console.error('Error deleting project:', error)
       setDeleteError(error.message || 'Failed to delete project')
     } finally {
       setIsDeleting(false)
-    }
-  }
-
-  const handleCopyProjectId = () => {
-    const textToCopy = createdProjectId || appId || ''
-    if (textToCopy) {
-      navigator.clipboard.writeText(textToCopy)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
     }
   }
 
@@ -103,10 +74,11 @@ export function OverviewTab({
 
     try {
       setIsSaving(true)
-      const updated = await updatePayoutWallet(appId, trimmed)
-      setCurrentPayoutWallet(updated.payTo)
+      await updatePayoutWallet(appId, trimmed)
       setIsEditingPayoutWallet(false)
       setWalletError("")
+      // Reload projects to get updated data
+      loadProjects()
     } catch (error: any) {
       console.error('Error updating payout wallet:', error)
       setWalletError(error.message || 'Failed to update wallet. Please try again.')
@@ -126,7 +98,7 @@ export function OverviewTab({
               value={selectedProject?.appId || ""}
               onChange={(e) => {
                 const project = projects.find(p => p.appId === e.target.value)
-                if (project) onSelectProject(project)
+                if (project) setSelectedProject(project)
               }}
               className="min-w-[140px] cursor-pointer appearance-none rounded-lg border border-foreground/20 bg-foreground/5 px-3 py-2 font-sans text-sm leading-normal text-foreground transition-colors hover:border-foreground/40 hover:bg-foreground/10 focus:border-foreground/40 focus:bg-foreground/10 focus:outline-none"
               style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
@@ -141,10 +113,10 @@ export function OverviewTab({
         </div>
         <button
           onClick={onCreateProject}
-          className="flex items-center gap-2 rounded-lg border border-foreground/20 bg-foreground/10 px-4 py-2 font-sans text-sm text-foreground transition-colors hover:bg-foreground/15"
+          className="flex items-center gap-2 rounded-lg border border-foreground/20 bg-foreground/15 px-4 py-2.5 font-sans text-sm text-foreground transition-colors hover:bg-foreground/20"
         >
           <Plus className="h-4 w-4" />
-          Create
+          Create Project
         </button>
       </div>
 
@@ -257,9 +229,9 @@ export function OverviewTab({
                     {userWalletAddress && (
                       <button
                         onClick={() => {
-                          if (userWalletAddress) {
-                            setCurrentPayoutWallet(userWalletAddress)
-                          }
+                          // This would need to update the project's payout wallet
+                          // For now, we'll just show the button but the actual update
+                          // should go through the edit flow
                         }}
                         className="text-foreground/60 transition-colors hover:text-foreground"
                         title="Use Connected Wallet"

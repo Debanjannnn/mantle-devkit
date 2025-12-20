@@ -48,10 +48,10 @@ export function DashboardSidebar({
         {sidebarOpen && (
           <>
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground/15">
-                <span className="font-mono text-sm font-bold text-foreground">x402</span>
+              <div className="flex h-8 w-8 items-center justify-center overflow-hidden">
+                <img src="/X402.png" alt="x402" className="h-full w-full object-contain" />
               </div>
-              <span className="font-sans text-lg font-semibold text-foreground">DevKit</span>
+              <span className="font-sans text-sm font-semibold text-foreground">DevKit</span>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
