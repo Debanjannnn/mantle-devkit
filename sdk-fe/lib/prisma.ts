@@ -11,19 +11,31 @@ const globalForPrisma = globalThis as unknown as {
 // It should be set in .env.local in the root directory
 const connectionString = process.env.DATABASE_URL || ''
 
-if (!connectionString) {
-  console.warn('DATABASE_URL is not set. Please add it to your .env.local file')
-}
-
 // Create PostgreSQL connection pool and adapter for Prisma 7
-let prismaConfig: any = {
+// Prisma 7 requires an adapter, so we create one even during build
+// Use a placeholder connection string if DATABASE_URL is not set (for build time)
+const pool = new Pool({ 
+  connectionString: connectionString || 'postgresql://user:password@localhost:5432/db?schema=public',
+  // Prevent actual connections during build if no DATABASE_URL
+  ...(connectionString ? {} : { 
+    max: 0,
+    idleTimeoutMillis: 0,
+    connectionTimeoutMillis: 0
+  })
+})
+
+const adapter = new PrismaPg(pool)
+
+const prismaConfig: any = {
+  adapter,
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
 }
 
-if (connectionString) {
-  const pool = new Pool({ connectionString })
-  const adapter = new PrismaPg(pool)
-  prismaConfig.adapter = adapter
+if (!connectionString) {
+  // Only warn in development, not during build
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('DATABASE_URL is not set. Please add it to your .env.local file')
+  }
 }
 
 export const prisma =
