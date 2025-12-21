@@ -205,7 +205,7 @@ export function PaymentModal({ isOpen, request, onComplete, onCancel, simulation
                 {txHash ? "Payment Complete" : "Payment Required"}
               </h2>
               {simulation && (
-                <span className="rounded-full border border-yellow-500/40 bg-yellow-500/20 px-2 py-0.5 font-mono text-xs text-yellow-400">
+                <span className="rounded-full border border-blue-500/40 bg-blue-500/20 px-2 py-0.5 font-mono text-xs text-blue-400">
                   SIMULATION
                 </span>
               )}

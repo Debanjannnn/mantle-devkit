@@ -178,7 +178,7 @@ export function CreateProjectDialog({
                 <p className="break-all font-mono text-sm text-foreground">{createdProject.payTo}</p>
               </div>
               <div>
-                <p className="mb-2 font-mono text-xs text-foreground/60">Project ID</p>
+                <p className="mb-2 font-mono text-xs text-foreground/60">APP Id</p>
                 <div className="flex items-center gap-2 rounded-lg border border-foreground/20 bg-background px-3 py-2 overflow-hidden">
                   <code className="min-w-0 flex-1 truncate font-mono text-sm text-foreground">
                     {createdProject.projectId || createdProject.appId}

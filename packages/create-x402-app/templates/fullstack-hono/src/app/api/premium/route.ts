@@ -1,52 +1,100 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { processPaymentMiddleware, initializePlatform } from 'x402-mantle-sdk/server'
+import { processPaymentMiddleware, initializePlatform, clearCache } from 'x402-mantle-sdk/server'
+
+// Configuration - Set these in your .env file
+const appId = process.env.X402_APP_ID || ''
+const platformUrl = process.env.X402_PLATFORM_URL || 'https://mantle-x402.vercel.app'
+
+if (!process.env.X402_APP_ID) {
+  process.env.X402_APP_ID = appId
+}
+if (!process.env.X402_PLATFORM_URL) {
+  process.env.X402_PLATFORM_URL = platformUrl
+}
 
 let initialized = false
+let initError: Error | null = null
 
-export async function GET(request: NextRequest) {
-  // Initialize platform once
-  if (!initialized) {
+const initPlatform = async () => {
+  try {
     await initializePlatform()
     initialized = true
+    initError = null
+  } catch (error) {
+    initError = error as Error
+    console.error('Platform initialization failed:', error)
   }
+}
 
-  // Convert headers to plain object
-  const headers: Record<string, string> = {}
-  request.headers.forEach((value, key) => {
-    headers[key] = value
-  })
+export async function GET(request: NextRequest) {
+  try {
+    // Initialize platform on first request
+    if (!initialized && !initError) {
+      await initPlatform()
+    } else if (initError) {
+      try { clearCache() } catch {}
+      initError = null
+      await initPlatform()
+    }
 
-  // Process payment - returns 402 if payment required
-  const result = await processPaymentMiddleware(
-    { price: '0.001', token: 'MNT', testnet: true },
-    headers
-  )
+    if (initError) {
+      return NextResponse.json(
+        { error: 'Platform initialization failed', details: (initError as Error).message },
+        { status: 500 }
+      )
+    }
 
-  // Payment required - return 402 with payment details
-  if (result.paymentRequired) {
-    const response = NextResponse.json(result.paymentRequired.body, { status: 402 })
-    Object.entries(result.paymentRequired.headers).forEach(([key, value]) => {
-      response.headers.set(key, value)
+    // Payment options
+    const paymentOptions = {
+      price: '0.001',
+      token: 'MNT',
+      testnet: true,
+    }
+
+    // Convert headers to plain object
+    const headers: Record<string, string> = {}
+    request.headers.forEach((value, key) => {
+      headers[key] = value
     })
-    return response
-  }
 
-  // Payment verified - return premium content
-  if (result.allowed) {
-    return NextResponse.json({
-      success: true,
-      message: 'Premium content unlocked!',
-      data: {
-        secret: 'This is premium data that required payment.',
-        timestamp: new Date().toISOString(),
-      },
-    })
-  }
+    // Process payment middleware
+    const result = await processPaymentMiddleware(paymentOptions, headers)
 
-  // Error handling
-  if (result.error) {
-    return NextResponse.json({ error: result.error.message }, { status: result.error.status })
-  }
+    // Payment required - return 402 with payment details
+    if (result.paymentRequired) {
+      const response = NextResponse.json(result.paymentRequired.body, { status: 402 })
+      Object.entries(result.paymentRequired.headers).forEach(([key, value]) => {
+        response.headers.set(key, value)
+      })
+      return response
+    }
 
-  return NextResponse.json({ error: 'Unexpected error' }, { status: 500 })
+    // Error
+    if (result.error) {
+      return NextResponse.json(
+        { error: result.error.message },
+        { status: result.error.status }
+      )
+    }
+
+    // Payment verified - return premium content
+    if (result.allowed) {
+      return NextResponse.json({
+        success: true,
+        message: 'Premium content unlocked!',
+        data: {
+          secret: 'This is premium data that required payment.',
+          timestamp: new Date().toISOString(),
+        },
+      })
+    }
+
+    return NextResponse.json({ error: 'Unexpected error' }, { status: 500 })
+  } catch (error) {
+    console.error('Error in premium route:', error)
+    return NextResponse.json(
+      { error: 'Internal server error', message: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    )
+  }
 }

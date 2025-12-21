@@ -786,8 +786,8 @@ export function SettingsTab() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-sans text-sm text-foreground">Show Project IDs</p>
-                    <p className="font-mono text-xs text-foreground/60">Display project IDs by default</p>
+                    <p className="font-sans text-sm text-foreground">Show APP Ids</p>
+                    <p className="font-mono text-xs text-foreground/60">Display APP Ids by default</p>
                   </div>
                   <button
                     onClick={() => setShowProjectIds(!showProjectIds)}

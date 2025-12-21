@@ -147,7 +147,7 @@ export function OverviewTab({ onCreateProject }: OverviewTabProps) {
         </button>
       </div>
 
-      {/* Project ID Display - Show if project is created or selected */}
+      {/* APP Id Display - Show if project is created or selected */}
       {(createdProjectId || selectedProject) && (
         <div className="mb-6 space-y-4 rounded-lg border border-foreground/10 bg-foreground/5 p-4 backdrop-blur-sm">
           <div className="flex items-center justify-between">
@@ -159,11 +159,11 @@ export function OverviewTab({ onCreateProject }: OverviewTabProps) {
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <p className="mb-1 font-mono text-xs text-foreground/60">Project ID</p>
+                <p className="mb-1 font-mono text-xs text-foreground/60">APP Id</p>
                 <button
                   onClick={() => setShowProjectId(!showProjectId)}
                   className="text-foreground/60 transition-colors hover:text-foreground"
-                  title={showProjectId ? "Hide Project ID" : "Show Project ID"}
+                  title={showProjectId ? "Hide APP Id" : "Show APP Id"}
                 >
                   {showProjectId ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -174,7 +174,7 @@ export function OverviewTab({ onCreateProject }: OverviewTabProps) {
                   <button
                     onClick={handleCopyProjectId}
                     className="text-foreground/60 transition-colors hover:text-foreground"
-                    title="Copy Project ID"
+                    title="Copy APP Id"
                   >
                     {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </button>

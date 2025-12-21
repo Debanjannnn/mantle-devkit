@@ -1,6 +1,6 @@
 {
   "name": "x402-mantle-sdk",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Complete SDK for monetizing APIs with HTTP 402 payments on Mantle Network. Protect API routes, handle payments automatically, and track revenue.",
   "type": "module",
   "exports": {
@@ -77,10 +77,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/x402-devkit/x402.git"
+    "url": "git+https://github.com/Debanjannnn/x-402-mantle-sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/x402-devkit/x402/issues"
+    "url": "https://github.com/Debanjannnn/x-402-mantle-sdk/issues"
   },
   "homepage": "https://x402.dev",
   "publishConfig": {

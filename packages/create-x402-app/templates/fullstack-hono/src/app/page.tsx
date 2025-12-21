@@ -144,7 +144,18 @@ export default function Home() {
       const res = await fetch(`${API_BASE}${endpoint}`)
 
       if (res.status === 402) {
-        const body = await res.json().catch(() => ({}))
+        let body = {}
+        const contentType = res.headers.get("content-type")
+        if (contentType && contentType.includes("application/json")) {
+          try {
+            const text = await res.text()
+            if (text.trim()) {
+              body = JSON.parse(text)
+            }
+          } catch {
+            // Ignore JSON parse errors, use empty object
+          }
+        }
 
         const amount = res.headers.get("x-402-amount") || body.amount || "0"
         const token = res.headers.get("x-402-token") || body.token || "MNT"
@@ -165,7 +176,22 @@ export default function Home() {
         return
       }
 
-      const data = await res.json()
+      let data = {}
+      const contentType = res.headers.get("content-type")
+      if (contentType && contentType.includes("application/json")) {
+        try {
+          const text = await res.text()
+          if (text.trim()) {
+            data = JSON.parse(text)
+          }
+        } catch (err) {
+          setError("Failed to parse response as JSON")
+          return
+        }
+      } else {
+        const text = await res.text()
+        data = { message: text || "Request successful" }
+      }
       setResponse(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Request failed")
@@ -193,7 +219,23 @@ export default function Home() {
             "X-402-Transaction-Hash": payment.transactionHash,
           },
         })
-        const data = await res.json()
+        
+        let data = {}
+        const contentType = res.headers.get("content-type")
+        if (contentType && contentType.includes("application/json")) {
+          try {
+            const text = await res.text()
+            if (text.trim()) {
+              data = JSON.parse(text)
+            }
+          } catch {
+            lastError = "Failed to parse response"
+            continue
+          }
+        } else {
+          const text = await res.text()
+          data = { message: text || "Request successful" }
+        }
 
         if (res.ok) {
           setResponse(data)
@@ -231,7 +273,24 @@ export default function Home() {
 
     try {
       const res = await fetch(`${API_BASE}${endpoint}`)
-      const data = await res.json()
+      
+      let data = {}
+      const contentType = res.headers.get("content-type")
+      if (contentType && contentType.includes("application/json")) {
+        try {
+          const text = await res.text()
+          if (text.trim()) {
+            data = JSON.parse(text)
+          }
+        } catch (err) {
+          setError("Failed to parse response as JSON")
+          return
+        }
+      } else {
+        const text = await res.text()
+        data = { message: text || "Request successful" }
+      }
+      
       setResponse(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Request failed")

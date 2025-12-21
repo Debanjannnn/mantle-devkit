@@ -31,7 +31,7 @@ var require_package = __commonJS({
   "package.json"(exports2, module2) {
     module2.exports = {
       name: "create-x402-app",
-      version: "0.1.6",
+      version: "0.1.9",
       description: "Create a new x402 pay-per-request API project",
       keywords: [
         "x402",
@@ -50,7 +50,7 @@ var require_package = __commonJS({
       license: "MIT",
       repository: {
         type: "git",
-        url: "https://github.com/anthropics/x402"
+        url: "git+https://github.com/Debanjannnn/x-402-mantle-sdk.git"
       },
       bin: {
         "create-x402-app": "./dist/index.js"
