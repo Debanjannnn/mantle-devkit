@@ -1,25 +1,330 @@
 "use client"
 
-import { useState } from "react"
-import { Copy, Check, Play, LogOut, Wallet, Network, Sidebar, Eye, EyeOff, GitBranch, ArrowRight, Zap } from "lucide-react"
+import { useState, useEffect, Fragment } from "react"
+import { Copy, Check, Play, LogOut, Wallet, Network, Sidebar, Eye, EyeOff, GitBranch, ArrowRight, Zap, RefreshCw, ExternalLink, TrendingUp, Activity, DollarSign } from "lucide-react"
 import { BlurFade } from "@/components/ui/blur-fade"
 import { MagicCard } from "@/components/ui/magic-card"
 import { PaymentModal, PaymentRequest } from "@/components/payment-modal"
 import { usePrivy } from "@privy-io/react-auth"
 import { useDashboard } from "@/contexts/dashboard-context"
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+
+const TREASURY_ADDRESS = "0xB27705342ACE73736AE490540Ea031cc06C3eF49"
+
+interface Transaction {
+  transactionHash: string
+  from: string
+  amount: string
+  blockNumber: number
+  timestamp: number
+  type?: string
+}
+
+interface ChartData {
+  date: string
+  amount: number
+  count: number
+}
 
 export function AnalyticsTab() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="mb-2 font-sans text-2xl font-light text-foreground">Analytics</h2>
-        <p className="font-mono text-sm text-foreground/60">Coming soon</p>
-      </div>
-      <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-8 backdrop-blur-sm">
-        <p className="text-center font-mono text-sm text-foreground/50">
-          Analytics dashboard will be available soon
+  const { isAdmin } = useDashboard()
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [chartData, setChartData] = useState<ChartData[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [copiedHash, setCopiedHash] = useState<string | null>(null)
+  const [totalVolume, setTotalVolume] = useState("0")
+  const [txCount, setTxCount] = useState(0)
+
+  const fetchTransactions = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+
+      // Fetch from our API route to avoid CORS issues
+      const response = await fetch('/api/treasury/transactions')
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to fetch transactions')
+      }
+
+      const data = await response.json()
+
+      setTransactions(data.transactions || [])
+      setTxCount(data.txCount || 0)
+      setTotalVolume(data.totalVolume || "0")
+      setChartData(data.chartData || [])
+
+    } catch (err) {
+      console.error("Error fetching transactions:", err)
+      setError(err instanceof Error ? err.message : "Failed to fetch transactions")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetchTransactions()
+    }
+  }, [isAdmin])
+
+  const handleCopyHash = async (hash: string) => {
+    try {
+      await navigator.clipboard.writeText(hash)
+      setCopiedHash(hash)
+      setTimeout(() => setCopiedHash(null), 2000)
+    } catch (err) {
+      console.error("Failed to copy:", err)
+    }
+  }
+
+  const formatAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`
+  }
+
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp)
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="mb-4 rounded-full border border-red-500/30 bg-red-500/10 p-6">
+          <Activity className="h-12 w-12 text-red-500/60" />
+        </div>
+        <h3 className="mb-2 font-sans text-xl font-light text-foreground">Access Denied</h3>
+        <p className="mb-6 max-w-md font-mono text-sm text-foreground/60">
+          Analytics is only available for admin users.
         </p>
       </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground" />
+        <p className="font-sans text-sm text-foreground/60">Loading analytics...</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="mb-2 font-sans text-2xl font-light text-foreground">Treasury Analytics</h2>
+          <p className="font-mono text-sm text-foreground/60">
+            Platform fee transactions from Treasury contract
+          </p>
+        </div>
+        <button
+          onClick={fetchTransactions}
+          disabled={isLoading}
+          className="flex items-center gap-2 rounded-lg border border-foreground/20 bg-foreground/10 px-4 py-2 font-sans text-sm text-foreground transition-colors hover:bg-foreground/15 disabled:opacity-50"
+        >
+          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4 backdrop-blur-sm">
+          <div className="mb-2 flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-foreground/60" />
+            <p className="font-mono text-xs text-foreground/60">Total Volume</p>
+          </div>
+          <p className="font-sans text-2xl font-light text-foreground">{totalVolume} MNT</p>
+        </div>
+        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4 backdrop-blur-sm">
+          <div className="mb-2 flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-foreground/60" />
+            <p className="font-mono text-xs text-foreground/60">Total Transactions</p>
+          </div>
+          <p className="font-sans text-2xl font-light text-foreground">{txCount}</p>
+        </div>
+        <div className="rounded-lg border border-foreground/10 bg-foreground/5 p-4 backdrop-blur-sm">
+          <div className="mb-2 flex items-center gap-2">
+            <Activity className="h-4 w-4 text-foreground/60" />
+            <p className="font-mono text-xs text-foreground/60">Treasury Address</p>
+          </div>
+          <p className="font-mono text-sm text-foreground">{formatAddress(TREASURY_ADDRESS)}</p>
+        </div>
+      </div>
+
+      {/* Transaction Chart */}
+      {chartData.length > 0 && (
+        <BlurFade delay={0.1} direction="up">
+          <MagicCard
+            gradientSize={300}
+            gradientFrom="oklch(0.35 0.15 240)"
+            gradientTo="oklch(0.3 0.13 240)"
+            gradientColor="oklch(0.35 0.15 240)"
+            gradientOpacity={0.15}
+            className="rounded-xl"
+          >
+            <div className="rounded-xl border border-foreground/10 bg-foreground/5 p-6 backdrop-blur-sm">
+              <h3 className="mb-4 font-sans text-lg font-light text-foreground">Fee Volume Over Time</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.6}/>
+                      <stop offset="50%" stopColor="#1d4ed8" stopOpacity={0.3}/>
+                      <stop offset="100%" stopColor="#1e3a5f" stopOpacity={0.1}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="rgba(59,130,246,0.15)"
+                    vertical={false}
+                    horizontal={true}
+                  />
+                  <XAxis
+                    dataKey="date"
+                    stroke="#60a5fa"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={{ stroke: 'rgba(59,130,246,0.3)' }}
+                  />
+                  <YAxis
+                    stroke="#60a5fa"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => value.toFixed(6)}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(30,58,138,0.95)',
+                      border: '1px solid #3b82f6',
+                      borderRadius: '8px',
+                      color: '#93c5fd',
+                    }}
+                    formatter={(value: number) => [`${value.toFixed(6)} MNT`, 'Fee Volume']}
+                  />
+                  <Area
+                    type="natural"
+                    dataKey="amount"
+                    stroke="#3b82f6"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorBlue)"
+                    dot={false}
+                    activeDot={{ r: 4, fill: '#3b82f6', stroke: '#93c5fd', strokeWidth: 2 }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            </div>
+          </MagicCard>
+        </BlurFade>
+      )}
+
+      {/* Transactions Table */}
+      <BlurFade delay={0.2} direction="up">
+        <MagicCard
+          gradientSize={300}
+          gradientFrom="oklch(0.35 0.15 240)"
+          gradientTo="oklch(0.3 0.13 240)"
+          gradientColor="oklch(0.35 0.15 240)"
+          gradientOpacity={0.15}
+          className="rounded-xl"
+        >
+          <div className="rounded-xl border border-foreground/10 bg-foreground/5 p-6 backdrop-blur-sm">
+            <h3 className="mb-4 font-sans text-lg font-light text-foreground">Recent Transactions</h3>
+
+            {transactions.length === 0 ? (
+              <div className="py-8 text-center">
+                <Activity className="mx-auto mb-4 h-12 w-12 text-foreground/30" />
+                <p className="font-mono text-sm text-foreground/50">No transactions found</p>
+                <p className="mt-2 font-mono text-xs text-foreground/40">
+                  Transactions will appear here when fees are received by the Treasury
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-foreground/10">
+                      <th className="pb-3 text-left font-mono text-xs font-medium text-foreground/60">TX Hash</th>
+                      <th className="pb-3 text-left font-mono text-xs font-medium text-foreground/60">From</th>
+                      <th className="pb-3 text-right font-mono text-xs font-medium text-foreground/60">Fee Amount</th>
+                      <th className="pb-3 text-right font-mono text-xs font-medium text-foreground/60">Date</th>
+                      <th className="pb-3 text-right font-mono text-xs font-medium text-foreground/60">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transactions.map((tx) => (
+                      <tr key={tx.transactionHash} className="border-b border-foreground/5 last:border-0">
+                        <td className="py-3">
+                          <code className="font-mono text-xs text-foreground">
+                            {tx.transactionHash.slice(0, 10)}...{tx.transactionHash.slice(-6)}
+                          </code>
+                        </td>
+                        <td className="py-3">
+                          <code className="font-mono text-xs text-foreground/70">
+                            {formatAddress(tx.from)}
+                          </code>
+                        </td>
+                        <td className="py-3 text-right">
+                          <span className="font-mono text-xs text-foreground">{tx.amount} MNT</span>
+                        </td>
+                        <td className="py-3 text-right">
+                          <span className="font-mono text-xs text-foreground/60">
+                            {formatDate(tx.timestamp)}
+                          </span>
+                        </td>
+                        <td className="py-3 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => handleCopyHash(tx.transactionHash)}
+                              className="text-foreground/40 transition-colors hover:text-foreground/60"
+                              title="Copy transaction hash"
+                            >
+                              {copiedHash === tx.transactionHash ? (
+                                <Check className="h-3.5 w-3.5" />
+                              ) : (
+                                <Copy className="h-3.5 w-3.5" />
+                              )}
+                            </button>
+                            <a
+                              href={`https://sepolia.mantlescan.xyz/tx/${tx.transactionHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-foreground/40 transition-colors hover:text-foreground/60"
+                              title="View on explorer"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5" />
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </MagicCard>
+      </BlurFade>
+
+      {error && (
+        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4">
+          <p className="font-mono text-sm text-red-500">{error}</p>
+        </div>
+      )}
     </div>
   )
 }
@@ -275,13 +580,14 @@ export function EndpointsTab() {
               </feMerge>
             </filter>
           </defs>
-          {nodes.map((node) =>
-            node.connections.map((connection) => {
-              const targetNode = nodes.find((n) => n.id === connection.targetId)
-              if (!targetNode) return null
-              const pathData = getConnectionPath(node, targetNode)
-              return (
-                <g key={`${node.id}-${connection.targetId}`}>
+          {nodes.map((node) => (
+            <Fragment key={node.id}>
+              {node.connections.map((connection) => {
+                const targetNode = nodes.find((n) => n.id === connection.targetId)
+                if (!targetNode) return null
+                const pathData = getConnectionPath(node, targetNode)
+                return (
+                  <g key={`${node.id}-${connection.targetId}`}>
                   {/* Connection line with glow */}
                   <path
                     d={pathData.path}
@@ -323,10 +629,11 @@ export function EndpointsTab() {
                       </text>
                     </g>
                   )}
-                </g>
-              )
-            })
-          )}
+                  </g>
+                )
+              })}
+            </Fragment>
+          ))}
         </svg>
 
         {/* Nodes */}

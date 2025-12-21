@@ -1,6 +1,6 @@
 {
   "name": "create-x402-app",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Create a new x402 pay-per-request API project",
   "keywords": [
     "x402",
@@ -21,6 +21,7 @@
     "type": "git",
     "url": "git+https://github.com/Debanjannnn/x-402-mantle-sdk.git"
   },
+  "homepage": "https://mantle-x402.vercel.app/",
   "bin": {
     "create-x402-app": "./dist/index.js"
   },

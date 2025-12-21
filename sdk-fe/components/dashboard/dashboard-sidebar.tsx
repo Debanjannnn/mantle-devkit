@@ -24,13 +24,12 @@ export function DashboardSidebar({
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Overview", id: "overview" as const },
-    { icon: BarChart3, label: "Analytics", id: "analytics" as const },
+    ...(isAdmin ? [{ icon: BarChart3, label: "Analytics", id: "analytics" as const }] : []),
     { icon: Zap, label: "Endpoints", id: "endpoints" as const },
     { icon: FileText, label: "Components", id: "components" as const },
     { icon: BookOpen, label: "Docs", id: "docs" as const },
     ...(isAdmin ? [{ icon: Shield, label: "Admin", id: "admin" as const }] : []),
     { icon: Settings, label: "Settings", id: "settings" as const },
- 
   ]
 
   const handleTabClick = (tabId: string) => {
