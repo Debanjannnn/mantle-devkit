@@ -11,6 +11,7 @@ import {
   type PrivateKeyAccount,
 } from "viem/accounts";
 import { mantle, mantleSepoliaTestnet } from "viem/chains";
+import { sendTransaction } from "./tools/mantle/sendTransaction";
 
 export class MNTAgentKit {
   public account: PrivateKeyAccount;
@@ -23,5 +24,9 @@ export class MNTAgentKit {
       transport: http(),
       account: this.account,
     });
+  }
+
+  async sendTransaction(to: Address, amount: string) {
+    return await sendTransaction(this, to, amount);
   }
 }
