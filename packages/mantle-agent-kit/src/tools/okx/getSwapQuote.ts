@@ -1,5 +1,5 @@
 import type { MNTAgentKit } from "../../agent";
-import { getSwapTransaction } from "../../utils/okx/getSwapLimit";
+import { getSwapTransaction } from "../../utils/okx";
 
 export const getSwapQuote = async (
   agent: MNTAgentKit,

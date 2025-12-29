@@ -1,9 +1,7 @@
 import type { Address, Hex } from "viem";
 import type { MNTAgentKit } from "../../agent";
 import { ETH_ADDRESS } from "../../constants/okx";
-import { approveToken } from "../../utils/okx/approveToken";
-import { getGasLimit } from "../../utils/okx/getGasLimit";
-import { getSwapTransaction } from "../../utils/okx/getSwapLimit";
+import { approveToken, getGasLimit, getSwapTransaction } from "../../utils/okx";
 
 /**
  * Execute token swap
