@@ -1139,9 +1139,9 @@ export function SettingsTab() {
             <div className="rounded-xl border border-foreground/10 bg-foreground/5 p-6 backdrop-blur-sm">
               <h3 className="mb-4 font-sans text-xl font-light text-foreground">About</h3>
               <div className="space-y-2 font-mono text-xs text-foreground/60">
-                <p>x402 DevKit SDK Dashboard</p>
+                <p>Mantle DevKit Dashboard</p>
                 <p>Version 1.0.0</p>
-                <p className="pt-2 text-foreground/50">Built for Mantle Network</p>
+                <p className="pt-2 text-foreground/50">x402 + Agent Kit for Mantle</p>
               </div>
             </div>
           </MagicCard>

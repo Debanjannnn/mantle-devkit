@@ -9,7 +9,8 @@ import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { OverviewTab } from "@/components/dashboard/overview-tab"
 import { DocsTab } from "@/components/dashboard/docs-tab"
 import { AdminTab } from "@/components/dashboard/admin-tab"
-import { AnalyticsTab, LogsTab, SettingsTab } from "@/components/dashboard/placeholder-tabs"
+import { AnalyticsTab, SettingsTab } from "@/components/dashboard/placeholder-tabs"
+import { AgentKitTab } from "@/components/dashboard/agent-kit-tab"
 import { EndpointsTab } from "@/components/dashboard/endpoints-tab"
 import { CreateProjectDialog } from "@/components/dashboard/create-project-dialog"
 
@@ -39,40 +40,25 @@ function DashboardContent() {
     return doc ? parseInt(doc, 10) : null
   })
   
-  // Update URL when docs state changes
+  // Update URL when docs state changes (only when on docs tab)
   useEffect(() => {
-    if (activeTab === "docs") {
-      const params = new URLSearchParams(searchParams.toString())
-      if (currentPage > 1) {
-        params.set("page", currentPage.toString())
-      } else {
-        params.delete("page")
-      }
-      if (selectedDoc !== null) {
-        params.set("doc", selectedDoc.toString())
-      } else {
-        params.delete("doc")
-      }
-      const newUrl = `/dashboard?${params.toString()}`
-      if (window.location.search !== `?${params.toString()}`) {
-        router.replace(newUrl, { scroll: false })
-      }
+    if (activeTab !== "docs") return
+
+    const params = new URLSearchParams()
+    if (currentPage > 1) {
+      params.set("page", currentPage.toString())
     }
-  }, [activeTab, currentPage, selectedDoc, searchParams, router])
-  
-  // Sync docs state from URL on mount
-  useEffect(() => {
-    if (activeTab === "docs") {
-      const pageFromUrl = searchParams.get("page")
-      const docFromUrl = searchParams.get("doc")
-      if (pageFromUrl) {
-        setCurrentPage(parseInt(pageFromUrl, 10))
-      }
-      if (docFromUrl) {
-        setSelectedDoc(parseInt(docFromUrl, 10))
-      }
+    if (selectedDoc !== null) {
+      params.set("doc", selectedDoc.toString())
     }
-  }, [searchParams, activeTab])
+
+    const newSearch = params.toString()
+    const currentSearch = window.location.search.replace("?", "")
+
+    if (newSearch !== currentSearch) {
+      router.replace(`/dashboard${newSearch ? `?${newSearch}` : ""}`, { scroll: false })
+    }
+  }, [activeTab, currentPage, selectedDoc, router])
 
   if (!ready) {
     return (
@@ -106,12 +92,8 @@ function DashboardContent() {
   }
 
   const handleTabChange = (tab: string) => {
-    if (tab === "docs") {
-      setCurrentPage(1)
-      setSelectedDoc(null)
-    } else {
-      setSelectedDoc(null)
-    }
+    setCurrentPage(1)
+    setSelectedDoc(null)
   }
 
   return (
@@ -122,15 +104,7 @@ function DashboardContent() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         isAdmin={isAdmin}
-        onTabChange={(tab) => {
-          handleTabChange(tab)
-          if (tab === "docs") {
-            setCurrentPage(1)
-            setSelectedDoc(null)
-          } else {
-            setSelectedDoc(null)
-          }
-        }}
+        onTabChange={handleTabChange}
       />
 
       <div className="flex flex-1 flex-col overflow-hidden">
@@ -144,7 +118,7 @@ function DashboardContent() {
 
             {activeTab === "analytics" && <AnalyticsTab />}
             {activeTab === "endpoints" && <EndpointsTab />}
-            {activeTab === "components" && <LogsTab />}
+            {activeTab === "components" && <AgentKitTab />}
             {activeTab === "docs" && (
               <DocsTab
                 currentPage={currentPage}

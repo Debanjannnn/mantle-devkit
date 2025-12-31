@@ -9,43 +9,43 @@ export function FAQSection() {
 
   const faqs = [
     {
+      question: "What is Mantle DevKit?",
+      answer:
+        "Mantle DevKit is a complete developer toolkit containing two SDKs: x402-mantle-sdk for API monetization with HTTP 402 payments, and mantle-agent-kit-sdk for DeFi protocol integrations including swaps, lending, and cross-chain operations.",
+    },
+    {
       question: "What is x402?",
       answer:
         "x402 is an open protocol that enables HTTP-native payments. When a client requests a paid resource, the server returns HTTP 402 with payment requirements. The client pays and retries. Simple, stateless, and works with any HTTP client.",
     },
     {
-      question: "Do I need to run my own facilitator?",
+      question: "What protocols does Agent Kit support?",
       answer:
-        "No. x402 DevKit works with existing facilitators like Coinbase's or the community facilitator. You can run your own if you want full control.",
+        "Agent Kit integrates with DEX aggregators (OKX, 1inch, OpenOcean), native DEXs (Agni Finance, Merchant Moe, Uniswap V3), Lendle for lending, mETH for liquid staking, and Squid Router for cross-chain operations.",
     },
     {
       question: "What wallets are supported?",
-      answer: "Any EVM-compatible wallet works. We provide adapters for viem and ethers.js out of the box.",
+      answer: "Any EVM-compatible wallet works. Both SDKs use Viem for blockchain interactions. x402 provides React payment modals, while Agent Kit works with private keys for server-side operations.",
     },
     {
       question: "How do I test without real money?",
       answer:
-        "Use `x402 dev` to start the mock facilitator locally. It accepts all payments and tracks them in memory. Your tests run against real payment flows without touching the blockchain.",
+        "For x402, use the mock facilitator locally. For Agent Kit, deploy to Mantle Sepolia testnet (chain ID 5003) for testing swaps, lending, and other DeFi operations.",
     },
     {
-      question: "Can I use this with Express?",
+      question: "What tokens can I use?",
       answer:
-        "Yes. While Hono is our primary target, we include an Express adapter. Import from `@x402-devkit/server/express`.",
+        "On Mantle: MNT, USDC, USDT, mETH, and WMNT. Both SDKs handle token detection and operations automatically. Agent Kit also supports any token listed on integrated DEXs.",
     },
     {
-      question: "What tokens can I accept?",
+      question: "Can I use Agent Kit for AI agents?",
       answer:
-        "On Mantle: MNT, USDC, mETH, and WMNT. The SDK handles token detection and verification automatically.",
-    },
-    {
-      question: "How does Observatory work?",
-      answer:
-        "The SDK emits events (payment received, payment failed, etc.) to the Observatory ingest API. Observatory stores these, computes aggregations, and serves them to the dashboard. Self-host or use our cloud version.",
+        "Absolutely. Agent Kit is designed for programmatic DeFi operations. Combine it with x402 to let your AI agents both pay for and monetize APIs while executing DeFi strategies.",
     },
     {
       question: "Is this production ready?",
       answer:
-        "Yes. The core payment flow is battle-tested. Observatory and CLI are stable. Use in production with confidence.",
+        "Yes. Both SDKs are production-ready. x402 handles payment flows reliably, and Agent Kit integrates with verified, production contracts on Mantle mainnet.",
     },
   ]
 

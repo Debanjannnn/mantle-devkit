@@ -19,31 +19,38 @@ export function WorkSection() {
           <h2 className="mb-2 font-sans text-5xl font-light tracking-tight text-foreground md:text-6xl lg:text-7xl">
             Features
           </h2>
-          <p className="font-mono text-sm text-foreground/60 md:text-base">/ Everything you need</p>
+          <p className="font-mono text-sm text-foreground/60 md:text-base">/ Two powerful SDKs</p>
         </div>
 
         <div className="space-y-6 md:space-y-8">
           {[
             {
               number: "01",
-              title: "Server SDK",
-              category: "Hono middleware",
-              year: "3 lines of code",
+              title: "x402 API Monetization",
+              category: "Payment middleware",
+              year: "Hono & Express",
               direction: "left",
             },
             {
               number: "02",
-              title: "Observatory",
-              category: "Real-time dashboard",
-              year: "Revenue tracking",
+              title: "DeFi Agent Kit",
+              category: "Protocol integrations",
+              year: "Swaps, Lending, Cross-chain",
               direction: "right",
             },
             {
               number: "03",
-              title: "Sandbox",
-              category: "Local testing",
-              year: "No real money",
+              title: "Observatory Dashboard",
+              category: "Real-time analytics",
+              year: "Revenue tracking",
               direction: "left",
+            },
+            {
+              number: "04",
+              title: "Multi-Protocol Support",
+              category: "DEXs & Aggregators",
+              year: "Agni, 1inch, OKX, Lendle",
+              direction: "right",
             },
           ].map((project, i) => (
             <ProjectCard key={i} project={project} index={i} isVisible={isVisible} />

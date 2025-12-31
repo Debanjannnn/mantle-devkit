@@ -86,6 +86,61 @@ x402 consists of two main packages:
    - [View on npm](https://www.npmjs.com/package/create-x402-app)`,
   },
   {
+    id: 12,
+    title: "Agent Kit - Getting Started",
+    shortContent: "Introduction to Mantle Agent Kit for DeFi protocol integrations.",
+    fullContent: `# Getting Started with Agent Kit
+
+Mantle Agent Kit is a TypeScript SDK for seamless integration with DeFi protocols on Mantle Network. Provides unified interfaces for swaps, lending, liquid staking, and cross-chain operations.
+
+## Installation
+
+\`\`\`bash
+npm install mantle-agent-kit-sdk
+# or
+bun install mantle-agent-kit-sdk
+\`\`\`
+
+## Quick Start
+
+\`\`\`typescript
+import { MNTAgentKit } from "mantle-agent-kit-sdk"
+
+// Initialize agent with private key and network
+const agent = new MNTAgentKit("0xYOUR_PRIVATE_KEY", "mainnet")
+
+// Initialize with platform validation
+await agent.initialize()
+
+// Execute a swap on Agni Finance
+const txHash = await agent.agniSwap(
+  "0xTokenIn",
+  "0xTokenOut",
+  "1000000000000000000" // 1 token in wei
+)
+\`\`\`
+
+## Supported Protocols
+
+DEX Aggregators: OKX DEX, 1inch, OpenOcean
+
+Native DEXs: Agni Finance, Merchant Moe, Uniswap V3
+
+Lending: Lendle (Aave V2 architecture)
+
+Cross-Chain: Squid Router (Axelar network)
+
+## Network Configuration
+
+\`\`\`typescript
+// Mainnet (Chain ID: 5000)
+const mainnetAgent = new MNTAgentKit(privateKey, "mainnet")
+
+// Testnet (Chain ID: 5003)
+const testnetAgent = new MNTAgentKit(privateKey, "testnet")
+\`\`\``,
+  },
+  {
     id: 2,
     title: "API Reference",
     shortContent: "Complete reference for all x402 server and client methods.",
@@ -689,6 +744,413 @@ app.use('/api', limiter)
 - Implement proper error handling
 - Keep dependencies updated
 - Monitor for vulnerabilities`,
+  },
+  {
+    id: 13,
+    title: "Agent Kit - DEX Swaps",
+    shortContent: "Execute token swaps on Agni Finance, Merchant Moe, and Uniswap V3.",
+    fullContent: `# DEX Swaps with Agent Kit
+
+## Agni Finance
+
+Agni Finance is the leading DEX on Mantle with concentrated liquidity (Uniswap V3 architecture).
+
+\`\`\`typescript
+import { MNTAgentKit } from "mantle-agent-kit-sdk"
+
+const agent = new MNTAgentKit(privateKey, "mainnet")
+await agent.initialize()
+
+// Basic swap
+const txHash = await agent.agniSwap(
+  "0xTokenInAddress",
+  "0xTokenOutAddress",
+  "1000000000000000000", // amount in wei
+  0.5, // slippage percent (optional, default 0.5)
+  3000 // fee tier (optional: 500, 3000, 10000)
+)
+\`\`\`
+
+### Fee Tiers
+- **500** - 0.05% fee (stable pairs)
+- **3000** - 0.3% fee (standard pairs)
+- **10000** - 1% fee (exotic pairs)
+
+## Merchant Moe
+
+Liquidity Book DEX with dynamic fee tiers (TraderJoe V2.1 fork).
+
+\`\`\`typescript
+const txHash = await agent.merchantMoeSwap(
+  "0xTokenInAddress",
+  "0xTokenOutAddress",
+  "1000000000000000000",
+  0.5 // slippage percent
+)
+\`\`\`
+
+## Uniswap V3
+
+Direct integration with canonical Uniswap V3 contracts.
+
+\`\`\`typescript
+// Get quote first
+const quote = await agent.getUniswapQuote(
+  "0xTokenIn",
+  "0xTokenOut",
+  "1000000000000000000"
+)
+
+// Execute swap
+const txHash = await agent.swapOnUniswap(
+  "0xTokenIn",
+  "0xTokenOut",
+  "1000000000000000000",
+  0.5 // slippage
+)
+\`\`\`
+
+## Contract Addresses (Mainnet)
+
+- **Agni SwapRouter**: 0x319B69888b0d11cEC22caA5034e25FfFBDc88421
+- **Merchant Moe LBRouter**: 0x013e138EF6008ae5FDFDE29700e3f2Bc61d21E3a
+- **Uniswap SwapRouter**: 0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45`,
+  },
+  {
+    id: 14,
+    title: "Agent Kit - DEX Aggregators",
+    shortContent: "Use 1inch, OKX, and OpenOcean for best swap rates across DEXs.",
+    fullContent: `# DEX Aggregators
+
+Get the best swap rates by aggregating liquidity across multiple DEXs.
+
+## 1inch
+
+Pathfinder algorithm for optimal swap routes.
+
+\`\`\`typescript
+import { MNTAgentKit } from "mantle-agent-kit-sdk"
+
+const agent = new MNTAgentKit(privateKey, "mainnet")
+await agent.initialize()
+
+// Get quote
+const quote = await agent.get1inchQuote(
+  "0xTokenIn",
+  "0xTokenOut",
+  "1000000000000000000"
+)
+
+// Execute swap
+const txHash = await agent.swapOn1inch(
+  "0xTokenIn",
+  "0xTokenOut",
+  "1000000000000000000",
+  0.5 // slippage
+)
+\`\`\`
+
+### Environment Variable (Optional)
+\`\`\`bash
+ONEINCH_API_KEY=your_api_key  # For higher rate limits
+\`\`\`
+
+## OKX DEX Aggregator
+
+Multi-source liquidity aggregation with HMAC authentication.
+
+\`\`\`typescript
+// Get quote
+const quote = await agent.getSwapQuote(
+  "0xTokenIn",
+  "0xTokenOut",
+  "1000000000000000000",
+  "0.5" // slippage percentage
+)
+
+// Execute swap
+const txHash = await agent.executeSwap(
+  "0xTokenIn",
+  "0xTokenOut",
+  "1000000000000000000",
+  "0.5"
+)
+\`\`\`
+
+### Required Environment Variables
+\`\`\`bash
+OKX_API_KEY=your_api_key
+OKX_SECRET_KEY=your_secret_key
+OKX_API_PASSPHRASE=your_passphrase
+OKX_PROJECT_ID=your_project_id
+\`\`\`
+
+## OpenOcean
+
+Cross-DEX aggregation for best execution prices.
+
+\`\`\`typescript
+// Get quote
+const quote = await agent.getOpenOceanQuote(
+  "0xTokenIn",
+  "0xTokenOut",
+  "1000000000000000000"
+)
+
+// Execute swap
+const txHash = await agent.swapOnOpenOcean(
+  "0xTokenIn",
+  "0xTokenOut",
+  "1000000000000000000",
+  0.5 // slippage
+)
+\`\`\``,
+  },
+  {
+    id: 15,
+    title: "Agent Kit - Lendle Lending",
+    shortContent: "Supply, borrow, withdraw, and repay on Lendle lending protocol.",
+    fullContent: `# Lendle Lending Protocol
+
+Lendle is Mantle's primary lending market built on Aave V2 architecture.
+
+## Supply Assets
+
+Deposit tokens to earn yield and use as collateral.
+
+\`\`\`typescript
+import { MNTAgentKit } from "mantle-agent-kit-sdk"
+
+const agent = new MNTAgentKit(privateKey, "mainnet")
+await agent.initialize()
+
+const txHash = await agent.lendleSupply(
+  "0xTokenAddress",
+  "1000000000000000000" // amount in wei
+)
+\`\`\`
+
+## Withdraw Assets
+
+Withdraw previously supplied tokens.
+
+\`\`\`typescript
+const txHash = await agent.lendleWithdraw(
+  "0xTokenAddress",
+  "1000000000000000000",
+  "0xRecipientAddress" // optional, defaults to your address
+)
+\`\`\`
+
+## Borrow Assets
+
+Borrow against your supplied collateral.
+
+\`\`\`typescript
+const txHash = await agent.lendleBorrow(
+  "0xTokenAddress",
+  "500000000000000000", // amount to borrow
+  2, // interest rate mode: 1 = stable, 2 = variable
+  "0xOnBehalfOf" // optional
+)
+\`\`\`
+
+## Repay Debt
+
+Repay borrowed assets.
+
+\`\`\`typescript
+const txHash = await agent.lendleRepay(
+  "0xTokenAddress",
+  "500000000000000000",
+  2, // rate mode: 1 = stable, 2 = variable
+  "0xOnBehalfOf" // optional
+)
+\`\`\`
+
+## Contract Addresses (Mainnet)
+
+- **LendingPool**: 0xCFa5aE7c2CE8Fadc6426C1ff872cA45378Fb7cF3
+- **DataProvider**: 0xD0E0b5e99c8a36f4c5234cd1E90CFc5C2Bb58A69
+
+## Best Practices
+
+- Always check your health factor before borrowing
+- Monitor interest rates (variable vs stable)
+- Keep collateral ratio safe to avoid liquidation`,
+  },
+  {
+    id: 16,
+    title: "Agent Kit - Cross-Chain",
+    shortContent: "Execute cross-chain swaps via Squid Router and Axelar network.",
+    fullContent: `# Cross-Chain Operations
+
+Execute seamless cross-chain swaps via Squid Router and Axelar network.
+
+## Squid Router
+
+### Get Cross-Chain Route
+
+\`\`\`typescript
+import { MNTAgentKit } from "mantle-agent-kit-sdk"
+
+const agent = new MNTAgentKit(privateKey, "mainnet")
+await agent.initialize()
+
+const route = await agent.getSquidRoute(
+  "0xFromToken",
+  "0xToToken",
+  181, // from chain (Mantle LayerZero ID)
+  1,   // to chain (Ethereum LayerZero ID)
+  "1000000000000000000",
+  1    // slippage percent
+)
+\`\`\`
+
+### Execute Cross-Chain Swap
+
+\`\`\`typescript
+const txHash = await agent.crossChainSwapViaSquid(
+  "0xFromToken",
+  "0xToToken",
+  181, // from chain
+  1,   // to chain
+  "1000000000000000000",
+  1    // slippage
+)
+\`\`\`
+
+## LayerZero Chain IDs
+
+- **Ethereum**: 1
+- **Arbitrum**: 110
+- **Optimism**: 111
+- **Polygon**: 109
+- **BSC**: 102
+- **Avalanche**: 106
+- **Mantle**: 181
+
+## mETH Protocol
+
+Access Mantle's liquid staking token.
+
+\`\`\`typescript
+// Get mETH token address
+const methAddress = agent.getMethTokenAddress()
+// Returns: 0xcDA86A272531e8640cD7F1a92c01839911B90bb0 (mainnet)
+\`\`\`
+
+Note: To stake ETH for mETH, use the official mETH interface at https://www.mantle-meth.xyz/`,
+  },
+  {
+    id: 17,
+    title: "Agent Kit - API Reference",
+    shortContent: "Complete API reference for all Agent Kit methods and types.",
+    fullContent: `# Agent Kit API Reference
+
+## Installation
+
+\`\`\`bash
+npm install mantle-agent-kit-sdk
+\`\`\`
+
+## MNTAgentKit Class
+
+### Constructor
+
+\`\`\`typescript
+const agent = new MNTAgentKit(
+  privateKey: string,
+  network: "mainnet" | "testnet"
+)
+\`\`\`
+
+### Initialization
+
+\`\`\`typescript
+await agent.initialize()
+\`\`\`
+
+## Token Transfers
+
+\`\`\`typescript
+await agent.sendTransaction(
+  recipientAddress: Address,
+  amount: string // in wei
+): Promise<Address>
+\`\`\`
+
+## DEX Methods
+
+### Agni Finance
+\`\`\`typescript
+agent.agniSwap(tokenIn, tokenOut, amountIn, slippage?, feeTier?)
+\`\`\`
+
+### Merchant Moe
+\`\`\`typescript
+agent.merchantMoeSwap(tokenIn, tokenOut, amountIn, slippage?)
+\`\`\`
+
+### Uniswap V3
+\`\`\`typescript
+agent.getUniswapQuote(fromToken, toToken, amount)
+agent.swapOnUniswap(fromToken, toToken, amount, slippage?)
+\`\`\`
+
+## Aggregator Methods
+
+### 1inch
+\`\`\`typescript
+agent.get1inchQuote(fromToken, toToken, amount)
+agent.swapOn1inch(fromToken, toToken, amount, slippage?)
+\`\`\`
+
+### OKX
+\`\`\`typescript
+agent.getSwapQuote(fromToken, toToken, amount, slippage?)
+agent.executeSwap(fromToken, toToken, amount, slippage?)
+\`\`\`
+
+### OpenOcean
+\`\`\`typescript
+agent.getOpenOceanQuote(fromToken, toToken, amount)
+agent.swapOnOpenOcean(fromToken, toToken, amount, slippage?)
+\`\`\`
+
+## Lendle Methods
+
+\`\`\`typescript
+agent.lendleSupply(tokenAddress, amount)
+agent.lendleWithdraw(tokenAddress, amount, to?)
+agent.lendleBorrow(tokenAddress, amount, interestRateMode?, onBehalfOf?)
+agent.lendleRepay(tokenAddress, amount, rateMode?, onBehalfOf?)
+\`\`\`
+
+## Cross-Chain Methods
+
+\`\`\`typescript
+agent.getSquidRoute(fromToken, toToken, fromChain, toChain, amount, slippage?)
+agent.crossChainSwapViaSquid(fromToken, toToken, fromChain, toChain, amount, slippage?)
+agent.getMethTokenAddress()
+\`\`\`
+
+## Environment Variables
+
+\`\`\`bash
+# Required
+APP_ID=your_app_id
+
+# OKX (for OKX methods)
+OKX_API_KEY=your_api_key
+OKX_SECRET_KEY=your_secret_key
+OKX_API_PASSPHRASE=your_passphrase
+OKX_PROJECT_ID=your_project_id
+
+# Optional
+ONEINCH_API_KEY=your_api_key
+PLATFORM_URL=https://mantle-x402.vercel.app
+\`\`\``,
   },
 ]
 

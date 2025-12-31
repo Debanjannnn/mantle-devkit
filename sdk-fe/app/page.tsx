@@ -17,10 +17,12 @@ export default function Home() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [currentSection, setCurrentSection] = useState(0)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isScrolling, setIsScrolling] = useState(false)
   const touchStartY = useRef(0)
   const touchStartX = useRef(0)
   const shaderContainerRef = useRef<HTMLDivElement>(null)
   const scrollThrottleRef = useRef<number | undefined>(undefined)
+  const scrollCooldownRef = useRef<NodeJS.Timeout | null>(null)
   const { ready, authenticated, login, user } = usePrivy()
   const router = useRouter()
 
@@ -140,16 +142,41 @@ export default function Home() {
     }
   }, [])
 
-  const scrollToSection = (index: number) => {
-    if (scrollContainerRef.current) {
-      const sectionWidth = scrollContainerRef.current.offsetWidth
-      scrollContainerRef.current.scrollTo({
-        left: sectionWidth * index,
-        behavior: "smooth",
-      })
-      setCurrentSection(index)
+  const scrollToSection = (index: number, force: boolean = false) => {
+    if (!scrollContainerRef.current) return
+    if (isScrolling && !force) return
+
+    const totalSections = 6
+    const clampedIndex = Math.max(0, Math.min(index, totalSections - 1))
+
+    // For wheel/touch, skip if same section; for nav clicks (force), always scroll
+    if (!force && clampedIndex === currentSection) return
+
+    setIsScrolling(true)
+    const sectionWidth = scrollContainerRef.current.offsetWidth
+    scrollContainerRef.current.scrollTo({
+      left: sectionWidth * clampedIndex,
+      behavior: "smooth",
+    })
+    setCurrentSection(clampedIndex)
+
+    // Reset scrolling state after animation completes
+    if (scrollCooldownRef.current) {
+      clearTimeout(scrollCooldownRef.current)
     }
+    scrollCooldownRef.current = setTimeout(() => {
+      setIsScrolling(false)
+    }, 800)
   }
+
+  // Cleanup cooldown timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollCooldownRef.current) {
+        clearTimeout(scrollCooldownRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
@@ -164,15 +191,27 @@ export default function Home() {
     }
 
     const handleTouchEnd = (e: TouchEvent) => {
+      if (isScrolling) return
+
       const touchEndY = e.changedTouches[0].clientY
       const touchEndX = e.changedTouches[0].clientX
       const deltaY = touchStartY.current - touchEndY
       const deltaX = touchStartX.current - touchEndX
 
-      if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 50) {
-        if (deltaY > 0 && currentSection < 5) {
+      const totalSections = 6
+      const swipeThreshold = 50
+
+      // Support both vertical and horizontal swipes
+      if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > swipeThreshold) {
+        if (deltaY > 0 && currentSection < totalSections - 1) {
           scrollToSection(currentSection + 1)
         } else if (deltaY < 0 && currentSection > 0) {
+          scrollToSection(currentSection - 1)
+        }
+      } else if (Math.abs(deltaX) > swipeThreshold) {
+        if (deltaX > 0 && currentSection < totalSections - 1) {
+          scrollToSection(currentSection + 1)
+        } else if (deltaX < 0 && currentSection > 0) {
           scrollToSection(currentSection - 1)
         }
       }
@@ -192,26 +231,28 @@ export default function Home() {
         container.removeEventListener("touchend", handleTouchEnd)
       }
     }
-  }, [currentSection])
+  }, [currentSection, isScrolling])
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        e.preventDefault()
+      e.preventDefault()
 
-        if (!scrollContainerRef.current) return
+      if (isScrolling || !scrollContainerRef.current) return
 
-        scrollContainerRef.current.scrollBy({
-          left: e.deltaY,
-          behavior: "instant",
-        })
+      const totalSections = 6
+      const threshold = 30 // Minimum scroll delta to trigger section change
 
-        const sectionWidth = scrollContainerRef.current.offsetWidth
-        const newSection = Math.round(scrollContainerRef.current.scrollLeft / sectionWidth)
+      // Determine scroll direction (support both vertical and horizontal wheel)
+      const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX
 
-        if (newSection !== currentSection) {
-          setCurrentSection(newSection)
-        }
+      if (Math.abs(delta) < threshold) return
+
+      if (delta > 0 && currentSection < totalSections - 1) {
+        // Scroll down/right - go to next section
+        scrollToSection(currentSection + 1)
+      } else if (delta < 0 && currentSection > 0) {
+        // Scroll up/left - go to previous section
+        scrollToSection(currentSection - 1)
       }
     }
 
@@ -225,7 +266,7 @@ export default function Home() {
         container.removeEventListener("wheel", handleWheel)
       }
     }
-  }, [currentSection])
+  }, [currentSection, isScrolling])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -267,10 +308,10 @@ export default function Home() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "x402 DevKit",
+    name: "Mantle DevKit",
     applicationCategory: "DeveloperApplication",
     description:
-      "The complete developer toolkit for x402 payments on Mantle. Build, test, and monitor paid APIs in minutes.",
+      "The complete developer toolkit for building on Mantle. x402 API monetization and DeFi Agent Kit for seamless protocol integrations.",
     operatingSystem: "Web",
     offers: {
       "@type": "Offer",
@@ -283,12 +324,12 @@ export default function Home() {
       ratingCount: "1",
     },
     featureList: [
-      "Server SDK for Hono",
-      "Client library for React",
-      "Monitoring dashboard",
-      "Local testing environment",
-      "Payment integration",
-      "Mantle Network support",
+      "x402 API Monetization",
+      "DeFi Agent Kit",
+      "DEX Aggregators Integration",
+      "Lending Protocol Support",
+      "Cross-Chain Operations",
+      "Real-time Dashboard",
     ],
   }
 
@@ -307,20 +348,20 @@ export default function Home() {
         }`}
       >
         <button
-          onClick={() => scrollToSection(0)}
+          onClick={() => scrollToSection(0, true)}
           className="flex items-center gap-2"
         >
           <div className="flex h-10 w-10 items-center justify-center overflow-hidden">
-            <img src="/X402.png" alt="x402" className="h-full w-full object-contain" />
+            <img src="/X402.png" alt="Mantle DevKit" className="h-full w-full object-contain" />
           </div>
-          <span className="font-sans text-sm font-semibold tracking-tight text-foreground">DevKit</span>
+          <span className="font-sans text-sm font-semibold tracking-tight text-foreground">Mantle DevKit</span>
         </button>
 
         <div className="hidden items-center gap-8 md:flex">
           {["Home", "Features", "Use Cases", "Why Mantle", "Pricing", "FAQ"].map((item, index) => (
             <button
               key={item}
-              onClick={() => scrollToSection(index)}
+              onClick={() => scrollToSection(index, true)}
               className={`group relative font-sans text-sm font-medium transition-colors ${
                 currentSection === index ? "text-foreground" : "text-foreground/80 hover:text-foreground"
               }`}
@@ -355,10 +396,10 @@ export default function Home() {
       <div
         ref={scrollContainerRef}
         data-scroll-container
-        className={`relative z-10 flex h-screen overflow-x-auto overflow-y-hidden transition-opacity duration-300 ${
+        className={`relative z-10 flex h-screen snap-x snap-mandatory overflow-x-auto overflow-y-hidden transition-opacity duration-300 ${
           isLoaded ? "opacity-100" : "opacity-0"
         }`}
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none", scrollBehavior: "smooth" }}
       >
         {/* Hero Section */}
         <section className="relative flex min-h-screen w-screen shrink-0 snap-start flex-col justify-end px-6 pb-16 pt-24 md:px-12 md:pb-24 lg:flex-row lg:items-end lg:gap-12">
@@ -372,16 +413,16 @@ export default function Home() {
             <BlurFade delay={0.2} direction="up" offset={20} blur="6px">
               <h1 className="mb-6 font-sans text-6xl font-light leading-[1.1] tracking-tight text-foreground md:text-7xl lg:text-8xl">
               <span className="text-balance">
-                Monetize Your APIs
+                Payments and DeFi
                 <br />
-                with Three Lines of Code
+                with a Few Lines of Code
               </span>
               </h1>
             </BlurFade>
             <BlurFade delay={0.3} direction="up" offset={15} blur="4px">
               <p className="mb-8 max-w-xl text-lg leading-relaxed text-foreground/90 md:text-xl">
               <span className="text-pretty">
-                The first complete developer toolkit for x402 payments on Mantle. Server SDK, client library, monitoring dashboard, and local testing — everything you need to build paid APIs.
+                The first complete developer toolkit for Mantle. Accept payments on any API with x402. Swap, lend, stake, and bridge with Agent Kit. Ship in minutes.
               </span>
               </p>
             </BlurFade>
@@ -390,7 +431,7 @@ export default function Home() {
               <MagneticButton size="lg" variant="primary" onClick={handleGetStarted}>
                 Get Started →
               </MagneticButton>
-              <MagneticButton size="lg" variant="secondary" onClick={() => scrollToSection(1)}>
+              <MagneticButton size="lg" variant="secondary" onClick={() => scrollToSection(1, true)}>
                 View Documentation
               </MagneticButton>
               </div>
@@ -421,77 +462,64 @@ export default function Home() {
                   <div className="flex items-start gap-3">
                     <span className="text-foreground/40">1</span>
                     <code className="text-foreground/90">
-                      <span className="text-foreground/60">import</span>{" "}
-                      <span className="text-foreground">{`{ x402 }`}</span>{" "}
-                      <span className="text-foreground/60">from</span>{" "}
-                      <span className="text-foreground">"@x402-devkit/server"</span>
+                      <span className="text-foreground/60">// x402 - API Monetization</span>
                     </code>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-foreground/40">2</span>
                     <code className="text-foreground/90">
-                      <span className="text-foreground/60"> </span>
+                      <span className="text-foreground">app</span>
+                      <span className="text-foreground/60">.</span>
+                      <span className="text-foreground">use</span>
+                      <span className="text-foreground/60">(</span>
+                      <span className="text-foreground">x402</span>
+                      <span className="text-foreground/60">({`{ price: "0.001", token: "USDC" }`})</span>
+                      <span className="text-foreground/60">)</span>
                     </code>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-foreground/40">3</span>
                     <code className="text-foreground/90">
-                      <span className="text-foreground">app</span>
-                      <span className="text-foreground/60">.</span>
-                      <span className="text-foreground">use</span>
-                      <span className="text-foreground/60">(</span>
-                      <span className="text-foreground">"/api/data"</span>
-                      <span className="text-foreground/60">, </span>
-                      <span className="text-foreground">x402</span>
-                      <span className="text-foreground/60">({`{`}</span>
+                      <span className="text-foreground/60"> </span>
                     </code>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-foreground/40">4</span>
                     <code className="text-foreground/90">
-                      <span className="text-foreground/60">  </span>
-                      <span className="text-foreground">price</span>
-                      <span className="text-foreground/60">: </span>
-                      <span className="text-foreground">"0.001"</span>
-                      <span className="text-foreground/60">,</span>
+                      <span className="text-foreground/60">// Agent Kit - DeFi Integration</span>
                     </code>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-foreground/40">5</span>
                     <code className="text-foreground/90">
-                      <span className="text-foreground/60">  </span>
-                      <span className="text-foreground">token</span>
-                      <span className="text-foreground/60">: </span>
-                      <span className="text-foreground">"USDC"</span>
-                      <span className="text-foreground/60">,</span>
+                      <span className="text-foreground/60">const </span>
+                      <span className="text-foreground">agent</span>
+                      <span className="text-foreground/60"> = </span>
+                      <span className="text-foreground/60">new </span>
+                      <span className="text-foreground">MNTAgentKit</span>
+                      <span className="text-foreground/60">(key, </span>
+                      <span className="text-foreground">"mainnet"</span>
+                      <span className="text-foreground/60">)</span>
                     </code>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-foreground/40">6</span>
                     <code className="text-foreground/90">
-                      <span className="text-foreground/60">  </span>
-                      <span className="text-foreground">network</span>
-                      <span className="text-foreground/60">: </span>
-                      <span className="text-foreground">"mantle"</span>
+                      <span className="text-foreground/60">await </span>
+                      <span className="text-foreground">agent</span>
+                      <span className="text-foreground/60">.</span>
+                      <span className="text-foreground">agniSwap</span>
+                      <span className="text-foreground/60">(tokenIn, tokenOut, amount)</span>
                     </code>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-foreground/40">7</span>
                     <code className="text-foreground/90">
-                      <span className="text-foreground/60">{`})`}</span>
-                      <span className="text-foreground/60">)</span>
-                    </code>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-foreground/40">8</span>
-                    <code className="text-foreground/90">
-                      <span className="text-foreground/60"> </span>
-                    </code>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-foreground/40">9</span>
-                    <code className="text-foreground/90">
-                      <span className="text-foreground/60">// That's it. Your API now accepts payments.</span>
+                      <span className="text-foreground/60">await </span>
+                      <span className="text-foreground">agent</span>
+                      <span className="text-foreground/60">.</span>
+                      <span className="text-foreground">lendleSupply</span>
+                      <span className="text-foreground/60">(token, amount)</span>
                     </code>
                   </div>
                 </div>
@@ -499,7 +527,7 @@ export default function Home() {
                   <div className="flex h-2 w-2 items-center justify-center">
                     <div className="h-2 w-2 animate-pulse rounded-full bg-foreground/60" />
                   </div>
-                  <p className="font-mono text-xs text-foreground/70">That's it. Your API now accepts payments.</p>
+                  <p className="font-mono text-xs text-foreground/70">Payments + DeFi in minutes.</p>
                 </div>
                 </div>
               </MagicCard>

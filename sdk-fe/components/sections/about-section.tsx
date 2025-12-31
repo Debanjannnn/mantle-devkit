@@ -25,7 +25,7 @@ export function AboutSection({ scrollToSection }: { scrollToSection?: (index: nu
                 <br />
                 Optimized for
                 <br />
-                <span className="text-foreground/40">micropayments</span>
+                <span className="text-foreground/40">developers</span>
               </h2>
             </div>
 
@@ -36,13 +36,13 @@ export function AboutSection({ scrollToSection }: { scrollToSection?: (index: nu
               style={{ transitionDelay: "200ms" }}
             >
               <p className="max-w-md text-sm leading-relaxed text-foreground/90 md:text-lg">
-                Ultra-low fees under $0.001 make micropayments finally profitable. Gas costs under $0.001. Micropayments finally make sense.
+                Ultra-low gas fees under $0.001 make micropayments profitable and DeFi operations cheap. Build without worrying about transaction costs.
               </p>
               <p className="max-w-md text-sm leading-relaxed text-foreground/90 md:text-lg">
-                Fast finality means transactions confirm in seconds. No waiting for payments. Mantle officially integrated x402 with first-class ecosystem support.
+                Fast finality means transactions confirm in seconds. Instant payments and real-time DeFi operations.
               </p>
               <p className="max-w-md text-sm leading-relaxed text-foreground/90 md:text-lg">
-                Same tools, same wallets, same security. Just faster and cheaper. Ethereum compatible.
+                Full Ethereum compatibility. Same tools, same wallets, same security — with native TypeScript SDKs.
               </p>
             </div>
           </div>
@@ -50,9 +50,9 @@ export function AboutSection({ scrollToSection }: { scrollToSection?: (index: nu
           {/* Right side - Stats with creative layout */}
           <div className="flex flex-col justify-center space-y-6 md:space-y-12">
             {[
-              { value: "< 5min", label: "Setup Time", sublabel: "From zero to paid API", direction: "right" },
-              { value: "3", label: "Lines of Code", sublabel: "Required", direction: "left" },
-              { value: "MNT, USDC, mETH", label: "Supported Tokens", sublabel: "Multiple options", direction: "right" },
+              { value: "2", label: "Powerful SDKs", sublabel: "x402 + Agent Kit", direction: "right" },
+              { value: "9+", label: "Protocol Integrations", sublabel: "DEXs, Lending, Cross-chain", direction: "left" },
+              { value: "5+", label: "Supported Tokens", sublabel: "MNT, USDC, mETH, WMNT", direction: "right" },
               { value: "< $0.001", label: "Gas Cost", sublabel: "Per transaction", direction: "left" },
             ].map((stat, i) => {
               const getRevealClass = () => {

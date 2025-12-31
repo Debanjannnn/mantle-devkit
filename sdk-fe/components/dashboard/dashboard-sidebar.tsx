@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { LayoutDashboard, BarChart3, Settings, FileText, Zap, X, Shield, BookOpen } from "lucide-react"
+import { LayoutDashboard, BarChart3, Settings, X, Shield, BookOpen, Boxes } from "lucide-react"
 
 interface DashboardSidebarProps {
   sidebarOpen: boolean
@@ -25,8 +25,7 @@ export function DashboardSidebar({
   const menuItems = [
     { icon: LayoutDashboard, label: "Overview", id: "overview" as const },
     ...(isAdmin ? [{ icon: BarChart3, label: "Analytics", id: "analytics" as const }] : []),
-    { icon: Zap, label: "Endpoints", id: "endpoints" as const },
-    { icon: FileText, label: "Components", id: "components" as const },
+    { icon: Boxes, label: "Agent Kit", id: "components" as const },
     { icon: BookOpen, label: "Docs", id: "docs" as const },
     ...(isAdmin ? [{ icon: Shield, label: "Admin", id: "admin" as const }] : []),
     { icon: Settings, label: "Settings", id: "settings" as const },
@@ -50,7 +49,7 @@ export function DashboardSidebar({
               <div className="flex h-8 w-8 items-center justify-center overflow-hidden">
                 <img src="/X402.png" alt="x402" className="h-full w-full object-contain" />
               </div>
-              <span className="font-sans text-sm font-semibold text-foreground">DevKit</span>
+              <span className="font-sans text-sm font-semibold text-foreground">Mantle DevKit</span>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}

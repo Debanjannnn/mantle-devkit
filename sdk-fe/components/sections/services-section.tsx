@@ -17,38 +17,43 @@ export function ServicesSection() {
           }`}
         >
           <h2 className="mb-2 font-sans text-5xl font-light tracking-tight text-foreground md:text-6xl lg:text-7xl">
-            Power Any Paid API
+            Use Cases
           </h2>
-          <p className="font-mono text-sm text-foreground/60 md:text-base">/ Real use cases</p>
+          <p className="font-mono text-sm text-foreground/60 md:text-base">/ Build anything on Mantle</p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 md:gap-x-16 md:gap-y-12 lg:gap-x-24">
           {[
             {
-              title: "AI & LLM APIs",
-              description: "Charge per token, per request, or per compute second. Let AI agents pay for the resources they use.",
+              title: "AI Agent Payments",
+              description: "Let AI agents pay for APIs with x402. Autonomous transactions for LLM inference and data access.",
               direction: "top",
             },
             {
-              title: "Data APIs",
-              description: "Monetize datasets, market data, or proprietary information. Per-query pricing that scales.",
+              title: "DEX Trading Bots",
+              description: "Build trading bots with Agent Kit. Swap on Agni, Merchant Moe, or aggregate via 1inch and OKX.",
               direction: "right",
             },
             {
-              title: "Compute APIs",
-              description: "Image processing, video transcoding, ML inference. Price based on actual resource consumption.",
+              title: "Paid Data APIs",
+              description: "Monetize market data, on-chain analytics, or proprietary datasets with per-query pricing.",
               direction: "left",
             },
             {
-              title: "Premium Content",
-              description: "Articles, research, analysis. Micropayments for individual pieces, not subscriptions.",
+              title: "Yield Automation",
+              description: "Auto-compound yields on Lendle. Supply, borrow, and rebalance positions programmatically.",
               direction: "bottom",
             },
             {
-              title: "IoT & Sensors",
-              description: "Sell real-time sensor data. Pay-per-read for weather, traffic, or environmental data.",
+              title: "Premium Content",
+              description: "Micropayments for articles, research, and analysis. No subscriptions, just pay per piece.",
               direction: "top",
             },
+            {
+              title: "Cross-Chain Ops",
+              description: "Bridge assets via Squid Router. Execute cross-chain swaps with a single function call.",
+              direction: "top",
+            }
           ].map((service, i) => (
             <ServiceCard key={i} service={service} index={i} isVisible={isVisible} />
           ))}
