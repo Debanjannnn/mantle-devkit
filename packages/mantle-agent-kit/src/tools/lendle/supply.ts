@@ -1,25 +1,25 @@
 import { type Address, type Hex, encodeFunctionData } from "viem";
 import type { MNTAgentKit } from "../../agent";
-import { POOL_ADDRESS, POOL_ABI, WMNT_ADDRESS } from "../../constants/aave";
+import { LENDING_POOL, LENDING_POOL_ABI, WMNT_ADDRESS } from "../../constants/lendle";
 import { approveToken } from "../../utils/common";
 
 /**
- * Supply tokens to Aave V3
+ * Supply (deposit) tokens to Lendle Protocol
  * @param agent - MNTAgentKit instance
- * @param tokenAddress - Token address to supply (use WMNT_ADDRESS for native MNT)
+ * @param tokenAddress - Token address to supply
  * @param amount - Amount to supply (in smallest units)
  * @returns Transaction hash
  */
-export async function aaveSupply(
+export async function lendleSupply(
   agent: MNTAgentKit,
   tokenAddress: Address,
   amount: string,
 ): Promise<Hex> {
-  const poolAddress = POOL_ADDRESS[agent.chain];
+  const lendingPoolAddress = LENDING_POOL[agent.chain];
 
-  if (poolAddress === "0x0000000000000000000000000000000000000000") {
+  if (lendingPoolAddress === "0x0000000000000000000000000000000000000000") {
     throw new Error(
-      `Aave Pool address not configured for ${agent.chain}. Please update constants/aave/index.ts`,
+      `Lendle LendingPool not configured for ${agent.chain}. Only available on mainnet.`,
     );
   }
 
@@ -28,19 +28,19 @@ export async function aaveSupply(
 
   // Approve token spending if not native
   if (!isNative) {
-    await approveToken(agent, tokenAddress, poolAddress, amount);
+    await approveToken(agent, tokenAddress, lendingPoolAddress, amount);
   }
 
-  // Encode supply function call
+  // Encode deposit function call (Aave V2 uses 'deposit' instead of 'supply')
   const data = encodeFunctionData({
-    abi: POOL_ABI,
-    functionName: "supply",
-    args: [tokenAddress, amountBigInt, agent.account.address, 0], // referralCode = 0
+    abi: LENDING_POOL_ABI,
+    functionName: "deposit",
+    args: [tokenAddress, amountBigInt, agent.account.address, 0], // referralCode = 0 (uint16)
   });
 
   // Send transaction
   const hash = await agent.client.sendTransaction({
-    to: poolAddress,
+    to: lendingPoolAddress,
     data,
     value: isNative ? amountBigInt : 0n,
   });
@@ -50,4 +50,3 @@ export async function aaveSupply(
 
   return hash;
 }
-

@@ -18,22 +18,27 @@ import { getSwapQuote } from "./tools/okx/getSwapQuote";
 import { swapOnOpenOcean, getOpenOceanQuote } from "./tools/openocean";
 import { swapOn1inch, get1inchQuote } from "./tools/oneinch";
 import { swapOnUniswap, getUniswapQuote } from "./tools/uniswap";
-import {
-  aaveSupply as executeAaveSupply,
-  aaveWithdraw as executeAaveWithdraw,
-  aaveBorrow as executeAaveBorrow,
-} from "./tools/aave";
 import { crossChainSwapViaSquid, getSquidRoute } from "./tools/squid";
 import {
-  bridgeViaStargate,
-  getStargateBridgeQuote,
-} from "./tools/stargate";
+  lendleSupply,
+  lendleWithdraw,
+  lendleBorrow,
+  lendleRepay,
+} from "./tools/lendle";
+import { agniSwap } from "./tools/agni";
+import { merchantMoeSwap } from "./tools/merchantmoe";
+import { METH_TOKEN } from "./tools/meth";
+import {
+  initializePlatform,
+  type ProjectConfig,
+} from "./utils/x402";
 
 export class MNTAgentKit {
   public account: PrivateKeyAccount;
   public client: WalletClient<Transport, Chain, PrivateKeyAccount> &
     PublicActions;
   public chain: "testnet" | "mainnet";
+  public projectConfig?: ProjectConfig;
 
   constructor(privateKey: Address, chain: "mainnet" | "testnet") {
     this.account = privateKeyToAccount(privateKey);
@@ -43,6 +48,26 @@ export class MNTAgentKit {
       transport: http(),
       account: this.account,
     }).extend(publicActions);
+  }
+
+  /**
+   * Initialize the agent with platform validation
+   *
+   * Validates APP_ID with the platform API.
+   * Must be called after creating the agent instance.
+   *
+   * @returns The initialized agent instance
+   * @throws Error if APP_ID is not set or validation fails
+   *
+   * @example
+   * ```typescript
+   * const agent = new MNTAgentKit(privateKey, "mainnet");
+   * await agent.initialize(); // Validates APP_ID
+   * ```
+   */
+  async initialize(): Promise<MNTAgentKit> {
+    this.projectConfig = await initializePlatform();
+    return this;
   }
 
   async sendTransaction(to: Address, amount: string) {
@@ -154,32 +179,80 @@ export class MNTAgentKit {
     );
   }
 
-  // Aave V3 Lending
-  async aaveSupply(tokenAddress: Address, amount: string) {
-    return await executeAaveSupply(this, tokenAddress, amount);
+  // Lendle Lending Protocol
+  async lendleSupply(tokenAddress: Address, amount: string) {
+    return await lendleSupply(this, tokenAddress, amount);
   }
 
-  async aaveWithdraw(
+  async lendleWithdraw(
     tokenAddress: Address,
     amount: string,
     to?: Address,
   ) {
-    return await executeAaveWithdraw(this, tokenAddress, amount, to);
+    return await lendleWithdraw(this, tokenAddress, amount, to);
   }
 
-  async aaveBorrow(
+  async lendleBorrow(
     tokenAddress: Address,
     amount: string,
     interestRateMode: 1 | 2 = 2,
     onBehalfOf?: Address,
   ) {
-    return await executeAaveBorrow(
+    return await lendleBorrow(
       this,
       tokenAddress,
       amount,
       interestRateMode,
       onBehalfOf,
     );
+  }
+
+  async lendleRepay(
+    tokenAddress: Address,
+    amount: string,
+    rateMode: 1 | 2 = 2,
+    onBehalfOf?: Address,
+  ) {
+    return await lendleRepay(this, tokenAddress, amount, rateMode, onBehalfOf);
+  }
+
+  // Agni Finance DEX (#1 on Mantle)
+  async agniSwap(
+    tokenIn: Address,
+    tokenOut: Address,
+    amountIn: string,
+    slippagePercent: number = 0.5,
+    feeTier?: number,
+  ) {
+    return await agniSwap(
+      this,
+      tokenIn,
+      tokenOut,
+      amountIn,
+      slippagePercent,
+      feeTier,
+    );
+  }
+
+  // Merchant Moe DEX (#2 on Mantle)
+  async merchantMoeSwap(
+    tokenIn: Address,
+    tokenOut: Address,
+    amountIn: string,
+    slippagePercent: number = 0.5,
+  ) {
+    return await merchantMoeSwap(
+      this,
+      tokenIn,
+      tokenOut,
+      amountIn,
+      slippagePercent,
+    );
+  }
+
+  // mETH Protocol - Liquid Staking Token
+  getMethTokenAddress() {
+    return METH_TOKEN[this.chain];
   }
 
   // Squid Router Cross-chain
@@ -221,40 +294,4 @@ export class MNTAgentKit {
     );
   }
 
-  // Stargate Cross-chain Bridge
-  async getStargateBridgeQuote(
-    tokenAddress: Address,
-    amount: string,
-    dstChainId: number,
-    slippage: number = 0.1,
-  ) {
-    return await getStargateBridgeQuote(
-      this,
-      tokenAddress,
-      amount,
-      dstChainId,
-      slippage,
-    );
-  }
-
-  async bridgeViaStargate(
-    tokenAddress: Address,
-    amount: string,
-    dstChainId: number,
-    dstAddress: Address,
-    srcPoolId?: number,
-    dstPoolId?: number,
-    slippage: number = 0.1,
-  ) {
-    return await bridgeViaStargate(
-      this,
-      tokenAddress,
-      amount,
-      dstChainId,
-      dstAddress,
-      srcPoolId,
-      dstPoolId,
-      slippage,
-    );
-  }
 }

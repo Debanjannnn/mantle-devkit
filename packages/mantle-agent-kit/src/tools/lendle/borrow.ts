@@ -1,9 +1,9 @@
 import { type Address, type Hex, encodeFunctionData } from "viem";
 import type { MNTAgentKit } from "../../agent";
-import { POOL_ADDRESS, POOL_ABI, INTEREST_RATE_MODE } from "../../constants/aave";
+import { LENDING_POOL, LENDING_POOL_ABI, INTEREST_RATE_MODE } from "../../constants/lendle";
 
 /**
- * Borrow tokens from Aave V3
+ * Borrow tokens from Lendle Protocol
  * @param agent - MNTAgentKit instance
  * @param tokenAddress - Token address to borrow
  * @param amount - Amount to borrow (in smallest units)
@@ -11,18 +11,18 @@ import { POOL_ADDRESS, POOL_ABI, INTEREST_RATE_MODE } from "../../constants/aave
  * @param onBehalfOf - Address to receive borrowed tokens (optional, defaults to agent address)
  * @returns Transaction hash
  */
-export async function aaveBorrow(
+export async function lendleBorrow(
   agent: MNTAgentKit,
   tokenAddress: Address,
   amount: string,
   interestRateMode: 1 | 2 = INTEREST_RATE_MODE.VARIABLE,
   onBehalfOf?: Address,
 ): Promise<Hex> {
-  const poolAddress = POOL_ADDRESS[agent.chain];
+  const lendingPoolAddress = LENDING_POOL[agent.chain];
 
-  if (poolAddress === "0x0000000000000000000000000000000000000000") {
+  if (lendingPoolAddress === "0x0000000000000000000000000000000000000000") {
     throw new Error(
-      `Aave Pool address not configured for ${agent.chain}. Please update constants/aave/index.ts`,
+      `Lendle LendingPool not configured for ${agent.chain}. Only available on mainnet.`,
     );
   }
 
@@ -31,14 +31,14 @@ export async function aaveBorrow(
 
   // Encode borrow function call
   const data = encodeFunctionData({
-    abi: POOL_ABI,
+    abi: LENDING_POOL_ABI,
     functionName: "borrow",
-    args: [tokenAddress, amountBigInt, interestRateMode, 0, onBehalfOfAddress], // referralCode = 0
+    args: [tokenAddress, amountBigInt, BigInt(interestRateMode), 0, onBehalfOfAddress], // referralCode = 0 (uint16)
   });
 
   // Send transaction
   const hash = await agent.client.sendTransaction({
-    to: poolAddress,
+    to: lendingPoolAddress,
     data,
   });
 
@@ -47,4 +47,3 @@ export async function aaveBorrow(
 
   return hash;
 }
-
