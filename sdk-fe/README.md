@@ -78,7 +78,7 @@ Set your project ID as an environment variable:
 ```bash
 # .env
 X402_APP_ID=your-app-id-here
-X402_PLATFORM_URL=https://mantle-x402.vercel.app  # Optional, defaults to https://mantle-x402.vercel.app
+X402_PLATFORM_URL=https://mantle-devkit.vercel.app  # Optional, defaults to https://mantle-devkit.vercel.app
 ```
 
 ## Server Usage

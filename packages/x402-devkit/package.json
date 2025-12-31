@@ -1,6 +1,6 @@
 {
   "name": "x402-mantle-sdk",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Complete SDK for monetizing APIs with HTTP 402 payments on Mantle Network. Protect API routes, handle payments automatically, and track revenue.",
   "type": "module",
   "exports": {
@@ -82,7 +82,7 @@
   "bugs": {
     "url": "https://github.com/Debanjannnn/x-402-mantle-sdk/issues"
   },
-  "homepage": "https://mantle-x402.vercel.app/",
+  "homepage": "https://mantle-devkit.vercel.app",
   "publishConfig": {
     "access": "public"
   },

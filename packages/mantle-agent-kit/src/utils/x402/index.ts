@@ -4,7 +4,7 @@
  * Validates APP_ID with Mantle platform API
  */
 
-const DEFAULT_PLATFORM_URL = "https://mantle-x402.vercel.app";
+const DEFAULT_PLATFORM_URL = "https://mantle-devkit.vercel.app";
 
 /** Project configuration from platform */
 export interface ProjectConfig {

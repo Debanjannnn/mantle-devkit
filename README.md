@@ -254,7 +254,7 @@ MIT
 
 ## Links
 
-- [Dashboard](https://devkit.x402.io)
+- [Dashboard](https://mantle-devkit.vercel.app)
 - [x402 npm](https://www.npmjs.com/package/x402-mantle-sdk)
 - [Agent Kit npm](https://www.npmjs.com/package/mantle-agent-kit-sdk)
 - [Mantlescan](https://mantlescan.xyz)

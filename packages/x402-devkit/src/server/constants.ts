@@ -141,7 +141,7 @@ export const TOKENS: Record<NetworkId, Record<string, TokenConfig>> = {
 export const ERC20_TRANSFER_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
 
 /** Default platform URL (for project config) */
-export const DEFAULT_PLATFORM_URL = 'https://mantle-x402.vercel.app'
+export const DEFAULT_PLATFORM_URL = 'https://mantle-devkit.vercel.app'
 
 /** Amount tolerance for payment verification (0.001 tokens) */
 export const AMOUNT_TOLERANCE = BigInt(1e15)

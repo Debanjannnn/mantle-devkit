@@ -131,7 +131,7 @@ export function OverviewTab({ onCreateProject }: OverviewTabProps) {
     if (!projectId) return
 
     // Always use production URL
-    const baseUrl = process.env.NEXT_PUBLIC_PLATFORM_URL || 'https://mantle-x402.vercel.app'
+    const baseUrl = process.env.NEXT_PUBLIC_PLATFORM_URL || 'https://mantle-devkit.vercel.app'
     const endpoint = `${baseUrl}/api/v1/validate?appId=${projectId}`
     
     try {
@@ -148,7 +148,7 @@ export function OverviewTab({ onCreateProject }: OverviewTabProps) {
     if (!projectId) return ''
     
     // Always use production URL
-    const baseUrl = process.env.NEXT_PUBLIC_PLATFORM_URL || 'https://mantle-x402.vercel.app'
+    const baseUrl = process.env.NEXT_PUBLIC_PLATFORM_URL || 'https://mantle-devkit.vercel.app'
     return `${baseUrl}/api/v1/validate?appId=${projectId}`
   }
 

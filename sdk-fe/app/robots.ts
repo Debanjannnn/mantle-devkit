@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://devkit.x402.io'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mantle-devkit.vercel.app'
 
   return {
     rules: [

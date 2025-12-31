@@ -1,19 +1,21 @@
-# Mantle Agent Kit
+# Mantle Agent Kit SDK
 
 TypeScript SDK for seamless integration with DeFi protocols on Mantle Network. Provides unified interfaces for swaps, lending, liquid staking, and cross-chain operations.
+
+Part of [Mantle DevKit](https://mantle-devkit.vercel.app) - the complete developer suite for Mantle.
 
 ## Installation
 
 ```bash
-npm install mantle-agent-kit
+npm install mantle-agent-kit-sdk
 # or
-bun install mantle-agent-kit
+bun install mantle-agent-kit-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { MNTAgentKit } from "mantle-agent-kit";
+import { MNTAgentKit } from "mantle-agent-kit-sdk";
 
 // Initialize agent with private key and network
 const agent = new MNTAgentKit("0xYOUR_PRIVATE_KEY", "mainnet");
@@ -259,8 +261,8 @@ The Mantle Agent Kit requires an APP_ID for platform validation and authenticati
 ```env
 APP_ID=your_app_id_here
 
-# Optional: Custom platform URL (defaults to https://mantle-x402.vercel.app)
-PLATFORM_URL=https://mantle-x402.vercel.app
+# Optional: Custom platform URL (defaults to https://mantle-devkit.vercel.app)
+PLATFORM_URL=https://mantle-devkit.vercel.app
 ```
 
 **What is APP_ID?**
@@ -334,7 +336,7 @@ import {
   MerchantMoeConstants,
   MethConstants,
   UniswapConstants,
-} from "mantle-agent-kit";
+} from "mantle-agent-kit-sdk";
 
 // Example: Get Lendle pool address
 const poolAddress = LendleConstants.LENDING_POOL.mainnet;
@@ -345,7 +347,7 @@ const poolAddress = LendleConstants.LENDING_POOL.mainnet;
 Import utility types for type-safe development:
 
 ```typescript
-import type { UserAccountData, ProjectConfig } from "mantle-agent-kit";
+import type { UserAccountData, ProjectConfig } from "mantle-agent-kit-sdk";
 
 // UserAccountData returned from Lendle user queries
 // ProjectConfig returned from platform validation
@@ -397,6 +399,7 @@ MIT
 
 ## Resources
 
+- [Mantle DevKit Dashboard](https://mantle-devkit.vercel.app)
 - [Mantle Network Documentation](https://docs.mantle.xyz/)
 - [Mantlescan Explorer](https://mantlescan.xyz/)
 - [Lendle Protocol](https://lendle.xyz/)

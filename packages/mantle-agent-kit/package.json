@@ -1,6 +1,6 @@
 {
   "name": "mantle-agent-kit-sdk",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "TypeScript SDK for DeFi protocols on Mantle Network - Unified interface for swaps, lending, liquid staking, and cross-chain operations",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -64,7 +64,7 @@
     "url": "https://github.com/Debanjannnn/mantle-devkit",
     "directory": "packages/mantle-agent-kit"
   },
-  "homepage": "https://github.com/Debanjannnn/mantle-devkit/tree/main/packages/mantle-agent-kit#readme",
+  "homepage": "https://mantle-devkit.vercel.app",
   "bugs": {
     "url": "https://github.com/Debanjannnn/mantle-devkit/issues"
   },

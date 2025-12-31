@@ -324,7 +324,7 @@ Each template includes:
 ## After Creating
 
 1. **Get your App ID**
-   - Visit the [x402 Dashboard](https://mantle-x402.vercel.app)
+   - Visit the [x402 Dashboard](https://mantle-devkit.vercel.app)
    - Connect your wallet
    - Create a project
    - Copy your App ID
@@ -342,7 +342,7 @@ Each template includes:
 
 ## Learn More
 
-- [x402 Documentation](https://mantle-x402.vercel.app/dashboard?tab=docs)
+- [x402 Documentation](https://mantle-devkit.vercel.app/dashboard?tab=docs)
 - [x402-mantle-sdk on npm](https://www.npmjs.com/package/x402-mantle-sdk)
 - [create-x402-app on npm](https://www.npmjs.com/package/create-x402-app)`,
   },
@@ -421,7 +421,7 @@ Set the \`X402_APP_ID\` environment variable:
 \`\`\`bash
 # .env
 X402_APP_ID=your-app-id-here
-X402_PLATFORM_URL=https://mantle-x402.vercel.app
+X402_PLATFORM_URL=https://mantle-devkit.vercel.app
 \`\`\`
 
 The SDK will automatically use this App ID:
@@ -607,7 +607,7 @@ Before going live:
 \`\`\`bash
 # Set environment variables in Vercel dashboard
 X402_APP_ID=your_app_id_here
-X402_PLATFORM_URL=https://mantle-x402.vercel.app
+X402_PLATFORM_URL=https://mantle-devkit.vercel.app
 \`\`\`
 
 ### Docker Deployment
@@ -1149,7 +1149,7 @@ OKX_PROJECT_ID=your_project_id
 
 # Optional
 ONEINCH_API_KEY=your_api_key
-PLATFORM_URL=https://mantle-x402.vercel.app
+PLATFORM_URL=https://mantle-devkit.vercel.app
 \`\`\``,
   },
 ]

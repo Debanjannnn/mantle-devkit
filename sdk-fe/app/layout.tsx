@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://devkit.x402.io"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://mantle-devkit.vercel.app"),
   alternates: {
     canonical: "/",
   },
