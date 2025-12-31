@@ -9,8 +9,8 @@ interface DashboardContextType {
   // UI State
   sidebarOpen: boolean
   setSidebarOpen: (open: boolean) => void
-  activeTab: "overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings"
-  setActiveTab: (tab: "overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings") => void
+  activeTab: "overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings" | "mcp" | "x402"
+  setActiveTab: (tab: "overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings" | "mcp" | "x402") => void
   
   // Project State
   projects: Project[]
@@ -52,21 +52,21 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const searchParams = useSearchParams()
   
   // Initialize activeTab from URL or default to "overview"
-  const getInitialTab = (): "overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings" => {
+  const getInitialTab = (): "overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings" | "mcp" | "x402" => {
     const tabFromUrl = searchParams.get("tab")
-    const validTabs: Array<"overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings"> = 
-      ["overview", "admin", "docs", "analytics", "endpoints", "components", "settings"]
+    const validTabs: Array<"overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings" | "mcp" | "x402"> =
+      ["overview", "admin", "docs", "analytics", "endpoints", "components", "settings", "mcp", "x402"]
     if (tabFromUrl && validTabs.includes(tabFromUrl as any)) {
       return tabFromUrl as any
     }
     return "overview"
   }
-  
+
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [activeTab, setActiveTab] = useState<"overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings">(getInitialTab())
-  
+  const [activeTab, setActiveTab] = useState<"overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings" | "mcp" | "x402">(getInitialTab())
+
   // Update URL when tab changes
-  const handleSetActiveTab = (tab: "overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings") => {
+  const handleSetActiveTab = (tab: "overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings" | "mcp" | "x402") => {
     setActiveTab(tab)
     const params = new URLSearchParams(searchParams.toString())
     params.set("tab", tab)
@@ -76,8 +76,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   // Sync with URL on mount and when URL changes
   useEffect(() => {
     const tabFromUrl = searchParams.get("tab")
-    const validTabs: Array<"overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings"> = 
-      ["overview", "admin", "docs", "analytics", "endpoints", "components", "settings"]
+    const validTabs: Array<"overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings" | "mcp" | "x402"> =
+      ["overview", "admin", "docs", "analytics", "endpoints", "components", "settings", "mcp", "x402"]
     if (tabFromUrl && validTabs.includes(tabFromUrl as any)) {
       setActiveTab(tabFromUrl as any)
     }

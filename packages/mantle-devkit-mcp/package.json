@@ -1,0 +1,54 @@
+{
+  "name": "mantle-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Mantle Network - Provides SDK documentation, DeFi protocols, and Mantle ecosystem context to Claude",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "mantle-mcp-server": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mantle",
+    "mantle-network",
+    "claude",
+    "ai",
+    "sdk",
+    "documentation",
+    "defi",
+    "x402",
+    "agent-kit"
+  ],
+  "author": "debanjannn",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Debanjannnn/mantle-devkit",
+    "directory": "packages/mantle-devkit-mcp"
+  },
+  "homepage": "https://mantle-devkit.vercel.app",
+  "bugs": {
+    "url": "https://github.com/Debanjannnn/mantle-devkit/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

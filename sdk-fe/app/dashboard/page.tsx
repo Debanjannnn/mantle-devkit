@@ -12,6 +12,8 @@ import { AdminTab } from "@/components/dashboard/admin-tab"
 import { AnalyticsTab, SettingsTab } from "@/components/dashboard/placeholder-tabs"
 import { AgentKitTab } from "@/components/dashboard/agent-kit-tab"
 import { EndpointsTab } from "@/components/dashboard/endpoints-tab"
+import { McpTab } from "@/components/dashboard/mcp-tab"
+import { X402Tab } from "@/components/dashboard/x402-tab"
 import { CreateProjectDialog } from "@/components/dashboard/create-project-dialog"
 
 function DashboardContent() {
@@ -118,7 +120,9 @@ function DashboardContent() {
 
             {activeTab === "analytics" && <AnalyticsTab />}
             {activeTab === "endpoints" && <EndpointsTab />}
+            {activeTab === "x402" && <X402Tab />}
             {activeTab === "components" && <AgentKitTab />}
+            {activeTab === "mcp" && <McpTab />}
             {activeTab === "docs" && (
               <DocsTab
                 currentPage={currentPage}

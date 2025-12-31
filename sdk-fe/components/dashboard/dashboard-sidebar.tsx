@@ -1,13 +1,13 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { LayoutDashboard, BarChart3, Settings, X, Shield, BookOpen, Boxes } from "lucide-react"
+import { LayoutDashboard, BarChart3, Settings, X, Shield, BookOpen, Boxes, Cpu, Puzzle } from "lucide-react"
 
 interface DashboardSidebarProps {
   sidebarOpen: boolean
   setSidebarOpen: (open: boolean) => void
   activeTab: string
-  setActiveTab: (tab: "overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings") => void
+  setActiveTab: (tab: "overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings" | "mcp" | "x402") => void
   isAdmin: boolean
   onTabChange?: (tab: string) => void
 }
@@ -25,14 +25,16 @@ export function DashboardSidebar({
   const menuItems = [
     { icon: LayoutDashboard, label: "Overview", id: "overview" as const },
     ...(isAdmin ? [{ icon: BarChart3, label: "Analytics", id: "analytics" as const }] : []),
+    { icon: Puzzle, label: "Components", id: "x402" as const },
     { icon: Boxes, label: "Agent Kit", id: "components" as const },
+    { icon: Cpu, label: "MCP Server", id: "mcp" as const },
     { icon: BookOpen, label: "Docs", id: "docs" as const },
     ...(isAdmin ? [{ icon: Shield, label: "Admin", id: "admin" as const }] : []),
     { icon: Settings, label: "Settings", id: "settings" as const },
   ]
 
   const handleTabClick = (tabId: string) => {
-    setActiveTab(tabId as "overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings")
+    setActiveTab(tabId as "overview" | "admin" | "docs" | "analytics" | "endpoints" | "components" | "settings" | "mcp" | "x402")
     onTabChange?.(tabId)
   }
 
