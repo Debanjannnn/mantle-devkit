@@ -28,26 +28,29 @@ import {
 import { agniSwap } from "./tools/agni";
 import { merchantMoeSwap } from "./tools/merchantmoe";
 import { METH_TOKEN } from "./tools/meth";
-import {
-  initializePlatform,
-  type ProjectConfig,
-} from "./utils/x402";
+import { initializePlatform, type ProjectConfig } from "./utils/x402";
+import { erc7811Actions, type Erc7811Actions } from "viem/experimental";
 
 export class MNTAgentKit {
   public account: PrivateKeyAccount;
   public client: WalletClient<Transport, Chain, PrivateKeyAccount> &
-    PublicActions;
+    PublicActions &
+    Erc7811Actions;
   public chain: "testnet" | "mainnet";
+  public demo: boolean;
   public projectConfig?: ProjectConfig;
 
-  constructor(privateKey: Address, chain: "mainnet" | "testnet") {
+  constructor(privateKey: Address, chain: "mainnet" | "testnet" | "testnet-demo") {
     this.account = privateKeyToAccount(privateKey);
-    this.chain = chain;
+    this.demo = chain === "testnet-demo";
+    this.chain = chain === "testnet-demo" ? "testnet" : chain;
     this.client = createWalletClient({
-      chain: chain == "mainnet" ? mantle : mantleSepoliaTestnet,
+      chain: this.chain == "mainnet" ? mantle : mantleSepoliaTestnet,
       transport: http(),
       account: this.account,
-    }).extend(publicActions);
+    })
+      .extend(publicActions)
+      .extend(erc7811Actions());
   }
 
   /**
@@ -96,15 +99,13 @@ export class MNTAgentKit {
     amount: string,
     slippagePercentage: string = "0.5",
   ) {
-    if (this.chain === "mainnet") {
-      return await executeSwap(
-        this,
-        fromTokenAddress,
-        toTokenAddress,
-        amount,
-        slippagePercentage,
-      );
-    }
+    return await executeSwap(
+      this,
+      fromTokenAddress,
+      toTokenAddress,
+      amount,
+      slippagePercentage,
+    );
   }
 
   // OpenOcean DEX Aggregator
@@ -132,11 +133,7 @@ export class MNTAgentKit {
   }
 
   // 1inch DEX Aggregator
-  async get1inchQuote(
-    fromToken: Address,
-    toToken: Address,
-    amount: string,
-  ) {
+  async get1inchQuote(fromToken: Address, toToken: Address, amount: string) {
     return await get1inchQuote(this, fromToken, toToken, amount);
   }
 
@@ -156,11 +153,7 @@ export class MNTAgentKit {
   }
 
   // Uniswap V3 DEX
-  async getUniswapQuote(
-    fromToken: Address,
-    toToken: Address,
-    amount: string,
-  ) {
+  async getUniswapQuote(fromToken: Address, toToken: Address, amount: string) {
     return await getUniswapQuote(this, fromToken, toToken, amount);
   }
 
@@ -184,11 +177,7 @@ export class MNTAgentKit {
     return await lendleSupply(this, tokenAddress, amount);
   }
 
-  async lendleWithdraw(
-    tokenAddress: Address,
-    amount: string,
-    to?: Address,
-  ) {
+  async lendleWithdraw(tokenAddress: Address, amount: string, to?: Address) {
     return await lendleWithdraw(this, tokenAddress, amount, to);
   }
 
@@ -252,6 +241,9 @@ export class MNTAgentKit {
 
   // mETH Protocol - Liquid Staking Token
   getMethTokenAddress() {
+    if (this.demo) {
+      return METH_TOKEN.mainnet;
+    }
     return METH_TOKEN[this.chain];
   }
 
@@ -293,5 +285,4 @@ export class MNTAgentKit {
       slippage,
     );
   }
-
 }

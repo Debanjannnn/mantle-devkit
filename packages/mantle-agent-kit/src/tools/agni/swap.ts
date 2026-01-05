@@ -2,6 +2,7 @@ import { type Address, type Hex, encodeFunctionData } from "viem";
 import type { MNTAgentKit } from "../../agent";
 import { SWAP_ROUTER, SWAP_ROUTER_ABI, FEE_TIERS } from "../../constants/agni";
 import { approveToken } from "../../utils/common";
+import { createMockSwapResponse } from "../../utils/demo/mockResponses";
 
 /**
  * Swap tokens on Agni Finance DEX
@@ -24,6 +25,9 @@ export async function agniSwap(
   const swapRouterAddress = SWAP_ROUTER[agent.chain];
 
   if (swapRouterAddress === "0x0000000000000000000000000000000000000000") {
+    if (agent.demo) {
+      return createMockSwapResponse("Agni", amountIn).txHash;
+    }
     throw new Error(`Agni SwapRouter not available on ${agent.chain}`);
   }
 

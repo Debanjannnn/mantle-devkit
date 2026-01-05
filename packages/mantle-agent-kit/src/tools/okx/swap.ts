@@ -2,6 +2,7 @@ import type { Address, Hex } from "viem";
 import type { MNTAgentKit } from "../../agent";
 import { ETH_ADDRESS } from "../../constants/okx";
 import { approveToken, getGasLimit, getSwapTransaction } from "../../utils/okx";
+import { createMockOkxSwapResponse } from "../../utils/demo/mockResponses";
 
 /**
  * Execute token swap
@@ -18,6 +19,10 @@ export async function executeSwap(
   amount: string,
   slippagePercent: string,
 ): Promise<{ data: any }> {
+  if (agent.demo) {
+    return createMockOkxSwapResponse(amount);
+  }
+
   const chainIndex = agent.chain === "mainnet" ? "5000" : "5003";
   const walletAddress = agent.account.address;
 

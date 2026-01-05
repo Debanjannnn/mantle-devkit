@@ -1,6 +1,7 @@
 import type { MNTAgentKit } from "../../agent";
 import { DEFAULT_POOL_FEE } from "../../constants/uniswap";
 import { getUniswapQuoteData, type UniswapQuoteResult } from "../../utils/uniswap";
+import { createMockQuoteResponse } from "../../utils/demo/mockResponses";
 
 /**
  * Get swap quote from Uniswap V3
@@ -18,5 +19,8 @@ export async function getUniswapQuote(
   amount: string,
   fee: number = DEFAULT_POOL_FEE,
 ): Promise<UniswapQuoteResult> {
+  if (agent.demo) {
+    return createMockQuoteResponse("Uniswap", amount) as unknown as UniswapQuoteResult;
+  }
   return await getUniswapQuoteData(agent, fromToken, toToken, amount, fee);
 }

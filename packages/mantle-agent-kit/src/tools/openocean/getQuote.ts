@@ -1,5 +1,6 @@
 import type { MNTAgentKit } from "../../agent";
 import { getQuoteData, type OpenOceanQuote } from "../../utils/openocean";
+import { createMockQuoteResponse } from "../../utils/demo/mockResponses";
 
 /**
  * Get swap quote from OpenOcean
@@ -15,5 +16,8 @@ export async function getOpenOceanQuote(
   toToken: string,
   amount: string,
 ): Promise<OpenOceanQuote> {
+  if (agent.demo) {
+    return createMockQuoteResponse("OpenOcean", amount) as unknown as OpenOceanQuote;
+  }
   return await getQuoteData(fromToken, toToken, amount, agent.chain);
 }

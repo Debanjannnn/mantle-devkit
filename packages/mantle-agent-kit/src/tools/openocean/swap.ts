@@ -3,6 +3,7 @@ import type { MNTAgentKit } from "../../agent";
 import { NATIVE_TOKEN_ADDRESS, OPENOCEAN_EXCHANGE_PROXY } from "../../constants/openocean";
 import { approveToken } from "../../utils/common";
 import { getSwapData } from "../../utils/openocean";
+import { createMockOpenOceanSwapResponse } from "../../utils/demo/mockResponses";
 
 /**
  * Execute token swap on OpenOcean
@@ -20,6 +21,10 @@ export async function swapOnOpenOcean(
   amount: string,
   slippage: string = "1",
 ): Promise<{ txHash: string; outAmount: string }> {
+  if (agent.demo) {
+    return createMockOpenOceanSwapResponse(amount);
+  }
+
   const walletAddress = agent.account.address;
 
   // 1. Approve token if not native

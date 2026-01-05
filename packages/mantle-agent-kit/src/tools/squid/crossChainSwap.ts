@@ -3,6 +3,7 @@ import type { MNTAgentKit } from "../../agent";
 import { SQUID_CHAIN_ID, NATIVE_TOKEN_ADDRESS } from "../../constants/squid";
 import { approveToken } from "../../utils/common";
 import { getRouteData } from "../../utils/squid";
+import { createMockTxHash, createMockSquidRoute } from "../../utils/demo/mockResponses";
 
 /**
  * Execute cross-chain swap via Squid Router
@@ -24,6 +25,10 @@ export async function crossChainSwapViaSquid(
   amount: string,
   slippage: number = 1,
 ): Promise<Hex> {
+  if (agent.demo) {
+    return createMockTxHash();
+  }
+
   // Get route data from Squid API
   const routeData = await getRouteData(
     fromToken,
@@ -84,6 +89,10 @@ export async function getSquidRoute(
   amount: string,
   slippage: number = 1,
 ) {
+  if (agent.demo) {
+    return createMockSquidRoute(amount);
+  }
+
   return await getRouteData(
     fromToken,
     toToken,
