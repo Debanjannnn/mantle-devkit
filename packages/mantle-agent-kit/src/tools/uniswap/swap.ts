@@ -3,6 +3,7 @@ import type { MNTAgentKit } from "../../agent";
 import { DEFAULT_POOL_FEE, SWAP_ROUTER_ADDRESS, NATIVE_TOKEN_ADDRESS } from "../../constants/uniswap";
 import { approveToken } from "../../utils/common";
 import { getUniswapQuoteData, buildSwapCalldata } from "../../utils/uniswap";
+import { createMockUniswapSwapResponse } from "../../utils/demo/mockResponses";
 
 /**
  * Execute token swap on Uniswap V3
@@ -22,6 +23,10 @@ export async function swapOnUniswap(
   slippage: string = "0.5",
   fee: number = DEFAULT_POOL_FEE,
 ): Promise<{ txHash: string; amountOut: string }> {
+  if (agent.demo) {
+    return createMockUniswapSwapResponse(amount);
+  }
+
   const walletAddress = agent.account.address;
   const isNativeIn = fromToken.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase();
 

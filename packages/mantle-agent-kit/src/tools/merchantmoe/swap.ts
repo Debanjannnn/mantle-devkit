@@ -2,6 +2,7 @@ import { type Address, type Hex, encodeFunctionData } from "viem";
 import type { MNTAgentKit } from "../../agent";
 import { LB_ROUTER, LB_ROUTER_ABI } from "../../constants/merchantmoe";
 import { approveToken } from "../../utils/common";
+import { createMockSwapResponse } from "../../utils/demo/mockResponses";
 
 /**
  * Swap tokens on Merchant Moe DEX
@@ -22,6 +23,9 @@ export async function merchantMoeSwap(
   const routerAddress = LB_ROUTER[agent.chain];
 
   if (routerAddress === "0x0000000000000000000000000000000000000000") {
+    if (agent.demo) {
+      return createMockSwapResponse("MerchantMoe", amountIn).txHash;
+    }
     throw new Error(`Merchant Moe LB Router not available on ${agent.chain}`);
   }
 

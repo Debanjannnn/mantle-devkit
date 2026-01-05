@@ -1,6 +1,7 @@
 import { type Address, type Hex, encodeFunctionData } from "viem";
 import type { MNTAgentKit } from "../../agent";
 import { LENDING_POOL, LENDING_POOL_ABI, INTEREST_RATE_MODE } from "../../constants/lendle";
+import { createMockLendleResponse } from "../../utils/demo/mockResponses";
 
 /**
  * Borrow tokens from Lendle Protocol
@@ -21,6 +22,9 @@ export async function lendleBorrow(
   const lendingPoolAddress = LENDING_POOL[agent.chain];
 
   if (lendingPoolAddress === "0x0000000000000000000000000000000000000000") {
+    if (agent.demo) {
+      return createMockLendleResponse("borrow", amount).txHash;
+    }
     throw new Error(
       `Lendle LendingPool not configured for ${agent.chain}. Only available on mainnet.`,
     );

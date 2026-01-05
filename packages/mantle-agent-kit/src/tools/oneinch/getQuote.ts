@@ -1,5 +1,6 @@
 import type { MNTAgentKit } from "../../agent";
 import { getQuoteData, type OneInchQuote } from "../../utils/oneinch";
+import { createMockQuoteResponse } from "../../utils/demo/mockResponses";
 
 /**
  * Get swap quote from 1inch
@@ -15,5 +16,8 @@ export async function get1inchQuote(
   toToken: string,
   amount: string,
 ): Promise<OneInchQuote> {
+  if (agent.demo) {
+    return createMockQuoteResponse("1inch", amount) as unknown as OneInchQuote;
+  }
   return await getQuoteData(fromToken, toToken, amount, agent.chain);
 }

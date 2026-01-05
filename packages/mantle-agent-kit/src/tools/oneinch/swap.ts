@@ -3,6 +3,7 @@ import type { MNTAgentKit } from "../../agent";
 import { NATIVE_TOKEN_ADDRESS, ONEINCH_ROUTER_ADDRESS } from "../../constants/oneinch";
 import { approveToken } from "../../utils/common";
 import { getSwapData } from "../../utils/oneinch";
+import { createMock1inchSwapResponse } from "../../utils/demo/mockResponses";
 
 /**
  * Execute token swap on 1inch
@@ -20,6 +21,10 @@ export async function swapOn1inch(
   amount: string,
   slippage: string = "1",
 ): Promise<{ txHash: string; dstAmount: string }> {
+  if (agent.demo) {
+    return createMock1inchSwapResponse(amount);
+  }
+
   const walletAddress = agent.account.address;
 
   // 1. Approve token if not native
