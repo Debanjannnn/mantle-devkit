@@ -1,6 +1,9 @@
 import type { Address, Hex } from "viem";
 import type { MNTAgentKit } from "../../agent";
-import { NATIVE_TOKEN_ADDRESS, OPENOCEAN_EXCHANGE_PROXY } from "../../constants/openocean";
+import {
+  NATIVE_TOKEN_ADDRESS,
+  OPENOCEAN_EXCHANGE_PROXY,
+} from "../../constants/openocean";
 import { approveToken } from "../../utils/common";
 import { getSwapData } from "../../utils/openocean";
 import { createMockOpenOceanSwapResponse } from "../../utils/demo/mockResponses";
@@ -23,6 +26,10 @@ export async function swapOnOpenOcean(
 ): Promise<{ txHash: string; outAmount: string }> {
   if (agent.demo) {
     return createMockOpenOceanSwapResponse(amount);
+  }
+
+  if (!agent.demo && agent.chain != "mainnet") {
+    throw new Error("Openocean swaps happen only on mainnet");
   }
 
   const walletAddress = agent.account.address;
