@@ -1,7 +1,7 @@
 {
   "name": "mantle-agent-kit-sdk",
-  "version": "1.0.3",
-  "description": "TypeScript SDK for DeFi protocols on Mantle Network - Unified interface for swaps, lending, liquid staking, and cross-chain operations",
+  "version": "1.0.4",
+  "description": "TypeScript SDK for DeFi protocols on Mantle Network - Unified interface for swaps, lending, liquid staking, perpetual trading, and cross-chain operations",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -55,7 +55,10 @@
     "1inch",
     "openocean",
     "okx",
-    "squid-router"
+    "squid-router",
+    "pikeperps",
+    "perpetual-trading",
+    "leverage-trading"
   ],
   "author": "Debanjannn",
   "license": "MIT",

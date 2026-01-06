@@ -24,11 +24,21 @@ import {
   lendleWithdraw,
   lendleBorrow,
   lendleRepay,
+  lendleGetPositions,
 } from "./tools/lendle";
 import { agniSwap } from "./tools/agni";
 import { merchantMoeSwap } from "./tools/merchantmoe";
 import { METH_TOKEN } from "./tools/meth";
+import { methGetPosition, swapToMeth, swapFromMeth } from "./tools/meth-staking";
+import {
+  pikeperpsOpenLong,
+  pikeperpsOpenShort,
+  pikeperpsClosePosition,
+  pikeperpsGetPositions,
+  pikeperpsGetMarketData,
+} from "./tools/pikeperps";
 import { initializePlatform, type ProjectConfig } from "./utils/x402";
+import { getUserAccountData } from "./utils/lendle";
 import { erc7811Actions, type Erc7811Actions } from "viem/experimental";
 
 export class MNTAgentKit {
@@ -205,6 +215,26 @@ export class MNTAgentKit {
     return await lendleRepay(this, tokenAddress, amount, rateMode, onBehalfOf);
   }
 
+  /**
+   * Get user account data from Lendle LendingPool
+   * Returns overall position including total collateral, debt, and health factor
+   * @param userAddress - User wallet address (optional, defaults to agent account)
+   * @returns User account data with collateral, debt, available borrows, and health factor
+   */
+  async lendleGetUserAccountData(userAddress?: Address) {
+    return await getUserAccountData(this, userAddress);
+  }
+
+  /**
+   * Get all Lendle positions for a user (per-token breakdown)
+   * Returns detailed supply and borrow amounts for each asset
+   * @param userAddress - User wallet address (optional, defaults to agent account)
+   * @returns Array of positions with supply/borrow amounts per asset
+   */
+  async lendleGetPositions(userAddress?: Address) {
+    return await lendleGetPositions(this, userAddress);
+  }
+
   // Agni Finance DEX (#1 on Mantle)
   async agniSwap(
     tokenIn: Address,
@@ -247,6 +277,36 @@ export class MNTAgentKit {
     return METH_TOKEN[this.chain];
   }
 
+  /**
+   * Get mETH staking position for a user
+   * Returns mETH balance and WETH balance for comparison
+   * @param userAddress - User wallet address (optional, defaults to agent account)
+   * @returns mETH position with balances
+   */
+  async methGetPosition(userAddress?: Address) {
+    return await methGetPosition(this, userAddress);
+  }
+
+  /**
+   * Swap WETH to mETH using DEX aggregator
+   * @param amount - Amount of WETH to swap (in wei as string)
+   * @param slippage - Slippage tolerance percentage (default 0.5%)
+   * @returns Transaction hash
+   */
+  async swapToMeth(amount: string, slippage: number = 0.5) {
+    return await swapToMeth(this, amount, slippage);
+  }
+
+  /**
+   * Swap mETH to WETH using DEX aggregator
+   * @param amount - Amount of mETH to swap (in wei as string)
+   * @param slippage - Slippage tolerance percentage (default 0.5%)
+   * @returns Transaction hash
+   */
+  async swapFromMeth(amount: string, slippage: number = 0.5) {
+    return await swapFromMeth(this, amount, slippage);
+  }
+
   // Squid Router Cross-chain
   async getSquidRoute(
     fromToken: Address,
@@ -284,5 +344,66 @@ export class MNTAgentKit {
       amount,
       slippage,
     );
+  }
+
+  // PikePerps - Perpetual Trading
+  /**
+   * Open a long position on PikePerps
+   * @param tokenAddress - Token to trade (meme token address)
+   * @param margin - Margin amount in wei (as string)
+   * @param leverage - Leverage multiplier (1-100, default 10)
+   * @returns Position ID and transaction hash
+   */
+  async pikeperpsOpenLong(
+    tokenAddress: Address,
+    margin: string,
+    leverage: number = 10,
+  ) {
+    return await pikeperpsOpenLong(this, tokenAddress, margin, leverage);
+  }
+
+  /**
+   * Open a short position on PikePerps
+   * @param tokenAddress - Token to trade (meme token address)
+   * @param margin - Margin amount in wei (as string)
+   * @param leverage - Leverage multiplier (1-100, default 10)
+   * @returns Position ID and transaction hash
+   */
+  async pikeperpsOpenShort(
+    tokenAddress: Address,
+    margin: string,
+    leverage: number = 10,
+  ) {
+    return await pikeperpsOpenShort(this, tokenAddress, margin, leverage);
+  }
+
+  /**
+   * Close an existing position on PikePerps
+   * @param positionId - Position ID to close
+   * @returns Transaction hash
+   */
+  async pikeperpsClosePosition(positionId: bigint) {
+    return await pikeperpsClosePosition(this, positionId);
+  }
+
+  /**
+   * Get all positions for a user on PikePerps
+   * Returns detailed position data including PnL and liquidation prices
+   * @param userAddress - User wallet address (optional, defaults to agent account)
+   * @returns Array of positions with PnL and liquidation data
+   */
+  async pikeperpsGetPositions(userAddress?: Address) {
+    return await pikeperpsGetPositions(this, userAddress);
+  }
+
+  /**
+   * Get market data for a token on PikePerps
+   * Returns current price and recent trades
+   * @param tokenAddress - Token address to get market data for
+   * @param limit - Maximum number of recent trades to return (default 20)
+   * @returns Market data with price and recent trades
+   */
+  async pikeperpsGetMarketData(tokenAddress: Address, limit: number = 20) {
+    return await pikeperpsGetMarketData(this, tokenAddress, limit);
   }
 }

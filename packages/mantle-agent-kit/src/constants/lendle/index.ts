@@ -126,3 +126,66 @@ export const LENDING_POOL_ABI = [
     type: "function",
   },
 ] as const;
+
+// ProtocolDataProvider ABI for reading user reserve data
+export const PROTOCOL_DATA_PROVIDER_ABI = [
+  {
+    inputs: [],
+    name: "getAllReservesTokens",
+    outputs: [
+      {
+        components: [
+          { name: "symbol", type: "string" },
+          { name: "tokenAddress", type: "address" },
+        ],
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { name: "asset", type: "address" },
+      { name: "user", type: "address" },
+    ],
+    name: "getUserReserveData",
+    outputs: [
+      { name: "currentATokenBalance", type: "uint256" },
+      { name: "currentStableDebt", type: "uint256" },
+      { name: "currentVariableDebt", type: "uint256" },
+      { name: "principalStableDebt", type: "uint256" },
+      { name: "scaledVariableDebt", type: "uint256" },
+      { name: "stableBorrowRate", type: "uint256" },
+      { name: "liquidityRate", type: "uint256" },
+      { name: "stableRateLastUpdated", type: "uint40" },
+      { name: "usageAsCollateralEnabled", type: "bool" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ name: "asset", type: "address" }],
+    name: "getReserveTokensAddresses",
+    outputs: [
+      { name: "aTokenAddress", type: "address" },
+      { name: "stableDebtTokenAddress", type: "address" },
+      { name: "variableDebtTokenAddress", type: "address" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
+
+// Supported assets on Lendle (Mantle mainnet)
+export const LENDLE_SUPPORTED_ASSETS = {
+  mainnet: [
+    { symbol: "WMNT", address: "0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8" },
+    { symbol: "WETH", address: "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111" },
+    { symbol: "USDC", address: "0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2" },
+    { symbol: "USDT", address: "0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE" },
+    { symbol: "mETH", address: "0xcDA86A272531e8640cD7F1a92c01839911B90bb0" },
+  ],
+  testnet: [],
+} as const;

@@ -8,3 +8,5 @@ export * from "./lendle";
 export * from "./agni";
 export * from "./merchantmoe";
 export * from "./meth";
+export * from "./meth-staking";
+export * from "./pikeperps";
