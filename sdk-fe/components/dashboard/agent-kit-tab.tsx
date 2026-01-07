@@ -16,6 +16,7 @@ const PROTOCOLS = [
     },
     explorer: "https://mantlescan.xyz/address/0x319B69888b0d11cEC22caA5034e25FfFBDc88421",
     methods: ["agniSwap"],
+    networks: ["mainnet"],
   },
   {
     name: "Merchant Moe",
@@ -27,6 +28,7 @@ const PROTOCOLS = [
     },
     explorer: "https://mantlescan.xyz/address/0x013e138EF6008ae5FDFDE29700e3f2Bc61d21E3a",
     methods: ["merchantMoeSwap"],
+    networks: ["mainnet"],
   },
   {
     name: "Lendle",
@@ -38,6 +40,7 @@ const PROTOCOLS = [
     },
     explorer: "https://mantlescan.xyz/address/0xCFa5aE7c2CE8Fadc6426C1ff872cA45378Fb7cF3",
     methods: ["lendleSupply", "lendleWithdraw", "lendleBorrow", "lendleRepay"],
+    networks: ["mainnet"],
   },
   {
     name: "1inch",
@@ -49,6 +52,7 @@ const PROTOCOLS = [
     },
     explorer: "https://app.1inch.io",
     methods: ["get1inchQuote", "swapOn1inch"],
+    networks: ["mainnet", "testnet"],
   },
   {
     name: "OKX DEX",
@@ -60,6 +64,7 @@ const PROTOCOLS = [
     },
     explorer: "https://www.okx.com/web3/dex",
     methods: ["getSwapQuote", "executeSwap"],
+    networks: ["mainnet", "testnet"],
   },
   {
     name: "OpenOcean",
@@ -71,6 +76,7 @@ const PROTOCOLS = [
     },
     explorer: "https://openocean.finance",
     methods: ["getOpenOceanQuote", "swapOnOpenOcean"],
+    networks: ["mainnet", "testnet"],
   },
   {
     name: "Squid Router",
@@ -82,6 +88,7 @@ const PROTOCOLS = [
     },
     explorer: "https://app.squidrouter.com",
     methods: ["getSquidRoute", "crossChainSwapViaSquid"],
+    networks: ["mainnet", "testnet"],
   },
   {
     name: "Uniswap V3",
@@ -93,6 +100,32 @@ const PROTOCOLS = [
     },
     explorer: "https://mantlescan.xyz/address/0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
     methods: ["getUniswapQuote", "swapOnUniswap"],
+    networks: ["mainnet"],
+  },
+  {
+    name: "Pyth Network",
+    category: "Oracle",
+    logo: "/pyth.png",
+    description: "Real-time price feeds for 80+ assets (crypto, forex, commodities)",
+    contracts: {
+      mainnet: "0xA2aa501b19aff244D90cc15a4Cf739D2725B5729",
+      testnet: "0x98046Bd286715D3B0BC227Dd7a956b83D8978603",
+    },
+    explorer: "https://mantlescan.xyz/address/0xA2aa501b19aff244D90cc15a4Cf739D2725B5729",
+    methods: ["pythGetPrice", "pythGetTokenPrice", "pythGetMultiplePrices", "pythGetEmaPrice"],
+    networks: ["mainnet", "testnet"],
+  },
+  {
+    name: "PikePerps",
+    category: "Perpetuals",
+    logo: "/pike-perps-logo.png",
+    description: "Leveraged perpetual trading on meme tokens (1-100x)",
+    contracts: {
+      mainnet: "0x6b9bb36519538e0C073894E964E90172E1c0B41F",
+    },
+    explorer: "https://mantlescan.xyz/address/0x6b9bb36519538e0C073894E964E90172E1c0B41F",
+    methods: ["pikeperpsOpenLong", "pikeperpsOpenShort", "pikeperpsClosePosition", "pikeperpsGetPositions"],
+    networks: ["mainnet"],
   },
 ]
 
@@ -101,6 +134,7 @@ const CODE_TEMPLATES = [
     id: "swap-agni",
     name: "Swap on Agni",
     category: "DEX",
+    networks: ["mainnet"],
     code: `import { MNTAgentKit } from "mantle-agent-kit-sdk"
 
 const agent = new MNTAgentKit(process.env.PRIVATE_KEY!, "mainnet")
@@ -120,6 +154,7 @@ console.log("Swap tx:", txHash)`,
     id: "swap-1inch",
     name: "Swap via 1inch",
     category: "Aggregator",
+    networks: ["mainnet", "testnet"],
     code: `import { MNTAgentKit } from "mantle-agent-kit-sdk"
 
 const agent = new MNTAgentKit(process.env.PRIVATE_KEY!, "mainnet")
@@ -147,6 +182,7 @@ console.log("Swap tx:", txHash)`,
     id: "lendle-supply",
     name: "Supply to Lendle",
     category: "Lending",
+    networks: ["mainnet"],
     code: `import { MNTAgentKit } from "mantle-agent-kit-sdk"
 
 const agent = new MNTAgentKit(process.env.PRIVATE_KEY!, "mainnet")
@@ -164,6 +200,7 @@ console.log("Supply tx:", txHash)`,
     id: "lendle-borrow",
     name: "Borrow from Lendle",
     category: "Lending",
+    networks: ["mainnet"],
     code: `import { MNTAgentKit } from "mantle-agent-kit-sdk"
 
 const agent = new MNTAgentKit(process.env.PRIVATE_KEY!, "mainnet")
@@ -182,6 +219,7 @@ console.log("Borrow tx:", txHash)`,
     id: "cross-chain",
     name: "Cross-Chain Swap",
     category: "Cross-Chain",
+    networks: ["mainnet", "testnet"],
     code: `import { MNTAgentKit } from "mantle-agent-kit-sdk"
 
 const agent = new MNTAgentKit(process.env.PRIVATE_KEY!, "mainnet")
@@ -200,9 +238,100 @@ const txHash = await agent.crossChainSwapViaSquid(
 console.log("Bridge tx:", txHash)`,
   },
   {
+    id: "pyth-price",
+    name: "Get Token Price (Pyth)",
+    category: "Oracle",
+    networks: ["mainnet", "testnet"],
+    code: `import { MNTAgentKit } from "mantle-agent-kit-sdk"
+
+const agent = new MNTAgentKit(process.env.PRIVATE_KEY!, "mainnet")
+await agent.initialize()
+
+// Get price by pair name
+const ethPrice = await agent.pythGetPrice("ETH/USD")
+console.log("ETH Price:", ethPrice.formattedPrice)
+
+// Get price by token address
+const price = await agent.pythGetTokenPrice(
+  "0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2" // USDC
+)
+console.log("Token:", price.tokenSymbol)
+console.log("Price:", price.priceUsd)
+console.log("Updated:", price.lastUpdated)
+
+// Get multiple prices at once
+const prices = await agent.pythGetMultiplePrices([
+  "BTC/USD",
+  "ETH/USD",
+  "0xcDA86A272531e8640cD7F1a92c01839911B90bb0" // mETH
+])`,
+  },
+  {
+    id: "pikeperps-long",
+    name: "Open Long Position",
+    category: "Perpetuals",
+    networks: ["mainnet"],
+    code: `import { MNTAgentKit } from "mantle-agent-kit-sdk"
+
+const agent = new MNTAgentKit(process.env.PRIVATE_KEY!, "mainnet")
+await agent.initialize()
+
+// Open a long position with 10x leverage
+const position = await agent.pikeperpsOpenLong(
+  "0xTokenAddress",        // Meme token to trade
+  "1000000000000000000",   // Margin in wei (1 MNT)
+  10                       // Leverage (1-100x)
+)
+
+console.log("Position ID:", position.positionId)
+console.log("Tx Hash:", position.txHash)`,
+  },
+  {
+    id: "pikeperps-short",
+    name: "Open Short Position",
+    category: "Perpetuals",
+    networks: ["mainnet"],
+    code: `import { MNTAgentKit } from "mantle-agent-kit-sdk"
+
+const agent = new MNTAgentKit(process.env.PRIVATE_KEY!, "mainnet")
+await agent.initialize()
+
+// Open a short position with 5x leverage
+const position = await agent.pikeperpsOpenShort(
+  "0xTokenAddress",        // Meme token to trade
+  "500000000000000000",    // Margin in wei (0.5 MNT)
+  5                        // Leverage (1-100x)
+)
+
+console.log("Position ID:", position.positionId)`,
+  },
+  {
+    id: "pikeperps-manage",
+    name: "Manage Positions",
+    category: "Perpetuals",
+    networks: ["mainnet"],
+    code: `import { MNTAgentKit } from "mantle-agent-kit-sdk"
+
+const agent = new MNTAgentKit(process.env.PRIVATE_KEY!, "mainnet")
+await agent.initialize()
+
+// Get all your positions
+const positions = await agent.pikeperpsGetPositions()
+for (const pos of positions) {
+  console.log("Position:", pos.positionId)
+  console.log("PnL:", pos.unrealizedPnl)
+  console.log("Liquidation Price:", pos.liquidationPrice)
+}
+
+// Close a position
+const txHash = await agent.pikeperpsClosePosition(positionId)
+console.log("Closed:", txHash)`,
+  },
+  {
     id: "full-example",
     name: "Full Setup Example",
     category: "Setup",
+    networks: ["mainnet", "testnet"],
     code: `import { MNTAgentKit } from "mantle-agent-kit-sdk"
 
 // Initialize the agent
@@ -231,7 +360,13 @@ await agent.lendleBorrow(token, amount, rateMode)
 // 4. Cross-chain
 await agent.crossChainSwapViaSquid(
   fromToken, toToken, fromChain, toChain, amount, slippage
-)`,
+)
+
+// 5. Price Oracles (Pyth)
+const price = await agent.pythGetTokenPrice(tokenAddress)
+
+// 6. Perpetual Trading (PikePerps)
+await agent.pikeperpsOpenLong(token, margin, leverage)`,
   },
 ]
 
@@ -258,13 +393,6 @@ function CopyButton({ text }: { text: string }) {
 function ProtocolCard({ protocol }: { protocol: typeof PROTOCOLS[0] }) {
   const [expanded, setExpanded] = useState(false)
 
-  const categoryColors: Record<string, string> = {
-    DEX: "bg-foreground/10 text-foreground/70",
-    Aggregator: "bg-foreground/10 text-foreground/70",
-    Lending: "bg-foreground/10 text-foreground/70",
-    "Cross-Chain": "bg-foreground/10 text-foreground/70",
-  }
-
   return (
     <MagicCard
       gradientSize={150}
@@ -282,9 +410,21 @@ function ProtocolCard({ protocol }: { protocol: typeof PROTOCOLS[0] }) {
             </div>
             <div>
               <h3 className="font-sans text-base font-medium text-foreground">{protocol.name}</h3>
-              <span className={`inline-block rounded-full px-2 py-0.5 text-xs ${categoryColors[protocol.category]}`}>
-                {protocol.category}
-              </span>
+              <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                <span className="inline-block rounded-full bg-foreground/10 px-2 py-0.5 text-xs font-medium text-foreground/70">
+                  {protocol.category}
+                </span>
+                {protocol.networks.includes("mainnet") && (
+                  <span className="inline-block rounded-full bg-foreground/10 px-2 py-0.5 text-xs font-medium text-foreground/70">
+                    Mainnet
+                  </span>
+                )}
+                {protocol.networks.includes("testnet") && (
+                  <span className="inline-block rounded-full bg-foreground/10 px-2 py-0.5 text-xs font-medium text-foreground/70">
+                    Testnet
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           <a
@@ -314,15 +454,26 @@ function ProtocolCard({ protocol }: { protocol: typeof PROTOCOLS[0] }) {
         >
           <div className="overflow-hidden">
             <div className="space-y-2">
-              <div className="rounded-lg bg-foreground/5 p-3">
-                <p className="mb-1 font-mono text-xs text-foreground/50">Mainnet</p>
-                <div className="flex items-center justify-between gap-2">
-                  <code className="font-mono text-xs text-foreground/80 truncate">{protocol.contracts.mainnet}</code>
-                  {protocol.contracts.mainnet !== "API-based" && (
-                    <CopyButton text={protocol.contracts.mainnet} />
-                  )}
+              {protocol.contracts.mainnet && (
+                <div className="rounded-lg bg-foreground/5 p-3">
+                  <p className="mb-1 font-mono text-xs text-foreground/50">Mainnet</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <code className="font-mono text-xs text-foreground/80 truncate">{protocol.contracts.mainnet}</code>
+                    {protocol.contracts.mainnet !== "API-based" && (
+                      <CopyButton text={protocol.contracts.mainnet} />
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
+              {protocol.contracts.testnet && (
+                <div className="rounded-lg bg-foreground/5 p-3">
+                  <p className="mb-1 font-mono text-xs text-foreground/50">Testnet</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <code className="font-mono text-xs text-foreground/80 truncate">{protocol.contracts.testnet}</code>
+                    <CopyButton text={protocol.contracts.testnet} />
+                  </div>
+                </div>
+              )}
               <div className="rounded-lg bg-foreground/5 p-3">
                 <p className="mb-2 font-mono text-xs text-foreground/50">Methods</p>
                 <div className="flex flex-wrap gap-1">
@@ -387,7 +538,21 @@ function CodeGenerator() {
               }`}
             >
               <p className="font-sans text-sm text-foreground">{template.name}</p>
-              <span className="font-mono text-xs text-foreground/50">{template.category}</span>
+              <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                <span className="inline-block rounded-full bg-foreground/10 px-2 py-0.5 text-xs font-medium text-foreground/70">
+                  {template.category}
+                </span>
+                {template.networks.includes("mainnet") && (
+                  <span className="inline-block rounded-full bg-foreground/10 px-2 py-0.5 text-xs font-medium text-foreground/70">
+                    Mainnet
+                  </span>
+                )}
+                {template.networks.includes("testnet") && (
+                  <span className="inline-block rounded-full bg-foreground/10 px-2 py-0.5 text-xs font-medium text-foreground/70">
+                    Testnet
+                  </span>
+                )}
+              </div>
             </button>
           ))}
         </div>
@@ -469,9 +634,11 @@ export function AgentKitTab() {
 
       {activeSection === "protocols" && (
         <BlurFade delay={0.2} direction="up">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-start">
+          <div className="flex flex-wrap gap-4">
             {PROTOCOLS.map((protocol) => (
-              <ProtocolCard key={protocol.name} protocol={protocol} />
+              <div key={protocol.name} className="w-full md:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.75rem)]">
+                <ProtocolCard protocol={protocol} />
+              </div>
             ))}
           </div>
         </BlurFade>

@@ -33,7 +33,7 @@ export function WorkSection() {
             },
             {
               number: "02",
-              title: "DeFi Agent Kit",
+              title: "Agent Kit",
               category: "Protocol integrations",
               year: "Swaps, Lending, Cross-chain",
               direction: "right",

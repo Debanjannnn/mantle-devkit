@@ -1043,7 +1043,188 @@ const methAddress = agent.getMethTokenAddress()
 Note: To stake ETH for mETH, use the official mETH interface at https://www.mantle-meth.xyz/`,
   },
   {
-    id: 17,
+    id: 18,
+    title: "Agent Kit - Pyth Price Oracles",
+    shortContent: "Get real-time price feeds for 80+ assets using Pyth Network oracles.",
+    fullContent: `# Pyth Network Price Oracles
+
+Get real-time, high-fidelity price feeds for 80+ assets including crypto, forex, commodities, and equities.
+
+## Get Price by Pair Name
+
+\`\`\`typescript
+import { MNTAgentKit } from "mantle-agent-kit-sdk"
+
+const agent = new MNTAgentKit(privateKey, "mainnet")
+await agent.initialize()
+
+// Get price by pair name
+const ethPrice = await agent.pythGetPrice("ETH/USD")
+console.log("ETH Price:", ethPrice.formattedPrice) // "3450.00"
+console.log("Confidence:", ethPrice.confidence)
+console.log("Publish Time:", ethPrice.publishTime)
+\`\`\`
+
+## Get Price by Token Address
+
+Pass any Mantle token address to get its USD price:
+
+\`\`\`typescript
+// Get price by token address
+const price = await agent.pythGetTokenPrice(
+  "0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2" // USDC
+)
+
+console.log("Token:", price.tokenSymbol)    // "USDC"
+console.log("Pair:", price.pair)            // "USDC/USD"
+console.log("Price:", price.priceUsd)       // "1.00"
+console.log("Updated:", price.lastUpdated)  // ISO timestamp
+\`\`\`
+
+### Supported Token Addresses
+
+- **USDC**: 0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2
+- **USDT**: 0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE
+- **WETH**: 0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111
+- **WMNT**: 0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8
+- **mETH**: 0xcDA86A272531e8640cD7F1a92c01839911B90bb0
+- **WBTC**: 0xCAbAE6f6Ea1ecaB08Ad02fE02ce9A44F09aebfA2
+
+## Get Multiple Prices
+
+\`\`\`typescript
+// Mix pair names and token addresses
+const prices = await agent.pythGetMultiplePrices([
+  "BTC/USD",
+  "ETH/USD",
+  "0xcDA86A272531e8640cD7F1a92c01839911B90bb0" // mETH
+])
+
+for (const p of prices) {
+  console.log(\`\${p.pair}: \${p.formattedPrice}\`)
+}
+\`\`\`
+
+## Get EMA Price
+
+\`\`\`typescript
+const emaPrice = await agent.pythGetEmaPrice("ETH/USD")
+\`\`\`
+
+## Helper Functions
+
+\`\`\`typescript
+// Get all supported price feeds
+const feeds = agent.pythGetSupportedPriceFeeds()
+// Returns: { "BTC/USD": "0xe62df...", "ETH/USD": "0xff614...", ... }
+
+// Get all supported token addresses
+const tokens = agent.pythGetSupportedTokenAddresses()
+// Returns: { "0x09Bc...": "USDC/USD", ... }
+
+// Check if price feed exists
+const exists = await agent.pythPriceFeedExists("ETH/USD")
+\`\`\`
+
+## Contract Address
+
+- **Pyth Oracle (Mainnet)**: 0xA2aa501b19aff244D90cc15a4Cf739D2725B5729
+- **Pyth Oracle (Testnet)**: 0x98046Bd286715D3B0BC227Dd7a956b83D8978603`,
+  },
+  {
+    id: 19,
+    title: "Agent Kit - PikePerps Trading",
+    shortContent: "Trade perpetuals with leverage on meme tokens using PikePerps.",
+    fullContent: `# PikePerps Perpetual Trading
+
+Trade meme tokens with leverage (1-100x) using PikePerps on Mantle Network.
+
+## Open Long Position
+
+Bet on price going up:
+
+\`\`\`typescript
+import { MNTAgentKit } from "mantle-agent-kit-sdk"
+
+const agent = new MNTAgentKit(privateKey, "mainnet")
+await agent.initialize()
+
+// Open a long position with 10x leverage
+const position = await agent.pikeperpsOpenLong(
+  "0xTokenAddress",        // Meme token to trade
+  "1000000000000000000",   // Margin: 1 MNT
+  10                       // Leverage: 10x
+)
+
+console.log("Position ID:", position.positionId)
+console.log("Entry Price:", position.entryPrice)
+console.log("Tx Hash:", position.txHash)
+\`\`\`
+
+## Open Short Position
+
+Bet on price going down:
+
+\`\`\`typescript
+// Open a short position with 5x leverage
+const position = await agent.pikeperpsOpenShort(
+  "0xTokenAddress",
+  "500000000000000000",    // Margin: 0.5 MNT
+  5                        // Leverage: 5x
+)
+\`\`\`
+
+## Get Your Positions
+
+\`\`\`typescript
+const positions = await agent.pikeperpsGetPositions()
+
+for (const pos of positions) {
+  console.log("Position ID:", pos.positionId)
+  console.log("Direction:", pos.isLong ? "Long" : "Short")
+  console.log("Size:", pos.size)
+  console.log("Entry Price:", pos.entryPrice)
+  console.log("Unrealized PnL:", pos.unrealizedPnl)
+  console.log("Liquidation Price:", pos.liquidationPrice)
+}
+\`\`\`
+
+## Close Position
+
+\`\`\`typescript
+const txHash = await agent.pikeperpsClosePosition(positionId)
+console.log("Position closed:", txHash)
+\`\`\`
+
+## Get Market Data
+
+\`\`\`typescript
+const market = await agent.pikeperpsGetMarketData("0xTokenAddress")
+
+console.log("Token:", market.token)
+console.log("Price:", market.price)
+console.log("24h Volume:", market.volume24h)
+console.log("Open Interest:", market.openInterest)
+console.log("Funding Rate:", market.fundingRate)
+\`\`\`
+
+## Leverage Limits
+
+- **Minimum**: 1x
+- **Maximum**: 100x
+
+Higher leverage = higher risk of liquidation. Start with lower leverage until you understand the risks.
+
+## Contract Address
+
+- **PikePerps (Mainnet)**: 0x6b9bb36519538e0C073894E964E90172E1c0B41F
+
+## Risk Warning
+
+Perpetual trading involves significant risk. You can lose more than your initial margin if liquidated. Never trade with funds you can't afford to lose.`,
+  },
+  {
+    id: 20,
     title: "Agent Kit - API Reference",
     shortContent: "Complete API reference for all Agent Kit methods and types.",
     fullContent: `# Agent Kit API Reference
@@ -1133,6 +1314,28 @@ agent.lendleRepay(tokenAddress, amount, rateMode?, onBehalfOf?)
 agent.getSquidRoute(fromToken, toToken, fromChain, toChain, amount, slippage?)
 agent.crossChainSwapViaSquid(fromToken, toToken, fromChain, toChain, amount, slippage?)
 agent.getMethTokenAddress()
+\`\`\`
+
+## Pyth Oracle Methods
+
+\`\`\`typescript
+agent.pythGetPrice(input)              // pair name, token address, or feed ID
+agent.pythGetTokenPrice(tokenAddress)   // returns detailed token price info
+agent.pythGetEmaPrice(input)
+agent.pythGetMultiplePrices(inputs[])
+agent.pythGetSupportedPriceFeeds()
+agent.pythGetSupportedTokenAddresses()
+agent.pythPriceFeedExists(input)
+\`\`\`
+
+## PikePerps Methods
+
+\`\`\`typescript
+agent.pikeperpsOpenLong(token, margin, leverage)
+agent.pikeperpsOpenShort(token, margin, leverage)
+agent.pikeperpsClosePosition(positionId)
+agent.pikeperpsGetPositions()
+agent.pikeperpsGetMarketData(token)
 \`\`\`
 
 ## Environment Variables

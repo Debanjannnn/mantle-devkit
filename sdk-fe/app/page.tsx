@@ -12,6 +12,7 @@ import { BlurFade } from "@/components/ui/blur-fade"
 import { useRef, useEffect, useState } from "react"
 import { usePrivy } from "@privy-io/react-auth"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 export default function Home() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -311,7 +312,7 @@ export default function Home() {
     name: "Mantle DevKit",
     applicationCategory: "DeveloperApplication",
     description:
-      "The complete developer toolkit for building on Mantle. x402 API monetization and DeFi Agent Kit for seamless protocol integrations.",
+      "The complete developer toolkit for building on Mantle. x402 API monetization and Agent Kit for seamless protocol integrations.",
     operatingSystem: "Web",
     offers: {
       "@type": "Offer",
@@ -325,7 +326,7 @@ export default function Home() {
     },
     featureList: [
       "x402 API Monetization",
-      "DeFi Agent Kit",
+      "Agent Kit",
       "DEX Aggregators Integration",
       "Lending Protocol Support",
       "Cross-Chain Operations",
@@ -431,9 +432,11 @@ export default function Home() {
               <MagneticButton size="lg" variant="primary" onClick={handleGetStarted}>
                 Get Started →
               </MagneticButton>
-              <MagneticButton size="lg" variant="secondary" onClick={() => scrollToSection(1, true)}>
-                View Documentation
-              </MagneticButton>
+              <Link href="/docs-demo">
+                <MagneticButton size="lg" variant="secondary">
+                  View Documentation
+                </MagneticButton>
+              </Link>
               </div>
             </BlurFade>
           </div>
