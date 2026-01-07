@@ -4,37 +4,37 @@ import {
   PYTH_ABI,
   PYTH_PRICE_FEED_IDS,
   type PythPriceResponse,
+  type PythTokenPriceResponse,
+  resolvePriceFeedInput,
+  isTokenAddress,
+  TOKEN_ADDRESS_TO_PRICE_FEED,
 } from "../../constants/pyth";
 
 /**
  * Get price data from Pyth Network for a specific price feed
  * @param agent - MNTAgentKit instance
- * @param priceFeedIdOrPair - Either a price feed ID (hex string) or a pair name like "ETH/USD"
+ * @param input - Token address, price feed ID (hex string), or pair name like "ETH/USD"
  * @returns Price data with formatted price
  */
 export async function pythGetPrice(
   agent: MNTAgentKit,
-  priceFeedIdOrPair: string,
+  input: string,
 ): Promise<PythPriceResponse> {
   const pythAddress = PYTH_CONTRACT[agent.chain];
 
-  // Resolve price feed ID from pair name if needed
-  let priceFeedId = priceFeedIdOrPair;
-  let pair = priceFeedIdOrPair;
+  // Resolve input (token address, pair name, or feed ID)
+  const resolved = resolvePriceFeedInput(input);
 
-  // Check if it's a known pair name
-  if (priceFeedIdOrPair in PYTH_PRICE_FEED_IDS) {
-    priceFeedId =
-      PYTH_PRICE_FEED_IDS[priceFeedIdOrPair as keyof typeof PYTH_PRICE_FEED_IDS];
-    pair = priceFeedIdOrPair;
+  let priceFeedId: string;
+  let pair: string;
+
+  if (resolved) {
+    priceFeedId = resolved.feedId;
+    pair = resolved.pair;
   } else {
-    // Try to find pair name from ID
-    const foundPair = Object.entries(PYTH_PRICE_FEED_IDS).find(
-      ([, id]) => id === priceFeedIdOrPair.replace("0x", ""),
-    );
-    if (foundPair) {
-      pair = foundPair[0];
-    }
+    // If not resolved, assume it's a raw feed ID
+    priceFeedId = input;
+    pair = input;
   }
 
   // Ensure the price feed ID has 0x prefix
@@ -81,23 +81,27 @@ export async function pythGetPrice(
 /**
  * Get EMA (Exponential Moving Average) price from Pyth
  * @param agent - MNTAgentKit instance
- * @param priceFeedIdOrPair - Either a price feed ID or pair name
+ * @param input - Token address, price feed ID, or pair name
  * @returns EMA price data
  */
 export async function pythGetEmaPrice(
   agent: MNTAgentKit,
-  priceFeedIdOrPair: string,
+  input: string,
 ): Promise<PythPriceResponse> {
   const pythAddress = PYTH_CONTRACT[agent.chain];
 
-  // Resolve price feed ID
-  let priceFeedId = priceFeedIdOrPair;
-  let pair = priceFeedIdOrPair;
+  // Resolve input (token address, pair name, or feed ID)
+  const resolved = resolvePriceFeedInput(input);
 
-  if (priceFeedIdOrPair in PYTH_PRICE_FEED_IDS) {
-    priceFeedId =
-      PYTH_PRICE_FEED_IDS[priceFeedIdOrPair as keyof typeof PYTH_PRICE_FEED_IDS];
-    pair = priceFeedIdOrPair;
+  let priceFeedId: string;
+  let pair: string;
+
+  if (resolved) {
+    priceFeedId = resolved.feedId;
+    pair = resolved.pair;
+  } else {
+    priceFeedId = input;
+    pair = input;
   }
 
   const feedId = priceFeedId.startsWith("0x") ? priceFeedId : `0x${priceFeedId}`;
@@ -149,6 +153,83 @@ function formatPythPrice(price: number, exponent: number): string {
 }
 
 /**
+ * Get price for a token by its contract address
+ * @param agent - MNTAgentKit instance
+ * @param tokenAddress - Token contract address on Mantle (e.g., "0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2" for USDC)
+ * @returns Token price details including address, symbol, and USD price
+ * @example
+ * const price = await pythGetTokenPrice(agent, "0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2");
+ * // Returns: { tokenAddress: "0x09Bc...", tokenSymbol: "USDC", priceUsd: "1.00", ... }
+ */
+export async function pythGetTokenPrice(
+  agent: MNTAgentKit,
+  tokenAddress: string,
+): Promise<PythTokenPriceResponse> {
+  // Validate it's a token address
+  if (!isTokenAddress(tokenAddress)) {
+    throw new Error(`Invalid token address format: ${tokenAddress}. Must be a valid Ethereum address (0x...)`);
+  }
+
+  // Find token in mapping
+  const normalizedAddress = tokenAddress.toLowerCase();
+  let tokenInfo: { pair: string; feedId: string } | null = null;
+  let originalAddress = tokenAddress;
+
+  for (const [addr, info] of Object.entries(TOKEN_ADDRESS_TO_PRICE_FEED)) {
+    if (addr.toLowerCase() === normalizedAddress) {
+      tokenInfo = info;
+      originalAddress = addr; // Keep original casing
+      break;
+    }
+  }
+
+  if (!tokenInfo) {
+    throw new Error(
+      `Token address not supported: ${tokenAddress}. Use pythGetSupportedTokenAddresses() to see available tokens.`
+    );
+  }
+
+  // Extract token symbol from pair (e.g., "USDC/USD" -> "USDC")
+  const tokenSymbol = tokenInfo.pair.split("/")[0] || "UNKNOWN";
+  const feedId = tokenInfo.feedId.startsWith("0x") ? tokenInfo.feedId : `0x${tokenInfo.feedId}`;
+
+  // Demo mode
+  if (agent.demo) {
+    return createMockTokenPriceResponse(originalAddress, tokenSymbol, tokenInfo.pair, feedId);
+  }
+
+  const pythAddress = PYTH_CONTRACT[agent.chain];
+
+  try {
+    const priceData = (await agent.client.readContract({
+      address: pythAddress,
+      abi: PYTH_ABI,
+      functionName: "getPriceUnsafe",
+      args: [feedId as `0x${string}`],
+    })) as { price: bigint; conf: bigint; expo: number; publishTime: bigint };
+
+    const formattedPrice = formatPythPrice(Number(priceData.price), priceData.expo);
+    const publishTime = Number(priceData.publishTime);
+
+    return {
+      tokenAddress: originalAddress,
+      tokenSymbol,
+      pair: tokenInfo.pair,
+      priceFeedId: feedId,
+      priceUsd: formattedPrice,
+      confidence: priceData.conf.toString(),
+      exponent: priceData.expo,
+      publishTime,
+      lastUpdated: new Date(publishTime * 1000).toISOString(),
+    };
+  } catch (error) {
+    throw new Error(
+      `Failed to fetch price for token ${tokenAddress}: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
+  }
+}
+
+/**
  * Create mock response for demo mode
  */
 function createMockPythResponse(pair: string, feedId: string): PythPriceResponse {
@@ -188,5 +269,39 @@ function createMockPythResponse(pair: string, feedId: string): PythPriceResponse
     exponent: -8,
     publishTime: Math.floor(Date.now() / 1000),
     formattedPrice: price.toFixed(decimals),
+  };
+}
+
+/**
+ * Create mock token price response for demo mode
+ */
+function createMockTokenPriceResponse(
+  tokenAddress: string,
+  tokenSymbol: string,
+  pair: string,
+  feedId: string
+): PythTokenPriceResponse {
+  const mockPrices: Record<string, number> = {
+    "USDC": 1.0, "USDT": 1.0, "DAI": 1.0,
+    "ETH": 3450.0, "WETH": 3450.0,
+    "BTC": 97500.0, "WBTC": 97500.0,
+    "MNT": 0.85, "WMNT": 0.85,
+    "mETH": 3500.0,
+    "PENDLE": 4.2,
+  };
+
+  const price = mockPrices[tokenSymbol] || 100.0;
+  const publishTime = Math.floor(Date.now() / 1000);
+
+  return {
+    tokenAddress,
+    tokenSymbol,
+    pair,
+    priceFeedId: feedId,
+    priceUsd: price.toFixed(price < 1 ? 4 : 2),
+    confidence: "50000",
+    exponent: -8,
+    publishTime,
+    lastUpdated: new Date(publishTime * 1000).toISOString(),
   };
 }

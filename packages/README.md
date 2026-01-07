@@ -33,13 +33,17 @@ This directory contains the npm packages for Mantle DevKit.
 | Merchant Moe | ❌ | ✅ | Liquidity Book DEX |
 | mETH Protocol | ❌ | ✅ | Liquid staking |
 | Uniswap V3 | ❌ | ✅ | DEX |
+| Pyth Network | ✅ | ✅ | Price oracles (80+ assets) |
+| PikePerps | ❌ | ✅ | Perpetual trading |
+| Token Launchpad | ✅ | ✅ | ERC20 & RWA tokens |
+| NFT Launchpad | ✅ | ✅ | ERC721 collections |
 
 ---
 
 ## Packages
 
 ### mantle-agent-kit
-TypeScript SDK for DeFi protocols on Mantle Network.
+TypeScript SDK for DeFi protocols on Mantle Network. Includes DEX swaps, lending, cross-chain, Pyth oracles, perpetual trading, token & NFT launchpads.
 
 ```bash
 npm install mantle-agent-kit-sdk
@@ -48,11 +52,24 @@ npm install mantle-agent-kit-sdk
 ```typescript
 import { MNTAgentKit } from "mantle-agent-kit-sdk";
 
-// For Testnet
-const agentTestnet = new MNTAgentKit(privateKey, "testnet");
+const agent = new MNTAgentKit(privateKey, "mainnet");
+await agent.initialize();
 
-// For Mainnet
-const agentMainnet = new MNTAgentKit(privateKey, "mainnet");
+// DEX swap
+await agent.agniSwap(tokenIn, tokenOut, amount);
+
+// Get price by token address
+const price = await agent.pythGetTokenPrice("0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2");
+// Returns: { tokenSymbol: "USDC", priceUsd: "1.00", ... }
+
+// Deploy ERC20 token
+const token = await agent.deployStandardToken("My Token", "MTK", "1000000");
+
+// Deploy NFT collection
+const nft = await agent.deployNFTCollection({ name: "MyNFT", symbol: "MNFT", baseURI: "...", maxSupply: 10000 });
+
+// Perpetual trading
+await agent.pikeperpsOpenLong(tokenAddress, margin, leverage);
 ```
 
 ### x402-devkit

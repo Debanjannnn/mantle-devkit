@@ -40,8 +40,10 @@ import {
 import {
   pythGetPrice,
   pythGetEmaPrice,
+  pythGetTokenPrice,
   pythGetMultiplePrices,
   pythGetSupportedPriceFeeds,
+  pythGetSupportedTokenAddresses,
   pythPriceFeedExists,
 } from "./tools/pyth";
 import {
@@ -442,29 +444,63 @@ export class MNTAgentKit {
 
   /**
    * Get real-time price from Pyth Network
-   * @param priceFeedIdOrPair - Price feed ID or pair name (e.g., "ETH/USD", "BTC/USD", "MNT/USD")
+   * Accepts token address, pair name, or price feed ID
+   * @param input - Token address (e.g., "0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2" for USDC),
+   *                pair name (e.g., "ETH/USD"), or price feed ID (hex string)
    * @returns Price data with formatted price
+   * @example
+   * // Using pair name
+   * await agent.pythGetPrice("ETH/USD");
+   * // Using token address (USDC on Mantle)
+   * await agent.pythGetPrice("0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2");
    */
-  async pythGetPrice(priceFeedIdOrPair: string) {
-    return await pythGetPrice(this, priceFeedIdOrPair);
+  async pythGetPrice(input: string) {
+    return await pythGetPrice(this, input);
   }
 
   /**
    * Get EMA (Exponential Moving Average) price from Pyth
-   * @param priceFeedIdOrPair - Price feed ID or pair name
+   * Accepts token address, pair name, or price feed ID
+   * @param input - Token address, pair name, or price feed ID
    * @returns EMA price data
    */
-  async pythGetEmaPrice(priceFeedIdOrPair: string) {
-    return await pythGetEmaPrice(this, priceFeedIdOrPair);
+  async pythGetEmaPrice(input: string) {
+    return await pythGetEmaPrice(this, input);
+  }
+
+  /**
+   * Get price for a token by its contract address
+   * Pass any supported token address and get the USD price with full details
+   * @param tokenAddress - Token contract address on Mantle
+   * @returns Token price details including symbol, USD price, and timestamp
+   * @example
+   * const price = await agent.pythGetTokenPrice("0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2");
+   * // Returns: {
+   * //   tokenAddress: "0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2",
+   * //   tokenSymbol: "USDC",
+   * //   pair: "USDC/USD",
+   * //   priceUsd: "1.00",
+   * //   lastUpdated: "2024-01-08T12:00:00.000Z"
+   * // }
+   */
+  async pythGetTokenPrice(tokenAddress: string) {
+    return await pythGetTokenPrice(this, tokenAddress);
   }
 
   /**
    * Get multiple prices from Pyth in a single call
-   * @param pairs - Array of pair names or price feed IDs
+   * Accepts token addresses, pair names, or price feed IDs
+   * @param inputs - Array of token addresses, pair names, or price feed IDs
    * @returns Array of price responses
+   * @example
+   * await agent.pythGetMultiplePrices([
+   *   "ETH/USD",                                           // pair name
+   *   "0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2",       // USDC address
+   *   "0xcDA86A272531e8640cD7F1a92c01839911B90bb0",       // mETH address
+   * ]);
    */
-  async pythGetMultiplePrices(pairs: string[]) {
-    return await pythGetMultiplePrices(this, pairs);
+  async pythGetMultiplePrices(inputs: string[]) {
+    return await pythGetMultiplePrices(this, inputs);
   }
 
   /**
@@ -476,12 +512,24 @@ export class MNTAgentKit {
   }
 
   /**
+   * Get all supported token addresses for Pyth price lookups on Mantle
+   * @returns Object mapping token addresses to their pair names
+   * @example
+   * const addresses = agent.pythGetSupportedTokenAddresses();
+   * // Returns: { "0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2": "USDC/USD", ... }
+   */
+  pythGetSupportedTokenAddresses() {
+    return pythGetSupportedTokenAddresses();
+  }
+
+  /**
    * Check if a price feed exists on Pyth
-   * @param priceFeedIdOrPair - Price feed ID or pair name
+   * Accepts token address, pair name, or price feed ID
+   * @param input - Token address, pair name, or price feed ID
    * @returns Boolean indicating if feed exists
    */
-  async pythPriceFeedExists(priceFeedIdOrPair: string) {
-    return await pythPriceFeedExists(this, priceFeedIdOrPair);
+  async pythPriceFeedExists(input: string) {
+    return await pythPriceFeedExists(this, input);
   }
 
   // ===== Token Launchpad =====

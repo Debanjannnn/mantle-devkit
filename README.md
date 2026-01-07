@@ -29,7 +29,7 @@ npm install x402-mantle-sdk
 
 ### mantle-agent-kit-sdk
 
-TypeScript SDK providing a unified interface to interact with DeFi protocols on Mantle Network. Designed for building AI agents, trading bots, and DeFi applications with a single, consistent API. Supports DEX aggregators (OKX, 1inch, OpenOcean), native DEXs (Agni, Merchant Moe, Uniswap V3), lending protocols (Lendle), liquid staking (mETH), and cross-chain operations (Squid Router).
+TypeScript SDK providing a unified interface to interact with DeFi protocols on Mantle Network. Designed for building AI agents, trading bots, and DeFi applications with a single, consistent API. Supports DEX aggregators (OKX, 1inch, OpenOcean), native DEXs (Agni, Merchant Moe, Uniswap V3), lending protocols (Lendle), liquid staking (mETH), cross-chain operations (Squid Router), Pyth Network price oracles (80+ assets), perpetual trading (PikePerps), token launchpad (ERC20 & RWA), and NFT launchpad (ERC721).
 
 ```bash
 npm install mantle-agent-kit-sdk
@@ -176,6 +176,16 @@ X402_APP_ID=your-app-id-here
 **Cross-Chain**
 - Squid Router - Axelar network integration
 
+**Perpetual Trading**
+- PikePerps - Leveraged trading on meme tokens (1-100x)
+
+**Price Oracles**
+- Pyth Network - 80+ real-time price feeds (crypto, forex, commodities, equities)
+
+**Token & NFT Creation**
+- Token Launchpad - Deploy ERC20 tokens and RWA (Real World Asset) tokens
+- NFT Launchpad - Deploy ERC721 collections with minting
+
 ### DEX Operations
 
 ```typescript
@@ -231,6 +241,76 @@ const txHash = await agent.crossChainSwapViaSquid(
 )
 ```
 
+### Pyth Price Oracles
+
+```typescript
+// Get price by pair name
+const ethPrice = await agent.pythGetPrice("ETH/USD")
+console.log(ethPrice.formattedPrice) // "3450.00"
+
+// Get price by token address
+const price = await agent.pythGetTokenPrice("0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2")
+// Returns: { tokenSymbol: "USDC", priceUsd: "1.00", lastUpdated: "2024-01-08T12:00:00.000Z" }
+
+// Get multiple prices
+const prices = await agent.pythGetMultiplePrices(["BTC/USD", "ETH/USD", "MNT/USD"])
+
+// Get supported token addresses
+const tokens = agent.pythGetSupportedTokenAddresses()
+```
+
+### Token Launchpad
+
+```typescript
+// Deploy standard ERC20 token (supply minted to your address)
+const token = await agent.deployStandardToken("My Token", "MTK", "1000000")
+console.log(token.tokenAddress)
+
+// Deploy RWA (Real World Asset) token
+const rwa = await agent.deployRWAToken(
+  "Manhattan Property",
+  "MPT",
+  "10000",
+  "Real Estate",
+  "PROP-001"
+)
+```
+
+### NFT Launchpad
+
+```typescript
+// Deploy ERC721 collection
+const collection = await agent.deployNFTCollection({
+  name: "My Collection",
+  symbol: "MYC",
+  baseURI: "https://api.example.com/metadata/",
+  maxSupply: 10000
+})
+
+// Mint NFT
+const nft = await agent.mintNFT(collection.collectionAddress)
+console.log(nft.tokenId)
+
+// Batch mint
+await agent.batchMintNFT(collectionAddress, recipientAddress, 10)
+```
+
+### Perpetual Trading (PikePerps)
+
+```typescript
+// Open long position with 10x leverage
+const position = await agent.pikeperpsOpenLong(tokenAddress, margin, 10)
+
+// Open short position
+const short = await agent.pikeperpsOpenShort(tokenAddress, margin, 5)
+
+// Get positions
+const positions = await agent.pikeperpsGetPositions()
+
+// Close position
+await agent.pikeperpsClosePosition(positionId)
+```
+
 ### Environment Variables
 
 ```bash
@@ -276,6 +356,10 @@ ONEINCH_API_KEY=your_api_key
 | Merchant Moe | ❌ | ✅ | Liquidity Book DEX (TraderJoe V2.1) |
 | mETH Protocol | ❌ | ✅ | Liquid staking |
 | Uniswap V3 | ❌ | ✅ | DEX |
+| Pyth Network | ✅ | ✅ | Price oracles (80+ assets) |
+| PikePerps | ❌ | ✅ | Perpetual trading |
+| Token Launchpad | ✅ | ✅ | ERC20 & RWA token deployment |
+| NFT Launchpad | ✅ | ✅ | ERC721 collection deployment |
 
 ## Contract Addresses (Mainnet)
 
@@ -293,6 +377,12 @@ ONEINCH_API_KEY=your_api_key
 
 **mETH Protocol**
 - mETH Token: `0xcDA86A272531e8640cD7F1a92c01839911B90bb0`
+
+**Pyth Network**
+- Pyth Oracle: `0xA2aa501b19aff244D90cc15a4Cf739D2725B5729`
+
+**PikePerps**
+- Trading Contract: `0x6b9bb36519538e0C073894E964E90172E1c0B41F`
 
 ## Project Structure
 

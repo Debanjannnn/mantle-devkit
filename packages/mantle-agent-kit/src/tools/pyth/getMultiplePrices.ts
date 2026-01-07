@@ -4,37 +4,36 @@ import {
   PYTH_ABI,
   PYTH_PRICE_FEED_IDS,
   type PythPriceResponse,
+  resolvePriceFeedInput,
+  TOKEN_ADDRESS_TO_PRICE_FEED,
 } from "../../constants/pyth";
 
 /**
  * Get multiple prices from Pyth in a single call
  * @param agent - MNTAgentKit instance
- * @param pairs - Array of pair names or price feed IDs
+ * @param inputs - Array of token addresses, pair names, or price feed IDs
  * @returns Array of price responses
  */
 export async function pythGetMultiplePrices(
   agent: MNTAgentKit,
-  pairs: string[],
+  inputs: string[],
 ): Promise<PythPriceResponse[]> {
   const pythAddress = PYTH_CONTRACT[agent.chain];
   const results: PythPriceResponse[] = [];
 
-  for (const pairOrId of pairs) {
-    // Resolve price feed ID
-    let priceFeedId = pairOrId;
-    let pair = pairOrId;
+  for (const input of inputs) {
+    // Resolve input (token address, pair name, or feed ID)
+    const resolved = resolvePriceFeedInput(input);
 
-    if (pairOrId in PYTH_PRICE_FEED_IDS) {
-      priceFeedId =
-        PYTH_PRICE_FEED_IDS[pairOrId as keyof typeof PYTH_PRICE_FEED_IDS];
-      pair = pairOrId;
+    let priceFeedId: string;
+    let pair: string;
+
+    if (resolved) {
+      priceFeedId = resolved.feedId;
+      pair = resolved.pair;
     } else {
-      const foundPair = Object.entries(PYTH_PRICE_FEED_IDS).find(
-        ([, id]) => id === pairOrId.replace("0x", ""),
-      );
-      if (foundPair) {
-        pair = foundPair[0];
-      }
+      priceFeedId = input;
+      pair = input;
     }
 
     const feedId = priceFeedId.startsWith("0x")
@@ -94,27 +93,43 @@ export function pythGetSupportedPriceFeeds(): Record<string, string> {
 }
 
 /**
+ * Get all supported token addresses that can be used for price lookups
+ * @returns Object mapping token addresses to their pair names
+ */
+export function pythGetSupportedTokenAddresses(): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const [address, info] of Object.entries(TOKEN_ADDRESS_TO_PRICE_FEED)) {
+    result[address] = info.pair;
+  }
+  return result;
+}
+
+/**
  * Check if a price feed exists on Pyth
  * @param agent - MNTAgentKit instance
- * @param priceFeedIdOrPair - Price feed ID or pair name
+ * @param input - Token address, price feed ID, or pair name
  * @returns Boolean indicating if feed exists
  */
 export async function pythPriceFeedExists(
   agent: MNTAgentKit,
-  priceFeedIdOrPair: string,
+  input: string,
 ): Promise<boolean> {
   const pythAddress = PYTH_CONTRACT[agent.chain];
 
-  let priceFeedId = priceFeedIdOrPair;
-  if (priceFeedIdOrPair in PYTH_PRICE_FEED_IDS) {
-    priceFeedId =
-      PYTH_PRICE_FEED_IDS[priceFeedIdOrPair as keyof typeof PYTH_PRICE_FEED_IDS];
+  // Resolve input (token address, pair name, or feed ID)
+  const resolved = resolvePriceFeedInput(input);
+
+  let priceFeedId: string;
+  if (resolved) {
+    priceFeedId = resolved.feedId;
+  } else {
+    priceFeedId = input;
   }
 
   const feedId = priceFeedId.startsWith("0x") ? priceFeedId : `0x${priceFeedId}`;
 
   if (agent.demo) {
-    return priceFeedIdOrPair in PYTH_PRICE_FEED_IDS;
+    return resolved !== null;
   }
 
   try {

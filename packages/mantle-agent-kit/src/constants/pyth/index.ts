@@ -312,3 +312,89 @@ export interface PythPriceResponse {
   publishTime: number;
   formattedPrice: string;
 }
+
+// Type for token price response (includes token details)
+export interface PythTokenPriceResponse {
+  tokenAddress: string;
+  tokenSymbol: string;
+  pair: string;
+  priceFeedId: string;
+  priceUsd: string;
+  confidence: string;
+  exponent: number;
+  publishTime: number;
+  lastUpdated: string;
+}
+
+// Token address to price feed mapping for Mantle Network
+// Allows users to pass token contract addresses to get prices
+export const TOKEN_ADDRESS_TO_PRICE_FEED: Record<string, { pair: string; feedId: string }> = {
+  // Native and Wrapped tokens
+  "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE": { pair: "MNT/USD", feedId: PYTH_PRICE_FEED_IDS["MNT/USD"] }, // Native MNT
+  "0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8": { pair: "MNT/USD", feedId: PYTH_PRICE_FEED_IDS["MNT/USD"] }, // WMNT
+  "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111": { pair: "ETH/USD", feedId: PYTH_PRICE_FEED_IDS["ETH/USD"] }, // WETH
+
+  // Stablecoins
+  "0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2": { pair: "USDC/USD", feedId: PYTH_PRICE_FEED_IDS["USDC/USD"] }, // USDC
+  "0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE": { pair: "USDT/USD", feedId: PYTH_PRICE_FEED_IDS["USDT/USD"] }, // USDT
+
+  // LST Tokens
+  "0xcDA86A272531e8640cD7F1a92c01839911B90bb0": { pair: "mETH/USD", feedId: PYTH_PRICE_FEED_IDS["mETH/USD"] }, // mETH
+
+  // Additional Mantle tokens (commonly traded)
+  "0xCAbAE6f6Ea1ecaB08Ad02fE02ce9A44F09aebfA2": { pair: "WBTC/USD", feedId: PYTH_PRICE_FEED_IDS["WBTC/USD"] }, // WBTC
+  "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000": { pair: "ETH/USD", feedId: PYTH_PRICE_FEED_IDS["ETH/USD"] }, // ETH (canonical)
+
+  // USDe and other stablecoins
+  "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34": { pair: "USDC/USD", feedId: PYTH_PRICE_FEED_IDS["USDC/USD"] }, // USDe (pegged to USD)
+
+  // Pendle
+  "0xf83bcc06D6A4A5682adeCA11CF9500f67bFe61AE": { pair: "PENDLE/USD", feedId: PYTH_PRICE_FEED_IDS["PENDLE/USD"] }, // PENDLE
+
+  // FBTC
+  "0xc96de26018a54d51c097160568752c4e3bd6c364": { pair: "BTC/USD", feedId: PYTH_PRICE_FEED_IDS["BTC/USD"] }, // FBTC
+
+  // Aurelius tokens (staked versions)
+  "0xe6829d9a7eE3040e1276Fa75293Bde931859e8fA": { pair: "MNT/USD", feedId: PYTH_PRICE_FEED_IDS["MNT/USD"] }, // cmETH
+} as const;
+
+// Helper to check if an input is a token address (starts with 0x and is 42 chars)
+export function isTokenAddress(input: string): boolean {
+  return /^0x[a-fA-F0-9]{40}$/i.test(input);
+}
+
+// Resolve token address or pair to price feed info
+export function resolvePriceFeedInput(input: string): { pair: string; feedId: string } | null {
+  // Normalize address to checksum format isn't needed, just lowercase comparison
+  const normalizedInput = input.toLowerCase();
+
+  // Check if it's a token address
+  if (isTokenAddress(input)) {
+    // Try to find in address mapping (case-insensitive)
+    for (const [addr, info] of Object.entries(TOKEN_ADDRESS_TO_PRICE_FEED)) {
+      if (addr.toLowerCase() === normalizedInput) {
+        return { pair: info.pair, feedId: info.feedId };
+      }
+    }
+    return null; // Unknown token address
+  }
+
+  // Check if it's a pair name
+  if (input in PYTH_PRICE_FEED_IDS) {
+    return {
+      pair: input,
+      feedId: PYTH_PRICE_FEED_IDS[input as keyof typeof PYTH_PRICE_FEED_IDS],
+    };
+  }
+
+  // Check if it's already a price feed ID
+  const normalizedId = input.replace("0x", "");
+  const foundPair = Object.entries(PYTH_PRICE_FEED_IDS).find(
+    ([, id]) => id === normalizedId,
+  );
+  if (foundPair) {
+    return { pair: foundPair[0], feedId: foundPair[1] };
+  }
+
+  return null;
+}
