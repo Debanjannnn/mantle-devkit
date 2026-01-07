@@ -37,6 +37,37 @@ import {
   pikeperpsGetPositions,
   pikeperpsGetMarketData,
 } from "./tools/pikeperps";
+import {
+  pythGetPrice,
+  pythGetEmaPrice,
+  pythGetMultiplePrices,
+  pythGetSupportedPriceFeeds,
+  pythPriceFeedExists,
+} from "./tools/pyth";
+import {
+  deployToken,
+  deployStandardToken,
+  deployRWAToken,
+  getTokenInfo,
+  getTokenBalance,
+  transferToken,
+} from "./tools/token-launchpad";
+import {
+  deployNFTCollection,
+  deployNFTCollectionWithPreset,
+  mintNFT,
+  batchMintNFT,
+  getNFTCollectionInfo,
+  getNFTTokenInfo,
+  getNFTBalance,
+  isNFTOwner,
+  transferNFT,
+  safeTransferNFT,
+  approveNFT,
+  setApprovalForAllNFT,
+} from "./tools/nft-launchpad";
+import type { TokenType } from "./constants/token-launchpad";
+import type { NFTCollectionConfig } from "./constants/nft-launchpad";
 import { initializePlatform, type ProjectConfig } from "./utils/x402";
 import { getUserAccountData } from "./utils/lendle";
 import { erc7811Actions, type Erc7811Actions } from "viem/experimental";
@@ -405,5 +436,281 @@ export class MNTAgentKit {
    */
   async pikeperpsGetMarketData(tokenAddress: Address, limit: number = 20) {
     return await pikeperpsGetMarketData(this, tokenAddress, limit);
+  }
+
+  // ===== Pyth Network Price Feeds =====
+
+  /**
+   * Get real-time price from Pyth Network
+   * @param priceFeedIdOrPair - Price feed ID or pair name (e.g., "ETH/USD", "BTC/USD", "MNT/USD")
+   * @returns Price data with formatted price
+   */
+  async pythGetPrice(priceFeedIdOrPair: string) {
+    return await pythGetPrice(this, priceFeedIdOrPair);
+  }
+
+  /**
+   * Get EMA (Exponential Moving Average) price from Pyth
+   * @param priceFeedIdOrPair - Price feed ID or pair name
+   * @returns EMA price data
+   */
+  async pythGetEmaPrice(priceFeedIdOrPair: string) {
+    return await pythGetEmaPrice(this, priceFeedIdOrPair);
+  }
+
+  /**
+   * Get multiple prices from Pyth in a single call
+   * @param pairs - Array of pair names or price feed IDs
+   * @returns Array of price responses
+   */
+  async pythGetMultiplePrices(pairs: string[]) {
+    return await pythGetMultiplePrices(this, pairs);
+  }
+
+  /**
+   * Get all supported Pyth price feed IDs
+   * @returns Object mapping pair names to price feed IDs
+   */
+  pythGetSupportedPriceFeeds() {
+    return pythGetSupportedPriceFeeds();
+  }
+
+  /**
+   * Check if a price feed exists on Pyth
+   * @param priceFeedIdOrPair - Price feed ID or pair name
+   * @returns Boolean indicating if feed exists
+   */
+  async pythPriceFeedExists(priceFeedIdOrPair: string) {
+    return await pythPriceFeedExists(this, priceFeedIdOrPair);
+  }
+
+  // ===== Token Launchpad =====
+
+  /**
+   * Deploy a new token (ERC20 or RWA) - supply minted to your address
+   * @param name - Token name
+   * @param symbol - Token symbol
+   * @param supply - Total supply (human readable, e.g., "1000000")
+   * @param tokenType - "standard" or "rwa"
+   * @param assetType - For RWA: asset category
+   * @param assetId - For RWA: external asset ID
+   */
+  async deployToken(
+    name: string,
+    symbol: string,
+    supply: string,
+    tokenType: TokenType = "standard",
+    assetType?: string,
+    assetId?: string,
+  ) {
+    return await deployToken(this, name, symbol, supply, tokenType, assetType, assetId);
+  }
+
+  /**
+   * Deploy a standard ERC20 token
+   * @param name - Token name
+   * @param symbol - Token symbol
+   * @param supply - Total supply (e.g., "1000000" for 1M tokens)
+   */
+  async deployStandardToken(name: string, symbol: string, supply: string) {
+    return await deployStandardToken(this, name, symbol, supply);
+  }
+
+  /**
+   * Deploy an RWA (Real World Asset) token
+   * @param name - Token name (e.g., "Manhattan Property Token")
+   * @param symbol - Token symbol (e.g., "MPT")
+   * @param supply - Total supply for fractional ownership
+   * @param assetType - Asset category: "Real Estate", "Commodities", "Securities", "Art"
+   * @param assetId - External reference ID for the underlying asset
+   */
+  async deployRWAToken(
+    name: string,
+    symbol: string,
+    supply: string,
+    assetType: string,
+    assetId?: string,
+  ) {
+    return await deployRWAToken(this, name, symbol, supply, assetType, assetId);
+  }
+
+  /**
+   * Get token information
+   */
+  async getTokenInfo(tokenAddress: Address, holder?: Address) {
+    return await getTokenInfo(this, tokenAddress, holder);
+  }
+
+  /**
+   * Get token balance
+   */
+  async getTokenBalance(tokenAddress: Address, holder?: Address) {
+    return await getTokenBalance(this, tokenAddress, holder);
+  }
+
+  /**
+   * Transfer tokens
+   */
+  async transferToken(tokenAddress: Address, to: Address, amount: string) {
+    return await transferToken(this, tokenAddress, to, amount);
+  }
+
+  // ===== NFT Launchpad =====
+
+  /**
+   * Deploy a new ERC721 NFT collection on Mantle Network
+   * @param config - Collection configuration (name, symbol, baseURI, maxSupply)
+   * @returns Collection deployment result with contract address
+   */
+  async deployNFTCollection(config: NFTCollectionConfig) {
+    return await deployNFTCollection(this, config);
+  }
+
+  /**
+   * Deploy an NFT collection with preset configurations
+   * @param preset - Preset type: "pfp" (10000), "art" (1000), "membership" (100), "unlimited"
+   * @param name - Collection name
+   * @param symbol - Collection symbol
+   * @param baseURI - Base URI for metadata
+   * @returns Collection deployment result
+   */
+  async deployNFTCollectionWithPreset(
+    preset: "pfp" | "art" | "membership" | "unlimited",
+    name: string,
+    symbol: string,
+    baseURI: string,
+  ) {
+    return await deployNFTCollectionWithPreset(
+      this,
+      preset,
+      name,
+      symbol,
+      baseURI,
+    );
+  }
+
+  /**
+   * Mint a single NFT from a collection
+   * @param collectionAddress - NFT collection contract address
+   * @param to - Recipient address (defaults to agent address)
+   * @returns Mint result with token ID
+   */
+  async mintNFT(collectionAddress: Address, to?: Address) {
+    return await mintNFT(this, collectionAddress, to);
+  }
+
+  /**
+   * Batch mint multiple NFTs from a collection
+   * @param collectionAddress - NFT collection contract address
+   * @param to - Recipient address
+   * @param quantity - Number of NFTs to mint
+   * @returns Mint result with starting token ID
+   */
+  async batchMintNFT(collectionAddress: Address, to: Address, quantity: number) {
+    return await batchMintNFT(this, collectionAddress, to, quantity);
+  }
+
+  /**
+   * Get information about an NFT collection
+   * @param collectionAddress - NFT collection contract address
+   * @param holderAddress - Optional address to get balance for
+   * @returns Collection information
+   */
+  async getNFTCollectionInfo(
+    collectionAddress: Address,
+    holderAddress?: Address,
+  ) {
+    return await getNFTCollectionInfo(this, collectionAddress, holderAddress);
+  }
+
+  /**
+   * Get information about a specific NFT token
+   * @param collectionAddress - NFT collection contract address
+   * @param tokenId - Token ID
+   * @returns Token information
+   */
+  async getNFTTokenInfo(collectionAddress: Address, tokenId: string) {
+    return await getNFTTokenInfo(this, collectionAddress, tokenId);
+  }
+
+  /**
+   * Get NFT balance for an address
+   * @param collectionAddress - NFT collection contract address
+   * @param holderAddress - Address to check (defaults to agent address)
+   * @returns Balance as string
+   */
+  async getNFTBalance(collectionAddress: Address, holderAddress?: Address) {
+    return await getNFTBalance(this, collectionAddress, holderAddress);
+  }
+
+  /**
+   * Check if an address owns a specific NFT
+   * @param collectionAddress - NFT collection contract address
+   * @param tokenId - Token ID to check
+   * @param ownerAddress - Address to verify ownership
+   * @returns Boolean indicating ownership
+   */
+  async isNFTOwner(
+    collectionAddress: Address,
+    tokenId: string,
+    ownerAddress?: Address,
+  ) {
+    return await isNFTOwner(this, collectionAddress, tokenId, ownerAddress);
+  }
+
+  /**
+   * Transfer an NFT to another address
+   * @param collectionAddress - NFT collection contract address
+   * @param to - Recipient address
+   * @param tokenId - Token ID to transfer
+   * @returns Transaction hash
+   */
+  async transferNFT(collectionAddress: Address, to: Address, tokenId: string) {
+    return await transferNFT(this, collectionAddress, to, tokenId);
+  }
+
+  /**
+   * Safe transfer an NFT (checks if recipient can receive)
+   * @param collectionAddress - NFT collection contract address
+   * @param to - Recipient address
+   * @param tokenId - Token ID to transfer
+   * @returns Transaction hash
+   */
+  async safeTransferNFT(
+    collectionAddress: Address,
+    to: Address,
+    tokenId: string,
+  ) {
+    return await safeTransferNFT(this, collectionAddress, to, tokenId);
+  }
+
+  /**
+   * Approve an address to transfer a specific NFT
+   * @param collectionAddress - NFT collection contract address
+   * @param approved - Address to approve
+   * @param tokenId - Token ID to approve
+   * @returns Transaction hash
+   */
+  async approveNFT(
+    collectionAddress: Address,
+    approved: Address,
+    tokenId: string,
+  ) {
+    return await approveNFT(this, collectionAddress, approved, tokenId);
+  }
+
+  /**
+   * Set approval for all NFTs in a collection
+   * @param collectionAddress - NFT collection contract address
+   * @param operator - Operator address
+   * @param approved - Whether to approve or revoke
+   * @returns Transaction hash
+   */
+  async setApprovalForAllNFT(
+    collectionAddress: Address,
+    operator: Address,
+    approved: boolean,
+  ) {
+    return await setApprovalForAllNFT(this, collectionAddress, operator, approved);
   }
 }
