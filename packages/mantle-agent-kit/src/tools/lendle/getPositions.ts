@@ -44,6 +44,38 @@ export async function lendleGetPositions(
     );
   }
 
+  // Demo mode
+  if (agent.demo) {
+    return {
+      positions: [
+        {
+          asset: "0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8" as Address, // WMNT
+          symbol: "WMNT",
+          supplied: BigInt("1000000000000000000"), // 1 WMNT
+          stableDebt: 0n,
+          variableDebt: BigInt("200000000000000000"), // 0.2 WMNT borrowed
+          totalDebt: BigInt("200000000000000000"),
+          liquidityRate: BigInt("25000000000000000000000000"), // ~2.5% APY (in ray)
+          stableBorrowRate: 0n,
+          usageAsCollateralEnabled: true,
+        },
+        {
+          asset: "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111" as Address, // WETH
+          symbol: "WETH",
+          supplied: BigInt("500000000000000000"), // 0.5 WETH
+          stableDebt: 0n,
+          variableDebt: 0n,
+          totalDebt: 0n,
+          liquidityRate: BigInt("30000000000000000000000000"), // ~3% APY
+          stableBorrowRate: 0n,
+          usageAsCollateralEnabled: true,
+        },
+      ],
+      totalSupplied: BigInt("1500000000000000000"),
+      totalDebt: BigInt("200000000000000000"),
+    };
+  }
+
   // Get supported assets for the chain
   const supportedAssets = LENDLE_SUPPORTED_ASSETS[agent.chain];
   if (!supportedAssets || supportedAssets.length === 0) {
