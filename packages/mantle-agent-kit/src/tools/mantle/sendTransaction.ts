@@ -26,6 +26,25 @@ export const sendTransaction = async (
   amount: string,
   tokenAddress?: Address,
 ) => {
+  // Demo mode
+  if (agent.demo) {
+    return {
+      transactionHash: "0xdemo000000000000000000000000000000000000000000000000000000000001" as `0x${string}`,
+      status: "success" as const,
+      blockNumber: 1n,
+      blockHash: "0xdemo000000000000000000000000000000000000000000000000000000000002" as `0x${string}`,
+      from: agent.account.address,
+      to,
+      value: tokenAddress ? 0n : parseEther(amount),
+      gasUsed: 21000n,
+      effectiveGasPrice: 1n,
+      cumulativeGasUsed: 21000n,
+      logs: [],
+      logsBloom: "0x" as `0x${string}`,
+      type: "eip1559" as const,
+    };
+  }
+
   let hash: `0x${string}`;
 
   if (tokenAddress) {

@@ -25,6 +25,11 @@ export async function swapFromMeth(
     );
   }
 
+  // Demo mode
+  if (agent.demo) {
+    return "0xdemo000000000000000000000000000000000000000000000000000000000001" as Hex;
+  }
+
   // Use OpenOcean aggregator to swap mETH -> WETH
   const result = await swapOnOpenOcean(
     agent,
