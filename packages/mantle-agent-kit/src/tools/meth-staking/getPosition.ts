@@ -28,21 +28,19 @@ export async function methGetPosition(
   const address = userAddress || agent.account.address;
 
   if (methTokenAddress === "0x0000000000000000000000000000000000000000") {
+    if (agent.demo) {
+      return {
+        methBalance: BigInt("2500000000000000000"), // 2.5 mETH
+        wethBalance: BigInt("1000000000000000000"), // 1 WETH
+        wmntBalance: BigInt("5000000000000000000000"), // 5000 WMNT
+        methTokenAddress,
+        wethTokenAddress,
+        wmntTokenAddress,
+      };
+    }
     throw new Error(
       `mETH not available on ${agent.chain}. Only available on mainnet.`,
     );
-  }
-
-  // Demo mode
-  if (agent.demo) {
-    return {
-      methBalance: BigInt("2500000000000000000"), // 2.5 mETH
-      wethBalance: BigInt("1000000000000000000"), // 1 WETH
-      wmntBalance: BigInt("5000000000000000000000"), // 5000 WMNT
-      methTokenAddress,
-      wethTokenAddress,
-      wmntTokenAddress,
-    };
   }
 
   // Get mETH balance

@@ -30,6 +30,12 @@ export type { PikePerpsPosition, PikePerpsMarketData, PikePerpsTrade } from "./t
 // Pyth Network types
 export type { PythPriceResponse, PythPriceData } from "./constants/pyth";
 
+// OKX DEX types
+export type { OKXToken } from "./utils/okx";
+
+// OpenOcean DEX types
+export type { OpenOceanToken } from "./utils/openocean";
+
 // Token Launchpad types
 export type {
   TokenConfig,

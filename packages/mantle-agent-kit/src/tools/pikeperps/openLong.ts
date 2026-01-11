@@ -28,6 +28,12 @@ export async function pikeperpsOpenLong(
   const perpetualTradingAddress = PERPETUAL_TRADING[agent.chain];
 
   if (perpetualTradingAddress === "0x0000000000000000000000000000000000000000") {
+    if (agent.demo) {
+      return {
+        positionId: BigInt(Math.floor(Math.random() * 1000)),
+        txHash: "0xdemo_open_long_tx_hash" as Hex,
+      };
+    }
     throw new Error(
       `PikePerps not available on ${agent.chain}. Only available on testnet.`,
     );
@@ -38,14 +44,6 @@ export async function pikeperpsOpenLong(
     throw new Error(
       `Leverage must be between ${PIKE_PERPS_CONFIG.MIN_LEVERAGE} and ${PIKE_PERPS_CONFIG.MAX_LEVERAGE}`,
     );
-  }
-
-  // Demo mode
-  if (agent.demo) {
-    return {
-      positionId: BigInt(Math.floor(Math.random() * 1000)),
-      txHash: "0xdemo_open_long_tx_hash" as Hex,
-    };
   }
 
   const marginBigInt = BigInt(margin);

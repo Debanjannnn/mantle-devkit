@@ -1,8 +1,17 @@
 import { type Address, type Hex, encodeFunctionData } from "viem";
 import type { MNTAgentKit } from "../../agent";
-import { SWAP_ROUTER, SWAP_ROUTER_ABI, FEE_TIERS } from "../../constants/agni";
+import { SWAP_ROUTER, SWAP_ROUTER_ABI, FEE_TIERS, WMNT } from "../../constants/agni";
 import { approveToken } from "../../utils/common";
 import { createMockSwapResponse } from "../../utils/demo/mockResponses";
+
+const NATIVE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+
+function isNativeToken(address: Address): boolean {
+  return (
+    address.toLowerCase() === NATIVE_ADDRESS.toLowerCase() ||
+    address === "0x0000000000000000000000000000000000000000"
+  );
+}
 
 /**
  * Swap tokens on Agni Finance DEX
@@ -34,11 +43,20 @@ export async function agniSwap(
   const amountInBigInt = BigInt(amountIn);
   const deadline = BigInt(Math.floor(Date.now() / 1000) + 1200); // 20 minutes
 
-  // Calculate minimum amount out (with slippage)
-  const amountOutMinimum = (amountInBigInt * BigInt(10000 - Math.floor(slippagePercent * 100))) / 10000n;
+  // Set amountOutMinimum to 0 (no quote function available)
+  // For production, implement a quoter to get expected output
+  const amountOutMinimum = 0n;
 
-  // Approve token
-  await approveToken(agent, tokenIn, swapRouterAddress, amountIn);
+  const isNativeIn = isNativeToken(tokenIn);
+  const isNativeOut = isNativeToken(tokenOut);
+  const wmntAddress = WMNT[agent.chain];
+  const actualTokenIn = isNativeIn ? wmntAddress : tokenIn;
+  const actualTokenOut = isNativeOut ? wmntAddress : tokenOut;
+
+  // Approve token (skip for native)
+  if (!isNativeIn) {
+    await approveToken(agent, tokenIn, swapRouterAddress, amountIn);
+  }
 
   // Encode swap
   const data = encodeFunctionData({
@@ -46,8 +64,8 @@ export async function agniSwap(
     functionName: "exactInputSingle",
     args: [
       {
-        tokenIn,
-        tokenOut,
+        tokenIn: actualTokenIn,
+        tokenOut: actualTokenOut,
         fee: feeTier,
         recipient: agent.account.address,
         deadline,
@@ -61,6 +79,7 @@ export async function agniSwap(
   const hash = await agent.client.sendTransaction({
     to: swapRouterAddress,
     data,
+    value: isNativeIn ? amountInBigInt : 0n,
   });
 
   await agent.client.waitForTransactionReceipt({ hash });

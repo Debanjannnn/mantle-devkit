@@ -15,7 +15,9 @@ import {
 import { mantle, mantleSepoliaTestnet } from "viem/chains";
 import { executeSwap, sendTransaction } from "./tools";
 import { getSwapQuote } from "./tools/okx/getSwapQuote";
+import { getTokens, type OKXToken } from "./utils/okx";
 import { swapOnOpenOcean, getOpenOceanQuote } from "./tools/openocean";
+import { getTokenList, type OpenOceanToken } from "./utils/openocean";
 import { swapOn1inch, get1inchQuote } from "./tools/oneinch";
 import { swapOnUniswap, getUniswapQuote } from "./tools/uniswap";
 import { crossChainSwapViaSquid, getSquidRoute } from "./tools/squid";
@@ -136,6 +138,11 @@ export class MNTAgentKit {
     );
   }
 
+  async getTokens(): Promise<OKXToken[]> {
+    const chainIndex = this.chain === "mainnet" ? "5000" : "5003";
+    return await getTokens(chainIndex);
+  }
+
   async executeSwap(
     fromTokenAddress: string,
     toTokenAddress: string,
@@ -173,6 +180,10 @@ export class MNTAgentKit {
       amount,
       slippage.toString(),
     );
+  }
+
+  async getOpenOceanTokens(): Promise<OpenOceanToken[]> {
+    return await getTokenList(this.chain);
   }
 
   // 1inch DEX Aggregator
@@ -292,6 +303,7 @@ export class MNTAgentKit {
     tokenOut: Address,
     amountIn: string,
     slippagePercent: number = 0.5,
+    binStep?: number,
   ) {
     return await merchantMoeSwap(
       this,
@@ -299,6 +311,7 @@ export class MNTAgentKit {
       tokenOut,
       amountIn,
       slippagePercent,
+      binStep,
     );
   }
 

@@ -46,30 +46,28 @@ export async function pikeperpsGetPositions(
   const address = userAddress || agent.account.address;
 
   if (perpetualTradingAddress === "0x0000000000000000000000000000000000000000") {
+    if (agent.demo) {
+      return [
+        {
+          positionId: 1n,
+          token: "0x0000000000000000000000000000000000000001" as Address,
+          isLong: true,
+          size: BigInt("1000000000000000000"), // 1 ETH equivalent
+          margin: BigInt("100000000000000000"), // 0.1 ETH
+          leverage: 10,
+          entryPrice: BigInt("100000000"), // $1.00 scaled by 1e8
+          entryTime: BigInt(Math.floor(Date.now() / 1000) - 3600),
+          currentPrice: BigInt("110000000"), // $1.10
+          pnl: BigInt("10000000000000000"), // 0.01 ETH profit
+          isProfit: true,
+          liquidationPrice: BigInt("90000000"), // $0.90
+          isOpen: true,
+        },
+      ];
+    }
     throw new Error(
       `PikePerps not available on ${agent.chain}. Only available on testnet.`,
     );
-  }
-
-  // Demo mode
-  if (agent.demo) {
-    return [
-      {
-        positionId: 1n,
-        token: "0x0000000000000000000000000000000000000001" as Address,
-        isLong: true,
-        size: BigInt("1000000000000000000"), // 1 ETH equivalent
-        margin: BigInt("100000000000000000"), // 0.1 ETH
-        leverage: 10,
-        entryPrice: BigInt("100000000"), // $1.00 scaled by 1e8
-        entryTime: BigInt(Math.floor(Date.now() / 1000) - 3600),
-        currentPrice: BigInt("110000000"), // $1.10
-        pnl: BigInt("10000000000000000"), // 0.01 ETH profit
-        isProfit: true,
-        liquidationPrice: BigInt("90000000"), // $0.90
-        isOpen: true,
-      },
-    ];
   }
 
   // Get all position IDs for user
