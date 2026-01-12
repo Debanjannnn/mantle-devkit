@@ -31,7 +31,7 @@ export function ServicesSection() {
             },
             {
               title: "DEX Trading Bots",
-              description: "Build trading bots with Agent Kit. Swap on Agni, Merchant Moe, or aggregate via 1inch and OKX.",
+              description: "Build trading bots with Agent Kit. Swap on Agni, Merchant Moe, or aggregate via OKX and OpenOcean.",
               direction: "right",
             },
             {

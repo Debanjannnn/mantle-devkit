@@ -91,8 +91,9 @@ export async function merchantMoeSwap(
     }
 
     // Use the first valid pair's bin step
-    useBinStep = validPairs[0].binStep;
-    console.log(`Using pool: ${validPairs[0].lbPair} with bin step: ${useBinStep}`);
+    const bestPair = validPairs[0]!;
+    useBinStep = bestPair.binStep;
+    console.log(`Using pool: ${bestPair.lbPair} with bin step: ${useBinStep}`);
   }
 
   // Calculate minimum out with slippage (0 = accept any for now)

@@ -122,7 +122,7 @@ const txHash = await agent.agniSwap(
 
 ## Supported Protocols
 
-DEX Aggregators: OKX DEX, 1inch, OpenOcean
+DEX Aggregators: OKX DEX, OpenOcean
 
 Native DEXs: Agni Finance, Merchant Moe, Uniswap V3
 
@@ -819,41 +819,10 @@ const txHash = await agent.swapOnUniswap(
   {
     id: 14,
     title: "Agent Kit - DEX Aggregators",
-    shortContent: "Use 1inch, OKX, and OpenOcean for best swap rates across DEXs.",
+    shortContent: "Use OKX and OpenOcean for best swap rates across DEXs.",
     fullContent: `# DEX Aggregators
 
 Get the best swap rates by aggregating liquidity across multiple DEXs.
-
-## 1inch
-
-Pathfinder algorithm for optimal swap routes.
-
-\`\`\`typescript
-import { MNTAgentKit } from "mantle-agent-kit-sdk"
-
-const agent = new MNTAgentKit(privateKey, "mainnet")
-await agent.initialize()
-
-// Get quote
-const quote = await agent.get1inchQuote(
-  "0xTokenIn",
-  "0xTokenOut",
-  "1000000000000000000"
-)
-
-// Execute swap
-const txHash = await agent.swapOn1inch(
-  "0xTokenIn",
-  "0xTokenOut",
-  "1000000000000000000",
-  0.5 // slippage
-)
-\`\`\`
-
-### Environment Variable (Optional)
-\`\`\`bash
-ONEINCH_API_KEY=your_api_key  # For higher rate limits
-\`\`\`
 
 ## OKX DEX Aggregator
 
@@ -1280,12 +1249,6 @@ agent.swapOnUniswap(fromToken, toToken, amount, slippage?)
 \`\`\`
 
 ## Aggregator Methods
-
-### 1inch
-\`\`\`typescript
-agent.get1inchQuote(fromToken, toToken, amount)
-agent.swapOn1inch(fromToken, toToken, amount, slippage?)
-\`\`\`
 
 ### OKX
 \`\`\`typescript

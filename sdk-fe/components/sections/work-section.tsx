@@ -49,7 +49,7 @@ export function WorkSection() {
               number: "04",
               title: "Multi-Protocol Support",
               category: "DEXs & Aggregators",
-              year: "Agni, 1inch, OKX, Lendle",
+              year: "Agni, OKX, Lendle",
               direction: "right",
             },
           ].map((project, i) => (

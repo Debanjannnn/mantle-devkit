@@ -21,7 +21,7 @@ export function FAQSection() {
     {
       question: "What protocols does Agent Kit support?",
       answer:
-        "Agent Kit integrates with DEX aggregators (OKX, 1inch, OpenOcean), native DEXs (Agni Finance, Merchant Moe, Uniswap V3), Lendle for lending, mETH for liquid staking, and Squid Router for cross-chain operations.",
+        "Agent Kit integrates with DEX aggregators (OKX, OpenOcean), native DEXs (Agni Finance, Merchant Moe, Uniswap V3), Lendle for lending, mETH for liquid staking, and Squid Router for cross-chain operations.",
     },
     {
       question: "What wallets are supported?",

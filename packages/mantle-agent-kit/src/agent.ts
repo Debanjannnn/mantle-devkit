@@ -18,7 +18,6 @@ import { getSwapQuote } from "./tools/okx/getSwapQuote";
 import { getTokens, type OKXToken } from "./utils/okx";
 import { swapOnOpenOcean, getOpenOceanQuote } from "./tools/openocean";
 import { getTokenList, type OpenOceanToken } from "./utils/openocean";
-import { swapOn1inch, get1inchQuote } from "./tools/oneinch";
 import { swapOnUniswap, getUniswapQuote } from "./tools/uniswap";
 import { crossChainSwapViaSquid, getSquidRoute } from "./tools/squid";
 import {
@@ -184,26 +183,6 @@ export class MNTAgentKit {
 
   async getOpenOceanTokens(): Promise<OpenOceanToken[]> {
     return await getTokenList(this.chain);
-  }
-
-  // 1inch DEX Aggregator
-  async get1inchQuote(fromToken: Address, toToken: Address, amount: string) {
-    return await get1inchQuote(this, fromToken, toToken, amount);
-  }
-
-  async swapOn1inch(
-    fromToken: Address,
-    toToken: Address,
-    amount: string,
-    slippage: number = 0.5,
-  ) {
-    return await swapOn1inch(
-      this,
-      fromToken,
-      toToken,
-      amount,
-      slippage.toString(),
-    );
   }
 
   // Uniswap V3 DEX

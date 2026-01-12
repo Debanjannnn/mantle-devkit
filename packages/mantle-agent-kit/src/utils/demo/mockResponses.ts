@@ -33,15 +33,6 @@ export function createMockTxHash(): Hex {
   return DEMO_TX_HASH;
 }
 
-export function createMock1inchSwapResponse(inputAmount: string) {
-  return {
-    txHash: DEMO_TX_HASH as string,
-    dstAmount: inputAmount,
-    demo: true,
-    message: "[DEMO] 1inch swap simulated",
-  };
-}
-
 export function createMockOkxSwapResponse(inputAmount: string) {
   return {
     data: DEMO_TX_HASH,

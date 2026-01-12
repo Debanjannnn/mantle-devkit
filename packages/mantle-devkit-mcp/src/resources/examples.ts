@@ -30,22 +30,6 @@ const txHash = await agent.agniSwap(
 console.log("Swap tx:", txHash);
 \`\`\`
 
-## Using 1inch Aggregator
-
-\`\`\`typescript
-// Get quote first
-const quote = await agent.get1inchQuote(WMNT, USDC, "1000000000000000000");
-console.log("Expected output:", quote.toTokenAmount);
-
-// Execute swap
-const txHash = await agent.swapOn1inch(
-  WMNT,
-  USDC,
-  "1000000000000000000",
-  0.5 // slippage
-);
-\`\`\`
-
 ## Using OpenOcean
 
 \`\`\`typescript
@@ -396,9 +380,6 @@ OKX_API_KEY=...
 OKX_SECRET_KEY=...
 OKX_API_PASSPHRASE=...
 OKX_PROJECT_ID=...
-
-# Optional for 1inch
-ONEINCH_API_KEY=...
 \`\`\`
 `,
   },

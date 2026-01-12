@@ -19,7 +19,6 @@ This directory contains the npm packages for Mantle DevKit.
 |----------|:-------:|:-------:|-------------|
 | Native MNT Transfers | ✅ | ✅ | Send/receive MNT tokens |
 | OKX DEX Aggregator | ✅ | ✅ | DEX aggregation (requires API keys) |
-| 1inch | ✅ | ✅ | DEX aggregation |
 | Squid Router | ✅ | ✅ | Cross-chain swaps & bridging |
 | OpenOcean | ✅ | ✅ | DEX aggregation |
 | x402 Payments | ✅ | ✅ | HTTP 402 payment infrastructure |

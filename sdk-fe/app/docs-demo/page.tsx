@@ -88,7 +88,6 @@ const NAVIGATION: NavSection[] = [
   {
     title: "Aggregators",
     items: [
-      { id: "agent-1inch", title: "1inch", hasChildren: true },
       { id: "agent-openocean", title: "OpenOcean", hasChildren: true },
       { id: "agent-okx", title: "OKX DEX", hasChildren: true },
     ],
@@ -225,11 +224,6 @@ const DOCS_CONTENT: Record<string, { title: string; description: string; content
     title: "Uniswap V3",
     description: "DEX swaps using Uniswap V3 on Mantle",
     content: <AgentUniswapContent />,
-  },
-  "agent-1inch": {
-    title: "1inch",
-    description: "DEX aggregation with optimal routing",
-    content: <Agent1inchContent />,
   },
   "agent-openocean": {
     title: "OpenOcean",
@@ -440,7 +434,6 @@ function DevKitProtocolsContent() {
   const bothNetworks = [
     { name: 'Native MNT', desc: 'Send/receive MNT tokens', logo: 'https://s2.coinmarketcap.com/static/img/coins/64x64/27614.png' },
     { name: 'OKX DEX', desc: 'DEX aggregation', logo: '/okx.png' },
-    { name: '1inch', desc: 'DEX aggregation', logo: '/1inch-1inch-logo.png' },
     { name: 'Squid Router', desc: 'Cross-chain swaps', logo: '/squid-router.png' },
     { name: 'OpenOcean', desc: 'DEX aggregation', logo: '/openocean.png' },
     { name: 'x402', desc: 'HTTP 402 payments', logo: '/X402.png' },
@@ -1011,7 +1004,7 @@ function AgentIntroContent() {
       <h3 className="mb-4 text-xl font-semibold text-foreground">Supported Protocols</h3>
       <div className="mb-8 grid gap-4 sm:grid-cols-2">
         <FeatureCard icon={<Layers className="h-5 w-5" />} title="DEX" description="Agni, Merchant Moe, Uniswap V3" />
-        <FeatureCard icon={<Globe className="h-5 w-5" />} title="Aggregators" description="1inch, OpenOcean, OKX DEX" />
+        <FeatureCard icon={<Globe className="h-5 w-5" />} title="Aggregators" description="OpenOcean, OKX DEX" />
         <FeatureCard icon={<Wallet className="h-5 w-5" />} title="Lending" description="Lendle Protocol (Aave V2)" />
         <FeatureCard icon={<Zap className="h-5 w-5" />} title="Oracles" description="Pyth Network (80+ feeds)" />
       </div>
@@ -1101,7 +1094,6 @@ PRIVATE_KEY=your_private_key_here
 APP_ID=your_app_id_here
 
 # Optional: API keys for aggregators
-ONEINCH_API_KEY=your_1inch_key
 OKX_API_KEY=your_okx_key`}
         />
       </div>
@@ -1236,60 +1228,6 @@ const txHash = await agent.uniswapV3MultiHopSwap(
       <div className="rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3">
         <span className="text-sm text-foreground/60">SwapRouter:</span>
         <code className="ml-2 text-sm text-foreground">0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45</code>
-      </div>
-    </article>
-  )
-}
-
-function Agent1inchContent() {
-  return (
-    <article>
-      <h2 className="mb-6 text-2xl font-bold text-foreground">1inch Aggregator</h2>
-      <p className="mb-6 leading-relaxed text-foreground/70">
-        1inch is a DEX aggregator that sources liquidity from multiple DEXs to find the
-        best swap rates. Uses the Pathfinder algorithm for optimal routing.
-      </p>
-      <div className="mb-6">
-        <CodeBlock
-          language="typescript"
-          code={`// Get quote from 1inch
-const quote = await agent.get1inchQuote(
-  "0xTokenIn",
-  "0xTokenOut",
-  "1000000000000000000" // amount in wei
-)
-console.log("Best rate:", quote.toAmount)
-console.log("Protocols used:", quote.protocols)
-
-// Execute swap
-const txHash = await agent.swapOn1inch(
-  "0xTokenIn",
-  "0xTokenOut",
-  "1000000000000000000",
-  0.5  // slippage %
-)`}
-        />
-      </div>
-
-      <h3 className="mb-4 text-xl font-semibold text-foreground">Environment Setup</h3>
-      <div className="mb-6">
-        <CodeBlock
-          language="bash"
-          code={`# Optional: Add API key for higher rate limits
-ONEINCH_API_KEY=your_api_key_here`}
-        />
-      </div>
-
-      <h3 className="mb-4 text-xl font-semibold text-foreground">Features</h3>
-      <div className="grid gap-2 sm:grid-cols-2">
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3">
-          <span className="font-medium text-foreground">Multi-DEX Routing</span>
-          <p className="text-sm text-foreground/60">Splits orders across DEXs</p>
-        </div>
-        <div className="rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3">
-          <span className="font-medium text-foreground">Gas Optimization</span>
-          <p className="text-sm text-foreground/60">Optimized for lowest gas costs</p>
-        </div>
       </div>
     </article>
   )

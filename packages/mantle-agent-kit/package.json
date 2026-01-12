@@ -1,6 +1,6 @@
 {
   "name": "mantle-agent-kit-sdk",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "TypeScript SDK for DeFi protocols on Mantle Network - Unified interface for swaps, lending, liquid staking, perpetual trading, cross-chain operations, Pyth oracles, token launchpad, and NFT minting",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -52,7 +52,6 @@
     "merchant-moe",
     "meth",
     "uniswap",
-    "1inch",
     "openocean",
     "okx",
     "squid-router",

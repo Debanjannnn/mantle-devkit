@@ -29,7 +29,7 @@ npm install x402-mantle-sdk
 
 ### mantle-agent-kit-sdk
 
-TypeScript SDK providing a unified interface to interact with DeFi protocols on Mantle Network. Designed for building AI agents, trading bots, and DeFi applications with a single, consistent API. Supports DEX aggregators (OKX, 1inch, OpenOcean), native DEXs (Agni, Merchant Moe, Uniswap V3), lending protocols (Lendle), liquid staking (mETH), cross-chain operations (Squid Router), Pyth Network price oracles (80+ assets), perpetual trading (PikePerps), token launchpad (ERC20 & RWA), and NFT launchpad (ERC721).
+TypeScript SDK providing a unified interface to interact with DeFi protocols on Mantle Network. Designed for building AI agents, trading bots, and DeFi applications with a single, consistent API. Supports DEX aggregators (OKX, OpenOcean), native DEXs (Agni, Merchant Moe, Uniswap V3), lending protocols (Lendle), liquid staking (mETH), cross-chain operations (Squid Router), Pyth Network price oracles (80+ assets), perpetual trading (PikePerps), token launchpad (ERC20 & RWA), and NFT launchpad (ERC721).
 
 ```bash
 npm install mantle-agent-kit-sdk
@@ -162,7 +162,6 @@ X402_APP_ID=your-app-id-here
 
 **DEX Aggregators**
 - OKX DEX - Multi-source liquidity aggregation
-- 1inch - Pathfinder algorithm for optimal routes
 - OpenOcean - Cross-DEX aggregation
 
 **Native DEXs**
@@ -198,11 +197,7 @@ const txHash = await agent.agniSwap(
   3000 // fee tier
 )
 
-// 1inch aggregator
-const quote = await agent.get1inchQuote(fromToken, toToken, amount)
-const txHash = await agent.swapOn1inch(fromToken, toToken, amount, 0.5)
-
-// OpenOcean
+// OpenOcean aggregator
 const txHash = await agent.swapOnOpenOcean(fromToken, toToken, amount, 0.5)
 ```
 
@@ -322,9 +317,6 @@ OKX_API_KEY=your_api_key
 OKX_SECRET_KEY=your_secret_key
 OKX_API_PASSPHRASE=your_passphrase
 OKX_PROJECT_ID=your_project_id
-
-# 1inch (optional - higher rate limits)
-ONEINCH_API_KEY=your_api_key
 ```
 
 ## Networks
@@ -342,7 +334,6 @@ ONEINCH_API_KEY=your_api_key
 |----------|:-------:|:-------:|-------------|
 | Native MNT Transfers | ✅ | ✅ | Send/receive MNT tokens |
 | OKX DEX Aggregator | ✅ | ✅ | DEX aggregation (requires API keys) |
-| 1inch | ✅ | ✅ | DEX aggregation |
 | Squid Router | ✅ | ✅ | Cross-chain swaps & bridging |
 | OpenOcean | ✅ | ✅ | DEX aggregation |
 | x402 Payments | ✅ | ✅ | HTTP 402 payment infrastructure |

@@ -43,7 +43,7 @@ async function main() {
   // 4. Example: Get swap quote from Agni Finance
   console.log("Step 5: Example operations available:");
   console.log("  ✓ DEX Swaps (Agni, Merchant Moe, Uniswap V3)");
-  console.log("  ✓ DEX Aggregators (OKX, 1inch, OpenOcean)");
+  console.log("  ✓ DEX Aggregators (OKX, OpenOcean)");
   console.log("  ✓ Lending (Lendle - supply, borrow, repay, withdraw)");
   console.log("  ✓ Liquid Staking (mETH)");
   console.log("  ✓ Cross-chain (Squid Router)");

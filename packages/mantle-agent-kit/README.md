@@ -35,7 +35,6 @@ const txHash = await agent.sendTransaction(
 | Protocol | Network | Description |
 |----------|---------|-------------|
 | **OKX DEX** | Mainnet | Multi-source liquidity aggregation |
-| **1inch** | Mainnet | Pathfinder algorithm for optimal routes |
 | **OpenOcean** | Mainnet | Cross-DEX aggregation |
 | **Agni Finance** | Mainnet | Concentrated liquidity DEX (Uniswap V3) |
 | **Merchant Moe** | Mainnet | Liquidity Book DEX (TraderJoe V2.1) |
@@ -80,23 +79,6 @@ const txHash = await agent.executeSwap(
   toTokenAddress: string,
   amount: string,
   slippagePercentage?: string // default: "0.5"
-);
-```
-
-#### 1inch
-
-```typescript
-const quote = await agent.get1inchQuote(
-  fromToken: Address,
-  toToken: Address,
-  amount: string
-);
-
-const txHash = await agent.swapOn1inch(
-  fromToken: Address,
-  toToken: Address,
-  amount: string,
-  slippage?: number // default: 0.5
 );
 ```
 
@@ -775,12 +757,6 @@ OKX_API_KEY=your_api_key
 OKX_SECRET_KEY=your_secret_key
 OKX_API_PASSPHRASE=your_passphrase
 OKX_PROJECT_ID=your_project_id
-```
-
-#### 1inch (Optional - Higher rate limits)
-
-```env
-ONEINCH_API_KEY=your_api_key
 ```
 
 ### Network Configuration

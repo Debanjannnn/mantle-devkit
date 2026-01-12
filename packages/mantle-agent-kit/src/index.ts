@@ -8,7 +8,6 @@ export * as LendleConstants from "./constants/lendle";
 export * as MerchantMoeConstants from "./constants/merchantmoe";
 export * as MethConstants from "./constants/meth";
 export * as OKXConstants from "./constants/okx";
-export * as OneInchConstants from "./constants/oneinch";
 export * as OpenOceanConstants from "./constants/openocean";
 export * as SquidConstants from "./constants/squid";
 export * as UniswapConstants from "./constants/uniswap";

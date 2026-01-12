@@ -43,18 +43,6 @@ const PROTOCOLS = [
     networks: ["mainnet"],
   },
   {
-    name: "1inch",
-    category: "Aggregator",
-    logo: "/1inch-1inch-logo.png",
-    description: "DEX aggregator with Pathfinder algorithm",
-    contracts: {
-      mainnet: "API-based",
-    },
-    explorer: "https://app.1inch.io",
-    methods: ["get1inchQuote", "swapOn1inch"],
-    networks: ["mainnet", "testnet"],
-  },
-  {
     name: "OKX DEX",
     category: "Aggregator",
     logo: "/okx.png",
@@ -146,34 +134,6 @@ const txHash = await agent.agniSwap(
   "1000000000000000000", // Amount in wei (1 token)
   0.5,  // Slippage %
   3000  // Fee tier (500, 3000, 10000)
-)
-
-console.log("Swap tx:", txHash)`,
-  },
-  {
-    id: "swap-1inch",
-    name: "Swap via 1inch",
-    category: "Aggregator",
-    networks: ["mainnet", "testnet"],
-    code: `import { MNTAgentKit } from "mantle-agent-kit-sdk"
-
-const agent = new MNTAgentKit(process.env.PRIVATE_KEY!, "mainnet")
-await agent.initialize()
-
-// Get quote first
-const quote = await agent.get1inchQuote(
-  "0xTokenIn",
-  "0xTokenOut",
-  "1000000000000000000"
-)
-console.log("Expected output:", quote)
-
-// Execute swap
-const txHash = await agent.swapOn1inch(
-  "0xTokenIn",
-  "0xTokenOut",
-  "1000000000000000000",
-  0.5 // Slippage %
 )
 
 console.log("Swap tx:", txHash)`,
@@ -350,7 +310,6 @@ await agent.agniSwap(tokenIn, tokenOut, amount)
 await agent.merchantMoeSwap(tokenIn, tokenOut, amount)
 
 // 2. Aggregators (best rates)
-await agent.swapOn1inch(tokenIn, tokenOut, amount, slippage)
 await agent.swapOnOpenOcean(tokenIn, tokenOut, amount, slippage)
 
 // 3. Lending
