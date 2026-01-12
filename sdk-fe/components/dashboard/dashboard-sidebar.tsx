@@ -24,7 +24,7 @@ export function DashboardSidebar({
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Overview", id: "overview" as const },
-    ...(isAdmin ? [{ icon: BarChart3, label: "Analytics", id: "analytics" as const }] : []),
+    { icon: BarChart3, label: "Analytics", id: "analytics" as const },
     { icon: Puzzle, label: "Components", id: "x402" as const },
     { icon: Boxes, label: "Agent Kit", id: "components" as const },
     { icon: Cpu, label: "MCP Server", id: "mcp" as const },

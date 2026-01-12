@@ -27,7 +27,6 @@ interface ChartData {
 }
 
 export function AnalyticsTab() {
-  const { isAdmin } = useDashboard()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [chartData, setChartData] = useState<ChartData[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -65,10 +64,8 @@ export function AnalyticsTab() {
   }
 
   useEffect(() => {
-    if (isAdmin) {
-      fetchTransactions()
-    }
-  }, [isAdmin])
+    fetchTransactions()
+  }, [])
 
   const handleCopyHash = async (hash: string) => {
     try {
@@ -92,20 +89,6 @@ export function AnalyticsTab() {
       hour: '2-digit',
       minute: '2-digit',
     })
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="mb-4 rounded-full border border-red-500/30 bg-red-500/10 p-6">
-          <Activity className="h-12 w-12 text-red-500/60" />
-        </div>
-        <h3 className="mb-2 font-sans text-xl font-light text-foreground">Access Denied</h3>
-        <p className="mb-6 max-w-md font-mono text-sm text-foreground/60">
-          Analytics is only available for admin users.
-        </p>
-      </div>
-    )
   }
 
   if (isLoading) {
