@@ -15,14 +15,12 @@ export async function pikeperpsClosePosition(
   const perpetualTradingAddress = PERPETUAL_TRADING[agent.chain];
 
   if (perpetualTradingAddress === "0x0000000000000000000000000000000000000000") {
+    if (agent.demo) {
+      return "0xdemo_close_position_tx_hash" as Hex;
+    }
     throw new Error(
       `PikePerps not available on ${agent.chain}. Only available on testnet.`,
     );
-  }
-
-  // Demo mode
-  if (agent.demo) {
-    return "0xdemo_close_position_tx_hash" as Hex;
   }
 
   // Encode function call

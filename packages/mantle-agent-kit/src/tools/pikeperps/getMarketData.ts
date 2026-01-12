@@ -47,35 +47,33 @@ export async function pikeperpsGetMarketData(
   const bondingCurveAddress = BONDING_CURVE_MARKET[agent.chain];
 
   if (perpetualTradingAddress === "0x0000000000000000000000000000000000000000") {
+    if (agent.demo) {
+      return {
+        token: tokenAddress,
+        currentPrice: BigInt("100000000"), // $1.00 scaled by 1e8
+        hasPrice: true,
+        isListed: true,
+        curveProgress: BigInt("5000"), // 50%
+        recentTrades: [
+          {
+            positionId: 1n,
+            trader: "0x0000000000000000000000000000000000000001" as Address,
+            token: tokenAddress,
+            isLong: true,
+            size: BigInt("1000000000000000000"),
+            margin: BigInt("100000000000000000"),
+            leverage: 10n,
+            entryPrice: BigInt("100000000"),
+            timestamp: Math.floor(Date.now() / 1000) - 300,
+            txHash: "0xdemo_trade_hash" as Hex,
+            blockNumber: 1000n,
+          },
+        ],
+      };
+    }
     throw new Error(
       `PikePerps not available on ${agent.chain}. Only available on testnet.`,
     );
-  }
-
-  // Demo mode
-  if (agent.demo) {
-    return {
-      token: tokenAddress,
-      currentPrice: BigInt("100000000"), // $1.00 scaled by 1e8
-      hasPrice: true,
-      isListed: true,
-      curveProgress: BigInt("5000"), // 50%
-      recentTrades: [
-        {
-          positionId: 1n,
-          trader: "0x0000000000000000000000000000000000000001" as Address,
-          token: tokenAddress,
-          isLong: true,
-          size: BigInt("1000000000000000000"),
-          margin: BigInt("100000000000000000"),
-          leverage: 10n,
-          entryPrice: BigInt("100000000"),
-          timestamp: Math.floor(Date.now() / 1000) - 300,
-          txHash: "0xdemo_trade_hash" as Hex,
-          blockNumber: 1000n,
-        },
-      ],
-    };
   }
 
   // Get current price from perpetual trading contract

@@ -30,7 +30,7 @@ export async function getSwapTransaction(
       toTokenAddress,
       amount,
       userWalletAddress,
-      slippage: slippagePercent,
+      slippagePercent,
     };
 
     // Prepare authentication

@@ -20,6 +20,12 @@ export const POSITION_MANAGER = {
   testnet: "0x0000000000000000000000000000000000000000" as const,
 } as const;
 
+// WMNT (Wrapped MNT) - native token wrapper
+export const WMNT = {
+  mainnet: "0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8" as const,
+  testnet: "0x0000000000000000000000000000000000000000" as const,
+} as const;
+
 // SwapRouter ABI (Uniswap V3 compatible)
 export const SWAP_ROUTER_ABI = [
   {

@@ -2,7 +2,6 @@ import type { MNTAgentKit } from "../../agent";
 import {
   PYTH_CONTRACT,
   PYTH_ABI,
-  PYTH_PRICE_FEED_IDS,
   type PythPriceResponse,
   type PythTokenPriceResponse,
   resolvePriceFeedInput,
@@ -38,7 +37,9 @@ export async function pythGetPrice(
   }
 
   // Ensure the price feed ID has 0x prefix
-  const feedId = priceFeedId.startsWith("0x") ? priceFeedId : `0x${priceFeedId}`;
+  const feedId = priceFeedId.startsWith("0x")
+    ? priceFeedId
+    : `0x${priceFeedId}`;
 
   // Demo mode
   if (agent.demo) {
@@ -104,7 +105,9 @@ export async function pythGetEmaPrice(
     pair = input;
   }
 
-  const feedId = priceFeedId.startsWith("0x") ? priceFeedId : `0x${priceFeedId}`;
+  const feedId = priceFeedId.startsWith("0x")
+    ? priceFeedId
+    : `0x${priceFeedId}`;
 
   if (agent.demo) {
     return createMockPythResponse(pair, feedId);
@@ -167,7 +170,9 @@ export async function pythGetTokenPrice(
 ): Promise<PythTokenPriceResponse> {
   // Validate it's a token address
   if (!isTokenAddress(tokenAddress)) {
-    throw new Error(`Invalid token address format: ${tokenAddress}. Must be a valid Ethereum address (0x...)`);
+    throw new Error(
+      `Invalid token address format: ${tokenAddress}. Must be a valid Ethereum address (0x...)`,
+    );
   }
 
   // Find token in mapping
@@ -185,17 +190,24 @@ export async function pythGetTokenPrice(
 
   if (!tokenInfo) {
     throw new Error(
-      `Token address not supported: ${tokenAddress}. Use pythGetSupportedTokenAddresses() to see available tokens.`
+      `Token address not supported: ${tokenAddress}. Use pythGetSupportedTokenAddresses() to see available tokens.`,
     );
   }
 
   // Extract token symbol from pair (e.g., "USDC/USD" -> "USDC")
   const tokenSymbol = tokenInfo.pair.split("/")[0] || "UNKNOWN";
-  const feedId = tokenInfo.feedId.startsWith("0x") ? tokenInfo.feedId : `0x${tokenInfo.feedId}`;
+  const feedId = tokenInfo.feedId.startsWith("0x")
+    ? tokenInfo.feedId
+    : `0x${tokenInfo.feedId}`;
 
   // Demo mode
   if (agent.demo) {
-    return createMockTokenPriceResponse(originalAddress, tokenSymbol, tokenInfo.pair, feedId);
+    return createMockTokenPriceResponse(
+      originalAddress,
+      tokenSymbol,
+      tokenInfo.pair,
+      feedId,
+    );
   }
 
   const pythAddress = PYTH_CONTRACT[agent.chain];
@@ -208,7 +220,10 @@ export async function pythGetTokenPrice(
       args: [feedId as `0x${string}`],
     })) as { price: bigint; conf: bigint; expo: number; publishTime: bigint };
 
-    const formattedPrice = formatPythPrice(Number(priceData.price), priceData.expo);
+    const formattedPrice = formatPythPrice(
+      Number(priceData.price),
+      priceData.expo,
+    );
     const publishTime = Number(priceData.publishTime);
 
     return {
@@ -224,7 +239,7 @@ export async function pythGetTokenPrice(
     };
   } catch (error) {
     throw new Error(
-      `Failed to fetch price for token ${tokenAddress}: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to fetch price for token ${tokenAddress}: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
 }
@@ -232,30 +247,66 @@ export async function pythGetTokenPrice(
 /**
  * Create mock response for demo mode
  */
-function createMockPythResponse(pair: string, feedId: string): PythPriceResponse {
+function createMockPythResponse(
+  pair: string,
+  feedId: string,
+): PythPriceResponse {
   const mockPrices: Record<string, number> = {
     // Major Crypto
-    "BTC/USD": 97500.0, "ETH/USD": 3450.0, "SOL/USD": 185.0, "BNB/USD": 680.0,
-    "XRP/USD": 2.35, "ADA/USD": 0.95, "DOGE/USD": 0.32, "DOT/USD": 7.2,
-    "AVAX/USD": 38.0, "MATIC/USD": 0.48, "LINK/USD": 22.0, "ATOM/USD": 9.5,
-    "LTC/USD": 105.0, "UNI/USD": 13.5, "NEAR/USD": 5.2, "TRX/USD": 0.25,
+    "BTC/USD": 97500.0,
+    "ETH/USD": 3450.0,
+    "SOL/USD": 185.0,
+    "BNB/USD": 680.0,
+    "XRP/USD": 2.35,
+    "ADA/USD": 0.95,
+    "DOGE/USD": 0.32,
+    "DOT/USD": 7.2,
+    "AVAX/USD": 38.0,
+    "MATIC/USD": 0.48,
+    "LINK/USD": 22.0,
+    "ATOM/USD": 9.5,
+    "LTC/USD": 105.0,
+    "UNI/USD": 13.5,
+    "NEAR/USD": 5.2,
+    "TRX/USD": 0.25,
     // L2
-    "ARB/USD": 0.85, "OP/USD": 1.95, "MNT/USD": 0.85, "STRK/USD": 0.45,
+    "ARB/USD": 0.85,
+    "OP/USD": 1.95,
+    "MNT/USD": 0.85,
+    "STRK/USD": 0.45,
     // DeFi
-    "AAVE/USD": 285.0, "CRV/USD": 0.52, "MKR/USD": 1850.0, "SNX/USD": 2.8,
-    "LDO/USD": 1.85, "GMX/USD": 28.0, "PENDLE/USD": 4.2,
+    "AAVE/USD": 285.0,
+    "CRV/USD": 0.52,
+    "MKR/USD": 1850.0,
+    "SNX/USD": 2.8,
+    "LDO/USD": 1.85,
+    "GMX/USD": 28.0,
+    "PENDLE/USD": 4.2,
     // Stablecoins
-    "USDC/USD": 1.0, "USDT/USD": 1.0, "DAI/USD": 1.0,
+    "USDC/USD": 1.0,
+    "USDT/USD": 1.0,
+    "DAI/USD": 1.0,
     // LST
-    "mETH/USD": 3500.0, "stETH/USD": 3450.0, "wstETH/USD": 4100.0,
+    "mETH/USD": 3500.0,
+    "stETH/USD": 3450.0,
+    "wstETH/USD": 4100.0,
     // Meme
-    "SHIB/USD": 0.000022, "PEPE/USD": 0.000018, "BONK/USD": 0.000028, "WIF/USD": 1.85,
+    "SHIB/USD": 0.000022,
+    "PEPE/USD": 0.000018,
+    "BONK/USD": 0.000028,
+    "WIF/USD": 1.85,
     // Commodities
-    "XAU/USD": 2650.0, "XAG/USD": 31.0,
+    "XAU/USD": 2650.0,
+    "XAG/USD": 31.0,
     // Forex
-    "EUR/USD": 1.08, "GBP/USD": 1.27, "JPY/USD": 0.0067,
+    "EUR/USD": 1.08,
+    "GBP/USD": 1.27,
+    "JPY/USD": 0.0067,
     // Equities
-    "AAPL/USD": 248.0, "NVDA/USD": 138.0, "TSLA/USD": 385.0, "MSFT/USD": 425.0,
+    "AAPL/USD": 248.0,
+    "NVDA/USD": 138.0,
+    "TSLA/USD": 385.0,
+    "MSFT/USD": 425.0,
   };
 
   const price = mockPrices[pair] || 100.0;
@@ -279,15 +330,20 @@ function createMockTokenPriceResponse(
   tokenAddress: string,
   tokenSymbol: string,
   pair: string,
-  feedId: string
+  feedId: string,
 ): PythTokenPriceResponse {
   const mockPrices: Record<string, number> = {
-    "USDC": 1.0, "USDT": 1.0, "DAI": 1.0,
-    "ETH": 3450.0, "WETH": 3450.0,
-    "BTC": 97500.0, "WBTC": 97500.0,
-    "MNT": 0.85, "WMNT": 0.85,
-    "mETH": 3500.0,
-    "PENDLE": 4.2,
+    USDC: 1.0,
+    USDT: 1.0,
+    DAI: 1.0,
+    ETH: 3450.0,
+    WETH: 3450.0,
+    BTC: 97500.0,
+    WBTC: 97500.0,
+    MNT: 0.85,
+    WMNT: 0.85,
+    mETH: 3500.0,
+    PENDLE: 4.2,
   };
 
   const price = mockPrices[tokenSymbol] || 100.0;

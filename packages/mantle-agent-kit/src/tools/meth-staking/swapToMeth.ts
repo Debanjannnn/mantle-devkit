@@ -20,14 +20,12 @@ export async function swapToMeth(
   const wethTokenAddress = WETH_TOKEN[agent.chain];
 
   if (methTokenAddress === "0x0000000000000000000000000000000000000000") {
+    if (agent.demo) {
+      return "0xdemo000000000000000000000000000000000000000000000000000000000001" as Hex;
+    }
     throw new Error(
       `mETH not available on ${agent.chain}. Only available on mainnet.`,
     );
-  }
-
-  // Demo mode
-  if (agent.demo) {
-    return "0xdemo000000000000000000000000000000000000000000000000000000000001" as Hex;
   }
 
   // Use OpenOcean aggregator to swap WETH -> mETH
