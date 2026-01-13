@@ -53,10 +53,10 @@ export const metadata: Metadata = {
     siteName: "Mantle DevKit",
     images: [
       {
-        url: "/X402.png",
+        url: "/Mantle%20Devkit-thumbnail.jpg",
         width: 1200,
         height: 630,
-        alt: "Mantle DevKit Logo",
+        alt: "Mantle DevKit - Developer Suite for Mantle",
       },
     ],
     locale: "en_US",
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     title: "Mantle DevKit - Developer Suite for Mantle",
     description:
       "The complete developer suite for Mantle Network. x402 for API monetization, Agent Kit for DeFi integrations.",
-    images: ["/X402.png"],
+    images: ["/Mantle%20Devkit-thumbnail.jpg"],
     creator: "@mantledevkit",
   },
   robots: {
