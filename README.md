@@ -10,7 +10,7 @@ Mantle DevKit is a comprehensive toolkit designed to accelerate development on M
 
 - **x402-mantle-sdk** - Monetize your APIs with native blockchain payments using the HTTP 402 protocol
 - **mantle-agent-kit-sdk** - Build AI agents and applications with unified DeFi protocol integrations
-- **create-x402-app** - CLI scaffolding tool to bootstrap x402 projects in seconds
+- **create-mantle-devkit-app** - CLI scaffolding tool to bootstrap x402 and Agent Kit projects in seconds
 - **mantle-devkit-mcp** - MCP server for Claude AI integration with Mantle Network
 
 ## Packages
@@ -39,15 +39,19 @@ npm install mantle-agent-kit-sdk
 
 ---
 
-### create-x402-app
+### create-mantle-devkit-app
 
-CLI tool for quickly scaffolding x402 payment-enabled applications. Generates production-ready project templates with pre-configured payment middleware, wallet integration, and best practices. Supports multiple templates: backend-only (Hono/Express) and fullstack (with React frontend).
+CLI tool for scaffolding production-ready Mantle applications. Supports two project types:
+
+**Agent Kit** - DeFi swap interface with Agni Finance, Merchant Moe, and OpenOcean integrations. Real-time price quotes via Pyth Oracle.
+
+**x402 API** - Pay-per-request API templates with HTTP 402 payment middleware. Available in fullstack (Next.js) and backend-only (Hono/Express) variants.
 
 ```bash
-npx create-x402-app my-app
+npx create-mantle-devkit-app my-app
 ```
 
-[![npm](https://img.shields.io/npm/v/create-x402-app)](https://www.npmjs.com/package/create-x402-app)
+[![npm](https://img.shields.io/npm/v/create-mantle-devkit-app)](https://www.npmjs.com/package/create-mantle-devkit-app)
 
 ---
 
@@ -63,7 +67,7 @@ Model Context Protocol (MCP) server that provides Claude AI with deep knowledge 
 |---------|-------------|---------|-----|
 | `x402-mantle-sdk` | HTTP 402 payment middleware for monetizing APIs | `npm i x402-mantle-sdk` | [npm](https://www.npmjs.com/package/x402-mantle-sdk) |
 | `mantle-agent-kit-sdk` | Unified DeFi protocol integrations for AI agents | `npm i mantle-agent-kit-sdk` | [npm](https://www.npmjs.com/package/mantle-agent-kit-sdk) |
-| `create-x402-app` | CLI to scaffold x402 payment applications | `npx create-x402-app` | [npm](https://www.npmjs.com/package/create-x402-app) |
+| `create-mantle-devkit-app` | CLI to scaffold x402 and Agent Kit applications | `npx create-mantle-devkit-app` | [npm](https://www.npmjs.com/package/create-mantle-devkit-app) |
 | `mantle-devkit-mcp` | MCP server for Claude AI integration | See docs | - |
 
 ## Quick Start
@@ -380,11 +384,11 @@ OKX_PROJECT_ID=your_project_id
 ```
 mantle-devkit/
 ├── packages/
-│   ├── x402-devkit/          # x402 API monetization SDK (x402-mantle-sdk)
-│   ├── mantle-agent-kit/     # DeFi protocol integrations (mantle-agent-kit-sdk)
-│   ├── create-x402-app/      # CLI scaffolding tool for x402 projects
-│   └── mantle-devkit-mcp/    # MCP server for Claude AI integration
-├── sdk-fe/                   # Dashboard & documentation frontend
+│   ├── x402-devkit/              # x402 API monetization SDK (x402-mantle-sdk)
+│   ├── mantle-agent-kit/         # DeFi protocol integrations (mantle-agent-kit-sdk)
+│   ├── create-mantle-devkit-app/ # CLI scaffolding tool
+│   └── mantle-devkit-mcp/        # MCP server for Claude AI integration
+├── sdk-fe/                       # Dashboard & documentation frontend
 └── README.md
 ```
 
@@ -432,10 +436,11 @@ MIT
 ### NPM Packages
 - [x402-mantle-sdk](https://www.npmjs.com/package/x402-mantle-sdk) - HTTP 402 payment SDK
 - [mantle-agent-kit-sdk](https://www.npmjs.com/package/mantle-agent-kit-sdk) - DeFi protocol integrations
-- [create-x402-app](https://www.npmjs.com/package/create-x402-app) - CLI scaffolding tool
+- [create-mantle-devkit-app](https://www.npmjs.com/package/create-mantle-devkit-app) - CLI scaffolding tool
 
 ### Resources
 - [Dashboard](https://mantle-devkit.vercel.app) - Project dashboard & documentation
+- [Documentation](https://mantle-devkit.vercel.app/docs-demo) - Full documentation
 - [Mantle Explorer](https://explorer.mantle.xyz) - Mainnet block explorer
 - [Mantle Sepolia Explorer](https://explorer.sepolia.mantle.xyz) - Testnet block explorer
 - [Mantlescan](https://mantlescan.xyz) - Alternative block explorer
