@@ -1,416 +1,62 @@
 # Mantle DevKit
 
-The complete developer suite for Mantle Network. Build payments, DeFi applications, and AI-powered blockchain agents with production-ready SDKs and tools.
+**The First Complete Developer Toolkit for Mantle Network**
 
-## Overview
-
-Mantle DevKit is a comprehensive toolkit designed to accelerate development on Mantle Network. Whether you're building monetized APIs, integrating DeFi protocols, or creating AI agents that interact with blockchain, Mantle DevKit provides the infrastructure you need.
-
-### What's Included
-
-- **x402-mantle-sdk** - Monetize your APIs with native blockchain payments using the HTTP 402 protocol
-- **mantle-agent-kit-sdk** - Build AI agents and applications with unified DeFi protocol integrations
-- **create-mantle-devkit-app** - CLI scaffolding tool to bootstrap x402 and Agent Kit projects in seconds
-- **mantle-devkit-mcp** - MCP server for Claude AI integration with Mantle Network
-
-## Packages
-
-### x402-mantle-sdk
-
-Complete SDK for implementing HTTP 402 Payment Required protocol on Mantle Network. Enables developers to monetize APIs by requiring cryptocurrency payments before granting access to protected resources. Includes server middleware for popular frameworks (Hono, Express, Next.js), client-side payment handling with automatic wallet integration, and React components for seamless UI integration.
-
-```bash
-npm install x402-mantle-sdk
-```
-
-[![npm](https://img.shields.io/npm/v/x402-mantle-sdk)](https://www.npmjs.com/package/x402-mantle-sdk)
+Payments and DeFi with a Few Lines of Code
 
 ---
 
-### mantle-agent-kit-sdk
+## The Problem
 
-TypeScript SDK providing a unified interface to interact with DeFi protocols on Mantle Network. Designed for building AI agents, trading bots, and DeFi applications with a single, consistent API. Supports DEX aggregators (OKX, OpenOcean), native DEXs (Agni, Merchant Moe, Uniswap V3), lending protocols (Lendle), liquid staking (mETH), cross-chain operations (Squid Router), Pyth Network price oracles (80+ assets), perpetual trading (PikePerps), token launchpad (ERC20 & RWA), and NFT launchpad (ERC721).
+Building production-grade blockchain applications today suffers from three critical challenges:
 
-```bash
-npm install mantle-agent-kit-sdk
-```
+1. **Fragmented Infrastructure**: Developers must integrate multiple SDKs, understand dozens of smart contract ABIs, and handle protocol-specific quirks across DEXs, lending platforms, and cross-chain bridges. A simple swap operation can require 500+ lines of boilerplate.
 
-[![npm](https://img.shields.io/npm/v/mantle-agent-kit-sdk)](https://www.npmjs.com/package/mantle-agent-kit-sdk)
+2. **API Monetization Complexity**: Web3 developers have no standardized way to accept crypto payments for API access. Traditional payment processors charge 3-5% fees, require lengthy onboarding, and don't support native tokens. Building custom payment logic means maintaining escrow contracts, handling refunds, and managing disputes.
 
----
+3. **Protocol Isolation**: Each DeFi protocol operates independently. Developers must learn Aave for lending, Uniswap for swaps, and Chainlink for oracles. There's no unified interface, no consistent error handling, and no standardized transaction patterns.
 
-### create-mantle-devkit-app
+Mantle DevKit solves this by providing two production-ready SDKs:
 
-CLI tool for scaffolding production-ready Mantle applications. Supports two project types:
-
-**Agent Kit** - DeFi swap interface with Agni Finance, Merchant Moe, and OpenOcean integrations. Real-time price quotes via Pyth Oracle.
-
-**x402 API** - Pay-per-request API templates with HTTP 402 payment middleware. Available in fullstack (Next.js) and backend-only (Hono/Express) variants.
-
-```bash
-npx create-mantle-devkit-app my-app
-```
-
-[![npm](https://img.shields.io/npm/v/create-mantle-devkit-app)](https://www.npmjs.com/package/create-mantle-devkit-app)
+- **Agent Kit**: Unified interface for 9+ DeFi protocols through a single class instance
+- **x402 SDK**: HTTP 402 Payment Required protocol implementation for API monetization with sub-cent gas costs
 
 ---
 
-### mantle-devkit-mcp
+## Why Mantle Network
 
-Model Context Protocol (MCP) server that provides Claude AI with deep knowledge of Mantle Network, SDK documentation, and DeFi protocol context. Enables Claude to assist with Mantle development, generate accurate code, and provide protocol-specific guidance. Integrates seamlessly with Claude Code and Claude Desktop.
+Mantle's modular L2 architecture is essential for DevKit's capabilities:
+
+**Ultra-Low Gas Fees**: Transaction costs under $0.001 make micropayments economically viable. x402 payments that would cost $2-5 on Ethereum mainnet cost fractions of a cent on Mantle.
+
+**Fast Finality**: Block confirmation in seconds enables real-time payment verification. API requests don't stall waiting for blockchain confirmations.
+
+**EVM Compatibility**: Deploy existing Solidity contracts without modification. Use familiar tools like Hardhat, Foundry, and Viem.
+
+**Native Yield**: MNT and mETH tokens earn native staking yield, allowing payment tokens to appreciate while held.
+
+**Ecosystem Depth**: Mature DeFi ecosystem with established protocols (Agni, Lendle, Merchant Moe) provides reliable liquidity for swaps and lending operations.
 
 ---
 
-## Package Summary
-
-| Package | Description | Install | npm |
-|---------|-------------|---------|-----|
-| `x402-mantle-sdk` | HTTP 402 payment middleware for monetizing APIs | `npm i x402-mantle-sdk` | [npm](https://www.npmjs.com/package/x402-mantle-sdk) |
-| `mantle-agent-kit-sdk` | Unified DeFi protocol integrations for AI agents | `npm i mantle-agent-kit-sdk` | [npm](https://www.npmjs.com/package/mantle-agent-kit-sdk) |
-| `create-mantle-devkit-app` | CLI to scaffold x402 and Agent Kit applications | `npx create-mantle-devkit-app` | [npm](https://www.npmjs.com/package/create-mantle-devkit-app) |
-| `mantle-devkit-mcp` | MCP server for Claude AI integration | See docs | - |
-
-## Quick Start
-
-### x402 - API Monetization
-
-```bash
-npm install x402-mantle-sdk
-```
-
-```typescript
-// Server - Protect API routes with payments
-import { x402 } from 'x402-mantle-sdk/server'
-
-app.use('/api/premium', x402({
-  price: '0.001',
-  token: 'MNT',
-  testnet: true
-}))
-
-// Client - Automatic payment handling
-import { x402Fetch } from 'x402-mantle-sdk/client'
-
-const response = await x402Fetch('https://api.example.com/api/premium')
-```
-
-### Agent Kit - DeFi Integrations
-
-```bash
-npm install mantle-agent-kit-sdk
-```
-
-```typescript
-import { MNTAgentKit } from "mantle-agent-kit-sdk"
-
-const agent = new MNTAgentKit(process.env.PRIVATE_KEY!, "mainnet")
-await agent.initialize()
-
-// DEX Swap
-await agent.agniSwap(tokenIn, tokenOut, amount)
-
-// Lending
-await agent.lendleSupply(token, amount)
-
-// Cross-chain
-await agent.crossChainSwapViaSquid(fromToken, toToken, fromChain, toChain, amount)
-```
-
-## x402 SDK
-
-### Features
-
-- HTTP 402 Payment Required protocol
-- Server middleware for Hono, Express, Next.js
-- Client-side payment modal
-- React components
-- Multiple tokens: MNT, USDC, USDT, mETH, WMNT
-- Automatic 0.5% platform fee splitting
-
-### Server Setup
-
-```typescript
-import { x402 } from 'x402-mantle-sdk/server'
-
-// Protect routes with payment
-app.use('/api/premium', x402({
-  price: '0.001',
-  token: 'MNT',
-  testnet: true
-}))
-
-app.get('/api/premium', (c) => {
-  return c.json({ data: 'Premium content' })
-})
-```
-
-### Client Usage
-
-```typescript
-import { x402Fetch } from 'x402-mantle-sdk/client'
-
-// Automatically handles 402 responses with payment modal
-const response = await x402Fetch('https://api.example.com/api/premium')
-const data = await response.json()
-```
-
-### Environment Variables
-
-```bash
-X402_APP_ID=your-app-id-here
-```
-
-## Agent Kit SDK
-
-### Supported Protocols
-
-**DEX Aggregators**
-- OKX DEX - Multi-source liquidity aggregation
-- OpenOcean - Cross-DEX aggregation
-
-**Native DEXs**
-- Agni Finance - Uniswap V3 architecture
-- Merchant Moe - TraderJoe V2.1 architecture
-- Uniswap V3 - Direct integration
-
-**Lending**
-- Lendle - Aave V2 architecture
-
-**Cross-Chain**
-- Squid Router - Axelar network integration
-
-**Perpetual Trading**
-- PikePerps - Leveraged trading on meme tokens (1-100x)
-
-**Price Oracles**
-- Pyth Network - 80+ real-time price feeds (crypto, forex, commodities, equities)
-
-**Token & NFT Creation**
-- Token Launchpad - Deploy ERC20 tokens and RWA (Real World Asset) tokens
-- NFT Launchpad - Deploy ERC721 collections with minting
-
-### DEX Operations
-
-```typescript
-// Agni Finance swap
-const txHash = await agent.agniSwap(
-  "0xTokenIn",
-  "0xTokenOut",
-  "1000000000000000000", // 1 token in wei
-  0.5, // slippage %
-  3000 // fee tier
-)
-
-// OpenOcean aggregator
-const txHash = await agent.swapOnOpenOcean(fromToken, toToken, amount, 0.5)
-```
-
-### Lending Operations
-
-```typescript
-// Supply assets to earn yield
-await agent.lendleSupply(tokenAddress, amount)
-
-// Borrow against collateral
-await agent.lendleBorrow(tokenAddress, amount, 2) // 2 = variable rate
-
-// Repay debt
-await agent.lendleRepay(tokenAddress, amount)
-
-// Withdraw
-await agent.lendleWithdraw(tokenAddress, amount)
-```
-
-### Cross-Chain Operations
-
-```typescript
-// Get route
-const route = await agent.getSquidRoute(
-  fromToken, toToken,
-  181, // Mantle LayerZero ID
-  1,   // Ethereum LayerZero ID
-  amount
-)
-
-// Execute cross-chain swap
-const txHash = await agent.crossChainSwapViaSquid(
-  fromToken, toToken,
-  181, 1, // from Mantle to Ethereum
-  amount, 1 // 1% slippage
-)
-```
-
-### Pyth Price Oracles
-
-```typescript
-// Get price by pair name
-const ethPrice = await agent.pythGetPrice("ETH/USD")
-console.log(ethPrice.formattedPrice) // "3450.00"
-
-// Get price by token address
-const price = await agent.pythGetTokenPrice("0x09Bc4E0D10C81b3a3766c49F0f98a8aaa7adA8D2")
-// Returns: { tokenSymbol: "USDC", priceUsd: "1.00", lastUpdated: "2024-01-08T12:00:00.000Z" }
-
-// Get multiple prices
-const prices = await agent.pythGetMultiplePrices(["BTC/USD", "ETH/USD", "MNT/USD"])
-
-// Get supported token addresses
-const tokens = agent.pythGetSupportedTokenAddresses()
-```
-
-### Token Launchpad
-
-```typescript
-// Deploy standard ERC20 token (supply minted to your address)
-const token = await agent.deployStandardToken("My Token", "MTK", "1000000")
-console.log(token.tokenAddress)
-
-// Deploy RWA (Real World Asset) token
-const rwa = await agent.deployRWAToken(
-  "Manhattan Property",
-  "MPT",
-  "10000",
-  "Real Estate",
-  "PROP-001"
-)
-```
-
-### NFT Launchpad
-
-```typescript
-// Deploy ERC721 collection
-const collection = await agent.deployNFTCollection({
-  name: "My Collection",
-  symbol: "MYC",
-  baseURI: "https://api.example.com/metadata/",
-  maxSupply: 10000
-})
-
-// Mint NFT
-const nft = await agent.mintNFT(collection.collectionAddress)
-console.log(nft.tokenId)
-
-// Batch mint
-await agent.batchMintNFT(collectionAddress, recipientAddress, 10)
-```
-
-### Perpetual Trading (PikePerps)
-
-```typescript
-// Open long position with 10x leverage
-const position = await agent.pikeperpsOpenLong(tokenAddress, margin, 10)
-
-// Open short position
-const short = await agent.pikeperpsOpenShort(tokenAddress, margin, 5)
-
-// Get positions
-const positions = await agent.pikeperpsGetPositions()
-
-// Close position
-await agent.pikeperpsClosePosition(positionId)
-```
-
-### Environment Variables
-
-```bash
-# Required
-APP_ID=your_app_id_here
-
-# OKX DEX (optional)
-OKX_API_KEY=your_api_key
-OKX_SECRET_KEY=your_secret_key
-OKX_API_PASSPHRASE=your_passphrase
-OKX_PROJECT_ID=your_project_id
-```
-
-## Networks
-
-| Network | Chain ID | RPC URL | Explorer |
-|---------|----------|---------|----------|
-| Mantle Mainnet | 5000 | https://rpc.mantle.xyz | https://explorer.mantle.xyz |
-| Mantle Sepolia | 5003 | https://rpc.sepolia.mantle.xyz | https://explorer.sepolia.mantle.xyz |
-
-## Protocol Support: Testnet vs Mainnet
-
-### Supported on Both Testnet & Mainnet
-
-| Protocol | Testnet | Mainnet | Description |
-|----------|:-------:|:-------:|-------------|
-| Native MNT Transfers | ✅ | ✅ | Send/receive MNT tokens |
-| OKX DEX Aggregator | ✅ | ✅ | DEX aggregation (requires API keys) |
-| Squid Router | ✅ | ✅ | Cross-chain swaps & bridging |
-| OpenOcean | ✅ | ✅ | DEX aggregation |
-| x402 Payments | ✅ | ✅ | HTTP 402 payment infrastructure |
-
-### Mainnet Only (Not Deployed on Testnet)
-
-| Protocol | Testnet | Mainnet | Description |
-|----------|:-------:|:-------:|-------------|
-| Lendle | ❌ | ✅ | Lending/borrowing (Aave V2 fork) |
-| Agni Finance | ❌ | ✅ | DEX (Uniswap V3 fork) |
-| Merchant Moe | ❌ | ✅ | Liquidity Book DEX (TraderJoe V2.1) |
-| mETH Protocol | ❌ | ✅ | Liquid staking |
-| Uniswap V3 | ❌ | ✅ | DEX |
-| Pyth Network | ✅ | ✅ | Price oracles (80+ assets) |
-| PikePerps | ❌ | ✅ | Perpetual trading |
-| Token Launchpad | ✅ | ✅ | ERC20 & RWA token deployment |
-| NFT Launchpad | ✅ | ✅ | ERC721 collection deployment |
-
-## Contract Addresses (Mainnet)
-
-**Lendle Protocol**
-- LendingPool: `0xCFa5aE7c2CE8Fadc6426C1ff872cA45378Fb7cF3`
-
-**Agni Finance**
-- SwapRouter: `0x319B69888b0d11cEC22caA5034e25FfFBDc88421`
-
-**Merchant Moe**
-- LBRouter: `0x013e138EF6008ae5FDFDE29700e3f2Bc61d21E3a`
-
-**Uniswap V3**
-- SwapRouter: `0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45`
-
-**mETH Protocol**
-- mETH Token: `0xcDA86A272531e8640cD7F1a92c01839911B90bb0`
-
-**Pyth Network**
-- Pyth Oracle: `0xA2aa501b19aff244D90cc15a4Cf739D2725B5729`
-
-**PikePerps**
-- Trading Contract: `0x6b9bb36519538e0C073894E964E90172E1c0B41F`
-
-## Project Structure
-
-```
-mantle-devkit/
-├── packages/
-│   ├── x402-devkit/              # x402 API monetization SDK (x402-mantle-sdk)
-│   ├── mantle-agent-kit/         # DeFi protocol integrations (mantle-agent-kit-sdk)
-│   ├── create-mantle-devkit-app/ # CLI scaffolding tool
-│   └── mantle-devkit-mcp/        # MCP server for Claude AI integration
-├── sdk-fe/                       # Dashboard & documentation frontend
-└── README.md
-```
-
-## Development
-
-```bash
-# Install dependencies
-bun install
-
-# Build packages
-bun run build
-
-# Type check
-bun run typecheck
-
-# Development mode
-bun run dev
-```
-
-## Token Addresses
-
-### Mainnet (Chain ID: 5000)
+## Technical Architecture
+
+### On-Chain Components (Mantle Network)
+
+**Mainnet (Chain ID: 5000)**
+
+| Protocol | Contract Type | Address |
+|----------|---------------|---------|
+| Agni Finance | SwapRouter | `0x319B69888b0d11cEC22caA5034e25FfFBDc88421` |
+| Agni Finance | Factory | `0x25780dc8Fc3cfBD75F33bFDAB65e969b603b2035` |
+| Merchant Moe | LBRouter | `0x013e138EF6008ae5FDFDE29700e3f2Bc61d21E3a` |
+| Uniswap V3 | SwapRouter | `0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45` |
+| Lendle | LendingPool | `0xCFa5aE7c2CE8Fadc6426C1ff872cA45378Fb7cF3` |
+| Lendle | DataProvider | `0x552b9e4bae485C4B7F540777d7D25614CdB84773` |
+| Pyth Network | Oracle | `0xA2aa501b19aff244D90cc15a4Cf739D2725B5729` |
+| mETH Protocol | Token | `0xcDA86A272531e8640cD7F1a92c01839911B90bb0` |
+
+**Token Addresses (Mainnet)**
 
 | Token | Address | Decimals |
 |-------|---------|----------|
@@ -420,27 +66,156 @@ bun run dev
 | mETH | `0xcDA86A272531e8640cD7F1a92c01839911B90bb0` | 18 |
 | WETH | `0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111` | 18 |
 
-### Testnet - Sepolia (Chain ID: 5003)
+**Testnet (Chain ID: 5003)**
 
-| Token | Address | Decimals |
-|-------|---------|----------|
-| USDC | `0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9` | 6 |
-| WMNT | `0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8` | 18 |
+| Protocol | Contract Type | Address |
+|----------|---------------|---------|
+| Pyth Network | Oracle | `0x98046Bd286715D3B0BC227Dd7a956b83D8978603` |
+| PikePerps | PerpetualTrading | `0x8081b646f349c049f2d5e8a400057d411dd657bd` |
+| PikePerps | BondingCurveMarket | `0x93b268325A9862645c82b32229f3B52264750Ca2` |
+
+### Off-Chain Infrastructure
+
+**Agent Kit SDK**: TypeScript library providing protocol abstraction layer. Handles ABI encoding, transaction simulation, gas estimation, and response parsing for all integrated protocols.
+
+**x402 SDK**: Middleware for Express, Hono, and Next.js that intercepts requests, validates payments, and routes to protected endpoints. Includes React components for client-side payment flows.
+
+**MCP Server**: Model Context Protocol server enabling Claude AI and other LLMs to interact with Mantle protocols through natural language.
+
+---
+
+## Product Features
+
+- **Unified DeFi Interface**: Single SDK to access 9+ protocols including Agni Finance, Lendle, Merchant Moe, and Pyth Network for swaps, lending, staking, and price feeds.
+- **API Monetization with x402**: Protect any endpoint with crypto payments using HTTP 402 standard—includes server middleware and React components for seamless integration.
+- **One-Click Token Deployment**: Deploy ERC20 tokens and NFT collections on Mantle with simple function calls, no contract development required.
+- **AI-Ready MCP Server**: Enable Claude and other LLMs to execute blockchain operations through natural language for autonomous agent workflows.
+
+---
+
+## NPM Packages
+
+| Package | Version | Description | Link |
+|---------|---------|-------------|------|
+| `mantle-agent-kit-sdk` | 1.2.0 | DeFi protocol integration SDK | [npm](https://www.npmjs.com/package/mantle-agent-kit-sdk) |
+| `x402-mantle-sdk` | 0.2.8 | HTTP 402 payment middleware | [npm](https://www.npmjs.com/package/x402-mantle-sdk) |
+| `create-mantle-devkit-app` | - | CLI scaffolding tool | [npm](https://www.npmjs.com/package/create-mantle-devkit-app) |
+
+---
+
+## Quick Start
+
+**Option 1: CLI Scaffolding**
+
+```bash
+npx create-mantle-devkit-app my-app
+```
+
+Select from templates:
+- Agent Kit (DeFi swap interface)
+- x402 Fullstack (Next.js + API)
+- x402 Backend (Hono/Express server)
+
+**Option 2: Manual Installation**
+
+```bash
+# For DeFi operations
+npm install mantle-agent-kit-sdk
+
+# For API monetization
+npm install x402-mantle-sdk
+```
+
+**Environment Configuration**
+
+```env
+# Agent Kit
+APP_ID=your_app_id_here
+
+# x402 SDK
+X402_APP_ID=your-app-id-here
+X402_PLATFORM_URL=https://mantle-devkit.vercel.app
+
+# OKX DEX (optional)
+OKX_API_KEY=...
+OKX_SECRET_KEY=...
+OKX_API_PASSPHRASE=...
+```
+
+---
+
+## Network Configuration
+
+| Network | Chain ID | RPC URL | Explorer |
+|---------|----------|---------|----------|
+| Mantle Mainnet | 5000 | https://rpc.mantle.xyz | https://explorer.mantle.xyz |
+| Mantle Sepolia | 5003 | https://rpc.sepolia.mantle.xyz | https://explorer.sepolia.mantle.xyz |
+
+---
+
+## Economic Model
+
+**For API Providers**
+- Set custom prices per endpoint (denominated in any supported token)
+- Receive payments directly to wallet (minus 0.5% platform fee)
+- Real-time revenue analytics via Observatory dashboard
+
+**For Developers**
+- Free and open source SDKs
+- No vendor lock-in (self-host or use managed infrastructure)
+- Pay only network gas fees (typically under $0.001)
+
+**Pricing Tiers**
+- Open Source: Free forever
+- Observatory Cloud: $29/month (coming soon) - managed analytics and monitoring
+- Enterprise: Custom pricing - dedicated support and SLAs
+
+---
+
+## Market Opportunity
+
+**Target Users**
+- DeFi protocol developers building on Mantle
+- API providers seeking crypto-native monetization
+- AI agent builders requiring blockchain capabilities
+- SaaS companies exploring micropayment models
+
+**Competitive Advantages**
+- Only complete developer toolkit purpose-built for Mantle Network
+- Sub-cent transaction costs enable micropayment use cases impossible on other L2s
+- Unified interface reduces integration time from weeks to hours
+- HTTP 402 standard provides framework-agnostic payment protocol
+
+---
+
+## Progress During Hackathon
+
+- Fully functional Agent Kit SDK with 9+ DeFi protocol integrations (Agni, Lendle, Merchant Moe, Pyth, etc.)
+- HTTP 402 payment middleware for Express, Hono, and Next.js with React components
+- MCP Server enabling AI agents to execute blockchain operations via natural language
+- CLI scaffolding tool (`create-mantle-devkit-app`) with multiple starter templates
+- Live dashboard for API analytics and payment tracking
+- Complete mainnet and testnet support with verified contract integrations
+- Published NPM packages with full TypeScript support and documentation
+
+---
+
+## Resources
+
+**Live Product**: https://mantle.dev-kit.xyz
+
+**Documentation**: https://mantle.dev-kit.xyz/docs-demo
+
+**Dashboard**: https://mantle.dev-kit.xyz/dashboard
+
+**Block Explorers**:
+- https://explorer.mantle.xyz
+- https://mantlescan.xyz
+
+**Mantle Network Docs**: https://docs.mantle.xyz
+
+---
 
 ## License
 
-MIT
-
-## Links
-
-### NPM Packages
-- [x402-mantle-sdk](https://www.npmjs.com/package/x402-mantle-sdk) - HTTP 402 payment SDK
-- [mantle-agent-kit-sdk](https://www.npmjs.com/package/mantle-agent-kit-sdk) - DeFi protocol integrations
-- [create-mantle-devkit-app](https://www.npmjs.com/package/create-mantle-devkit-app) - CLI scaffolding tool
-
-### Resources
-- [Dashboard](https://mantle-devkit.vercel.app) - Project dashboard & documentation
-- [Documentation](https://mantle-devkit.vercel.app/docs-demo) - Full documentation
-- [Mantle Explorer](https://explorer.mantle.xyz) - Mainnet block explorer
-- [Mantle Sepolia Explorer](https://explorer.sepolia.mantle.xyz) - Testnet block explorer
-- [Mantlescan](https://mantlescan.xyz) - Alternative block explorer
+Open source under MIT License.
