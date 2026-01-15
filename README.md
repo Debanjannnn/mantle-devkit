@@ -3,6 +3,7 @@
 The complete developer suite for Mantle Network. Build payments, DeFi applications, and AI-powered blockchain agents with production-ready SDKs and tools.
 
 ## Overview
+<img width="1920" height="1080" alt="Mantle Devkit" src="https://github.com/user-attachments/assets/b54e381f-eef9-4633-8cd0-4e1292a6d4d4" />
 
 Mantle DevKit is a comprehensive toolkit designed to accelerate development on Mantle Network. Whether you're building monetized APIs, integrating DeFi protocols, or creating AI agents that interact with blockchain, Mantle DevKit provides the infrastructure you need.
 
